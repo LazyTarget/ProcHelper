@@ -1,10 +1,10 @@
-﻿using System;
-using ServiceStack;
-
-namespace ProcHelper
+﻿namespace ProcHelper
 {
     public class HttpService : ServiceStack.Service
     {
+        private ProcessHelper _helper = new ProcessHelper();
+
+
         public ResponseDto Get(RequestDto request)
         {
             var response = new ResponseDto
@@ -14,28 +14,6 @@ namespace ProcHelper
             };
             return response;
         }
-
-    }
-
-
-    public class RequestDto : IReturn<ResponseDto>
-    {
-        public RequestDto()
-        {
-            ID = Guid.NewGuid();
-        }
-
-        public Guid ID { get; set; }
-
-        public string Value { get; set; }
-    }
-
-
-    public class ResponseDto
-    {
-        public RequestDto Request { get; set; }
-
-        public bool Success { get; set; }
 
     }
 }
