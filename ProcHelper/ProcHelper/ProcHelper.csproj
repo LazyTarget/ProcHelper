@@ -59,14 +59,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="HttpAppHost.cs" />
     <Compile Include="HttpService.cs" />
-    <Compile Include="Models\RequestDto.cs" />
+    <Compile Include="Interfaces\IProcessFinder.cs" />
+    <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\GetProcessesRequest.cs" />
+    <Compile Include="Models\ProcessStartInfoDto.cs" />
+    <Compile Include="Models\ProcessDto.cs" />
     <Compile Include="ProcessFinder.cs" />
+    <Compile Include="ProcessHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\ResponseDto.cs" />
-    <Compile Include="ProcessHelper.cs" />
+    <Compile Include="Models\ProcessesResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,16 +1,23 @@
-﻿namespace ProcHelper
+﻿using System.Collections.Generic;
+
+namespace ProcHelper
 {
     public class HttpService : ServiceStack.Service
     {
-        private ProcessHelper _helper = new ProcessHelper();
+        private IProcessHelper _helper = new ProcessHelper();
 
 
-        public ResponseDto Get(RequestDto request)
+        public ProcessesResponse Get(GetProcessesRequest request)
         {
-            var response = new ResponseDto
+            List<ProcessDto> processes;
+            if (request != null && !string.IsNullOrEmpty(request.Name))
+                processes = _helper.GetProcesses(request.Name);
+            else
+                processes = _helper.GetProcesses();
+
+            var response = new ProcessesResponse
             {
-                Request = request,
-                Success = true,
+                Processes = processes,
             };
             return response;
         }

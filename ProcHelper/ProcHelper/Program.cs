@@ -10,16 +10,19 @@ namespace ProcHelper
 
         static void Main(string[] args)
         {
-            Trace.WriteLine("AppHost started");
-
             var appHost = new HttpAppHost();
             appHost.ReceiveWebRequest += AppHost_OnReceiveWebRequest;
             appHost.Init();
 
             var urlBase = string.Format("http://*:{0}/", ServicePort);
             appHost.Start(urlBase);
+
+
+            Console.WriteLine("AppHost started");
+
             
             Console.ReadLine();
+
 
             Console.WriteLine("Stopping AppHost");
             appHost.Stop();

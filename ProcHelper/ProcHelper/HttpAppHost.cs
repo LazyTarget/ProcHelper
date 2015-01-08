@@ -19,7 +19,8 @@ namespace ProcHelper
 
         public override void Configure(Container container)
         {
-            Routes.Add<RequestDto>("/Test");
+            Routes.Add<GetProcessesRequest>("/Process")
+                  .Add<GetProcessesRequest>("/Process/{Name}");
         }
 
     }
