@@ -6,7 +6,16 @@ namespace ProcHelper
 {
     class Program
     {
-        private static long ServicePort = 1323;
+        private static int ServicePort;
+
+        static Program()
+        {
+            int p;
+            if (!int.TryParse(System.Configuration.ConfigurationManager.AppSettings.Get("ServicePort"), out p))
+                p = 1323;
+            ServicePort = p;
+        }
+
 
         static void Main(string[] args)
         {
