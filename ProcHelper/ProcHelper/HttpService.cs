@@ -7,7 +7,7 @@ namespace ProcHelper
         private IProcessHelper _helper = new ProcessHelper();
 
 
-        public ProcessesResponse Get(GetProcessesRequest request)
+        public ProcessesResponse Any(GetProcessesRequest request)
         {
             List<ProcessDto> processes;
             if (request != null && !string.IsNullOrEmpty(request.Name))
@@ -18,6 +18,17 @@ namespace ProcHelper
             var response = new ProcessesResponse
             {
                 Processes = processes,
+            };
+            return response;
+        }
+
+
+        public StartProcessResponse Any(StartProcessRequest request)
+        {
+            var process = _helper.StartProcess(request.FileName, request.Arguments, request.WorkingDirectory);
+            var response = new StartProcessResponse
+            {
+                Process = process,
             };
             return response;
         }

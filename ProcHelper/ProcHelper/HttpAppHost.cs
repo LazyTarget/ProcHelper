@@ -20,7 +20,11 @@ namespace ProcHelper
         public override void Configure(Container container)
         {
             Routes.Add<GetProcessesRequest>("/Process")
-                  .Add<GetProcessesRequest>("/Process/{Name}");
+                  .Add<GetProcessesRequest>("/Process/{Name}")
+                  .Add<StartProcessRequest>("/Process/Start")
+                  .Add<StartProcessRequest>("/Process/Start/{FileName}")
+                  .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}")
+                  .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}/{WorkingDirectory}");
         }
 
     }

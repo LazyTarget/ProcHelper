@@ -23,25 +23,30 @@ namespace ProcHelper
             var processes = _processFinder.GetProcessesByName(processName);
             return processes;
         }
-
-
+        
         public ProcessDto StartProcess(string fileName)
         {
-            return StartProcess(fileName, null);
+            var procInfo = StartProcess(fileName, null);
+            return procInfo;
         }
 
         public ProcessDto StartProcess(string fileName, string arguments)
         {
+            var procInfo = StartProcess(fileName, null, null);
+            return procInfo;
+        }
+
+        public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory)
+        {
             var processStartInfo = new ProcessStartInfo(fileName, arguments)
             {
-                
+                WorkingDirectory = workingDirectory,
             };
             var process = Process.Start(processStartInfo);
 
             var procInfo = new ProcessDto(process);
             return procInfo;
         }
-
 
 
         public bool IsRunning(string processName)

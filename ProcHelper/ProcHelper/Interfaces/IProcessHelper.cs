@@ -8,6 +8,7 @@ namespace ProcHelper
         List<ProcessDto> GetProcesses(string processName);
         ProcessDto StartProcess(string fileName);
         ProcessDto StartProcess(string fileName, string arguments);
+        ProcessDto StartProcess(string fileName, string arguments, string workingDirectory);
         bool IsRunning(string processName);
     }
 }
