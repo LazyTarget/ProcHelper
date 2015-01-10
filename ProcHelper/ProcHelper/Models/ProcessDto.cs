@@ -12,6 +12,11 @@ namespace ProcHelper
             _process = process;
         }
 
+        public Process GetBase()
+        {
+            return _process;
+        }
+
 
         public int Id
         {
@@ -71,6 +76,5 @@ namespace ProcHelper
         {
             get { return _process.TryGetProp(x => x.UserProcessorTime); }
         }
-
     }
 }

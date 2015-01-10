@@ -6,6 +6,13 @@ namespace ProcHelper
 {
     public class ProcessFinder : IProcessFinder
     {
+        public ProcessDto GetProcess(int processID)
+        {
+            var process = Process.GetProcessById(processID);
+            var result = new ProcessDto(process);
+            return result;
+        }
+
         public List<ProcessDto> GetProcesses()
         {
             var processes = Process.GetProcesses().ToList();

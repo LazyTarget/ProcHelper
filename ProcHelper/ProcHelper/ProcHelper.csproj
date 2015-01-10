@@ -65,8 +65,10 @@
     <Compile Include="HttpService.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\KillProcessRequest.cs" />
     <Compile Include="Models\StartProcessRequest.cs" />
     <Compile Include="Models\GetProcessesRequest.cs" />
+    <Compile Include="Models\KillProcessResponse.cs" />
     <Compile Include="Models\StartProcessResponse.cs" />
     <Compile Include="Models\ProcessStartInfoDto.cs" />
     <Compile Include="Models\ProcessDto.cs" />

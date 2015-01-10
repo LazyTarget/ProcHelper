@@ -24,7 +24,8 @@ namespace ProcHelper
                   .Add<StartProcessRequest>("/Process/Start")
                   .Add<StartProcessRequest>("/Process/Start/{FileName}")
                   .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}")
-                  .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}/{WorkingDirectory}");
+                  .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}/{WorkingDirectory}")
+                  .Add<KillProcessRequest>("/Process/Kill/{ProcessID}");
         }
 
     }

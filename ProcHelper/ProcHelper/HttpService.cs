@@ -33,5 +33,16 @@ namespace ProcHelper
             return response;
         }
 
+
+        public KillProcessResponse Any(KillProcessRequest request)
+        {
+            var process = _helper.KillProcess(request.ProcessID);
+            var response = new KillProcessResponse
+            {
+                Process = process,
+            };
+            return response;
+        }
+
     }
 }

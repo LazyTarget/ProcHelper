@@ -48,6 +48,15 @@ namespace ProcHelper
             return procInfo;
         }
 
+        public ProcessDto KillProcess(int processID)
+        {
+            var processDto = _processFinder.GetProcess(processID);
+            var process = processDto.GetBase();
+            process.Kill();
+
+            return processDto;
+        }
+
 
         public bool IsRunning(string processName)
         {
