@@ -30,13 +30,13 @@ namespace ProcHelper
 
         public StartProcessResponse Any(StartProcessRequest request)
         {
-            var process = _processHelper.StartProcess(request.FileName, request.Arguments, request.WorkingDirectory, request.GetStandardOutput);
+            var process = _processHelper.StartProcess(request.FileName, request.Arguments, request.WorkingDirectory, request.RedirectStandardOutput);
             
             var response = new StartProcessResponse
             {
                 Process = process,
             };
-            if (request.GetStandardOutput)
+            if (request.RedirectStandardOutput)
             {
                 var p = process.GetBase();
                 response.StandardOutput = p.StandardOutput.ReadToEnd();

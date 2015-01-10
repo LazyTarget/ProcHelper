@@ -27,6 +27,7 @@ namespace ProcHelper
         {
             get { return _process.TryGetProp(x => x.ProcessName); }
         }
+
         public string MachineName
         {
             get { return _process.TryGetProp(x => x.MachineName); }
@@ -75,6 +76,11 @@ namespace ProcHelper
         public TimeSpan UserProcessorTime
         {
             get { return _process.TryGetProp(x => x.UserProcessorTime); }
+        }
+
+        public ProcessModuleDto MainModule
+        {
+            get { return new ProcessModuleDto(_process.MainModule); }
         }
     }
 }

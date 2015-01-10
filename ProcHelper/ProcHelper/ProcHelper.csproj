@@ -67,6 +67,7 @@
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\ProcHelper\ProcessModuleDto.cs" />
     <Compile Include="Models\WinServiceHelper\GetWinServicesRequest.cs" />
     <Compile Include="Models\ProcHelper\KillProcessRequest.cs" />
     <Compile Include="Models\WinServiceHelper\PauseWinServiceRequest.cs" />

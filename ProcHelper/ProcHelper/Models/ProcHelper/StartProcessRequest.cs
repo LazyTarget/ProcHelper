@@ -8,6 +8,6 @@
 
         public string WorkingDirectory { get; set; }
 
-        public bool GetStandardOutput { get; set; }
+        public bool RedirectStandardOutput { get; set; }
     }
 }
