@@ -9,6 +9,7 @@ namespace ProcHelper
         ProcessDto StartProcess(string fileName);
         ProcessDto StartProcess(string fileName, string arguments);
         ProcessDto StartProcess(string fileName, string arguments, string workingDirectory);
+        ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput);
         ProcessDto KillProcess(int processID);
         bool IsRunning(string processName);
     }

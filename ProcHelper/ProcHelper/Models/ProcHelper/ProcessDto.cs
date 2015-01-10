@@ -25,11 +25,11 @@ namespace ProcHelper
 
         public string ProcessName
         {
-            get { return _process.ProcessName; }
+            get { return _process.TryGetProp(x => x.ProcessName); }
         }
         public string MachineName
         {
-            get { return _process.MachineName; }
+            get { return _process.TryGetProp(x => x.MachineName); }
         }
 
         public ProcessStartInfoDto StartInfo
@@ -44,7 +44,7 @@ namespace ProcHelper
         
         public bool Responding
         {
-            get { return _process.Responding; }
+            get { return _process.TryGetProp(x => x.Responding); }
         }
 
         public bool HasExited

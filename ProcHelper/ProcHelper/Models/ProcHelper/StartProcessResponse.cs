@@ -2,17 +2,10 @@
 {
     public class StartProcessResponse
     {
-        public StartProcessResponse()
-        {
-            
-        }
+        public string StandardOutput { get; set; }
 
-        public bool Started
-        {
-            get { return Process != null && !Process.HasExited; }
-        }
-
+        public string StandardError { get; set; }
+        
         public ProcessDto Process { get; set; }
-
     }
 }

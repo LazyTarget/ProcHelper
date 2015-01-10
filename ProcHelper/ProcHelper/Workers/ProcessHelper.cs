@@ -38,12 +38,25 @@ namespace ProcHelper
 
         public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory)
         {
+            var procInfo = StartProcess(fileName, null, null, false);
+            return procInfo;
+        }
+
+        public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput)
+        {
             var processStartInfo = new ProcessStartInfo(fileName, arguments)
             {
                 WorkingDirectory = workingDirectory,
             };
-            var process = Process.Start(processStartInfo);
+            if (redirectStOutput)
+            {
+                processStartInfo.UseShellExecute = false;
+                processStartInfo.RedirectStandardInput = true;
+                processStartInfo.RedirectStandardError = true;
+                processStartInfo.RedirectStandardOutput = true;
+            }
 
+            var process = Process.Start(processStartInfo);
             var procInfo = new ProcessDto(process);
             return procInfo;
         }

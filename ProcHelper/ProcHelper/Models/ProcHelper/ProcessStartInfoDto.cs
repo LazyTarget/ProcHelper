@@ -38,6 +38,26 @@ namespace ProcHelper
             get { return _processStartInfo.UserName; }
         }
 
+        public bool UseShellExecute
+        {
+            get { return _processStartInfo.UseShellExecute; }
+        }
+
+        public bool RedirectStandardOutput
+        {
+            get { return _processStartInfo.RedirectStandardOutput; }
+        }
+
+        public bool RedirectStandardError
+        {
+            get { return _processStartInfo.RedirectStandardError; }
+        }
+
+        public bool RedirectStandardInput
+        {
+            get { return _processStartInfo.RedirectStandardInput; }
+        }
+
         public string Verb
         {
             get { return _processStartInfo.Verb; }

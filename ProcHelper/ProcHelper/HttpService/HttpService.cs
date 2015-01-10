@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ProcHelper
@@ -9,7 +10,7 @@ namespace ProcHelper
         private IWinServiceHelper _winServiceHelper = new WinServiceHelper();
 
 
-        #region Services
+        #region ProcHelper
 
         public ProcessesResponse Any(GetProcessesRequest request)
         {
@@ -29,11 +30,18 @@ namespace ProcHelper
 
         public StartProcessResponse Any(StartProcessRequest request)
         {
-            var process = _processHelper.StartProcess(request.FileName, request.Arguments, request.WorkingDirectory);
+            var process = _processHelper.StartProcess(request.FileName, request.Arguments, request.WorkingDirectory, request.GetStandardOutput);
+            
             var response = new StartProcessResponse
             {
                 Process = process,
             };
+            if (request.GetStandardOutput)
+            {
+                var p = process.GetBase();
+                response.StandardOutput = p.StandardOutput.ReadToEnd();
+                response.StandardError = p.StandardError.ReadToEnd();
+            }
             return response;
         }
 
@@ -51,7 +59,7 @@ namespace ProcHelper
         #endregion
 
 
-        #region WinServices
+        #region WinServiceHelper
 
 
         public WinServicesResponse Any(GetWinServicesRequest request)
