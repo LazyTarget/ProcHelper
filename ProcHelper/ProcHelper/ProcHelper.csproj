@@ -61,8 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="HttpAppHost.cs" />
-    <Compile Include="HttpService.cs" />
+    <Compile Include="HttpService\HttpAppHost.cs" />
+    <Compile Include="HttpService\HttpService.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
     <Compile Include="Models\KillProcessRequest.cs" />
@@ -72,8 +72,8 @@
     <Compile Include="Models\StartProcessResponse.cs" />
     <Compile Include="Models\ProcessStartInfoDto.cs" />
     <Compile Include="Models\ProcessDto.cs" />
-    <Compile Include="ProcessFinder.cs" />
-    <Compile Include="ProcessHelper.cs" />
+    <Compile Include="Workers\ProcessFinder.cs" />
+    <Compile Include="Workers\ProcessHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\ProcessesResponse.cs" />
