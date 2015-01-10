@@ -26,6 +26,18 @@ namespace ProcHelper
                   .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}")
                   .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}/{WorkingDirectory}")
                   .Add<KillProcessRequest>("/Process/Kill/{ProcessID}");
+
+            Routes.Add<GetWinServicesRequest>("/WinService")
+                  .Add<GetWinServicesRequest>("/WinService/{Name}")
+                  .Add<StartWinServiceRequest>("/WinService/Start")
+                  .Add<StartWinServiceRequest>("/WinService/Start/{ServiceName}")
+                  .Add<StartWinServiceRequest>("/WinService/Start/{ServiceName}/{Arguments}")
+                  .Add<PauseWinServiceRequest>("/WinService/Pause")
+                  .Add<PauseWinServiceRequest>("/WinService/Pause/{ServiceName}")
+                  .Add<ContinueWinServiceRequest>("/WinService/Continue")
+                  .Add<ContinueWinServiceRequest>("/WinService/Continue/{ServiceName}")
+                  .Add<StopWinServiceRequest>("/WinService/Stop")
+                  .Add<StopWinServiceRequest>("/WinService/Stop/{ServiceName}");
         }
 
     }
