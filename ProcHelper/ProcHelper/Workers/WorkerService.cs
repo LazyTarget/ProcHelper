@@ -29,12 +29,16 @@ namespace ProcHelper
 
             var urlBase = string.Format("http://*:{0}/", ServicePort);
             _appHost.Start(urlBase);
+
+            this.Log().Debug("Started AppHost, url: " + urlBase);
         }
 
 
         public void Stop()
         {
             _appHost.Stop();
+
+            this.Log().Debug("AppHost stopped");
         }
 
         public void Dispose()
@@ -48,7 +52,7 @@ namespace ProcHelper
 
         private void AppHost_OnReceiveWebRequest(HttpListenerContext context)
         {
-            System.Diagnostics.Trace.WriteLine(string.Format("WebRequest: [{0}]: {1}", context.Request.HttpMethod, context.Request.Url));
+            this.Log().Debug("WebRequest: [{0}]: {1}", context.Request.HttpMethod, context.Request.Url);
         }
 
     }

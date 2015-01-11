@@ -11,11 +11,13 @@ namespace ProcHelper
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager
+                LogManager.InitializeWith<TraceLogger>();
                 StartService(args);
             }
             else
             {
                 // If run via Explorer, Command prompt or other
+                LogManager.InitializeWith<ConsoleLogger>();
                 StartServiceWithConsole(args);
             }
         }
