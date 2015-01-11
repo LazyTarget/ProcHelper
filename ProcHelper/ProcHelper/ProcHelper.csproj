@@ -52,6 +52,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
@@ -86,12 +87,20 @@
     <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
     <Compile Include="Models\ProcHelper\ProcessStartInfoDto.cs" />
     <Compile Include="Models\ProcHelper\ProcessDto.cs" />
+    <Compile Include="WinService\WinService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinService\WinServiceInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\ProcessFinder.cs" />
     <Compile Include="Workers\WinServiceHelper.cs" />
     <Compile Include="Workers\ProcessHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\ProcHelper\ProcessesResponse.cs" />
+    <Compile Include="Workers\WorkerService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

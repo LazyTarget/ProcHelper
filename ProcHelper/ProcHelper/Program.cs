@@ -1,49 +1,58 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Net;
 
 namespace ProcHelper
 {
     class Program
     {
-        private static int ServicePort;
-
-        static Program()
-        {
-            int p;
-            if (!int.TryParse(System.Configuration.ConfigurationManager.AppSettings.Get("ServicePort"), out p))
-                p = 1323;
-            ServicePort = p;
-        }
-
+        private static WorkerService _service;
 
         static void Main(string[] args)
         {
-            var appHost = new HttpAppHost();
-            appHost.ReceiveWebRequest += AppHost_OnReceiveWebRequest;
-            appHost.Init();
-
-            var urlBase = string.Format("http://*:{0}/", ServicePort);
-            appHost.Start(urlBase);
-
-
-            Console.WriteLine("AppHost started");
-
-            
-            Console.ReadLine();
-
-
-            Console.WriteLine("Stopping AppHost");
-            appHost.Stop();
-            Console.WriteLine("AppHost stopped");
-
-            Console.ReadLine();
+            if (!Environment.UserInteractive)
+            {
+                // If run via Service Control Manager
+                StartService(args);
+            }
+            else
+            {
+                // If run via Explorer, Command prompt or other
+                StartServiceWithConsole(args);
+            }
         }
 
-        private static void AppHost_OnReceiveWebRequest(HttpListenerContext context)
+
+
+        private static void StartService(string[] args)
         {
-            Trace.WriteLine(string.Format("WebRequest: [{0}]: {1}", context.Request.HttpMethod, context.Request.Url));
-            Console.WriteLine(string.Format("WebRequest: [{0}]: {1}", context.Request.HttpMethod, context.Request.Url));
+            _service = new WorkerService();
+            var winService = new WinService(_service);
+            var services = new System.ServiceProcess.ServiceBase[] { winService };
+            System.ServiceProcess.ServiceBase.Run(services);
+        }
+
+        private static void StartServiceWithConsole(string[] args)
+        {
+            _service = new WorkerService();
+            _service.Start(args);
+
+            string input = null;
+            while (true)
+            {
+                var prevInput = input;
+                if (input == "exit")
+                    break;
+                if (input == "stop")
+                    Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
+
+                input = Console.ReadLine();
+                Console.WriteLine();
+                if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
+                {
+                    _service.Stop();
+                    _service.Dispose();
+                    break;
+                }
+            }
         }
     }
 }

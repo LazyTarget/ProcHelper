@@ -80,7 +80,10 @@ namespace ProcHelper
 
         public ProcessModuleDto MainModule
         {
-            get { return new ProcessModuleDto(_process.MainModule); }
+            get
+            {
+                return _process.TryGetProp(x => x.MainModule) != null ? new ProcessModuleDto(_process.MainModule) : null;
+            }
         }
     }
 }
