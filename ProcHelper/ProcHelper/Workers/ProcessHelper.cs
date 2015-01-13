@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ProcHelper
@@ -55,6 +57,8 @@ namespace ProcHelper
                 processStartInfo.RedirectStandardError = true;
                 processStartInfo.RedirectStandardOutput = true;
             }
+            if (Program._envChanged)
+                processStartInfo.UseShellExecute = false;
 
             var process = Process.Start(processStartInfo);
             var procInfo = new ProcessDto(process);

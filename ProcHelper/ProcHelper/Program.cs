@@ -1,13 +1,21 @@
 ﻿using System;
+using System.Collections;
+using System.IO;
+using System.Linq;
 
 namespace ProcHelper
 {
     class Program
     {
+        internal static bool _envChanged;
         private static WorkerService _service;
 
         static void Main(string[] args)
         {
+            // Load config
+            ApplySearchFolders();
+
+
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager
@@ -54,6 +62,47 @@ namespace ProcHelper
                     _service.Dispose();
                     break;
                 }
+            }
+        }
+
+
+        private static void ApplySearchFolders()
+        {
+            var t = System.Configuration.ConfigurationManager.AppSettings.Get("SearchPaths");
+            if (!string.IsNullOrEmpty(t))
+            {
+                var paths = t.Split(';').ToList();
+                for (var i = 0; i < paths.Count; i++)
+                {
+                    var x = paths[i];
+                    if (string.IsNullOrWhiteSpace(x) || !Directory.Exists(x))
+                        paths.RemoveAt(i--);
+                }
+
+                var val = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine) ?? "";
+                var newVal = string.Join(";", paths.ToArray());
+                val = string.Format("{0};{1};", newVal, val.Trim(';'));
+                Environment.SetEnvironmentVariable("Path", val, EnvironmentVariableTarget.Process);
+                _envChanged = true;
+            }
+
+
+            t = System.Configuration.ConfigurationManager.AppSettings.Get("SearchFileExt");
+            if (!string.IsNullOrEmpty(t))
+            {
+                var exts = t.Split(';').ToList();
+                for (var i = 0; i < exts.Count; i++)
+                {
+                    var x = exts[i];
+                    if (string.IsNullOrWhiteSpace(x))
+                        exts.RemoveAt(i--);
+                }
+
+                var val = Environment.GetEnvironmentVariable("PathExt", EnvironmentVariableTarget.Machine) ?? "";
+                var newVal = string.Join(";", exts.ToArray());
+                val = string.Format("{0};{1};", newVal, val.Trim(';'));
+                Environment.SetEnvironmentVariable("PathExt", val, EnvironmentVariableTarget.Process);
+                _envChanged = true;
             }
         }
     }
