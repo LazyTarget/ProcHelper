@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace ProcHelper
@@ -50,6 +48,7 @@ namespace ProcHelper
             {
                 WorkingDirectory = workingDirectory,
             };
+
             if (redirectStOutput)
             {
                 processStartInfo.UseShellExecute = false;
@@ -59,6 +58,12 @@ namespace ProcHelper
             }
             if (Program._envChanged)
                 processStartInfo.UseShellExecute = false;
+
+
+            this.Log().Debug("ProcessStart.UserName: " + processStartInfo.UserName);
+            this.Log().Debug("ProcessStart.LoadUserProfile: " + processStartInfo.LoadUserProfile);
+            this.Log().Debug("ProcessStart.CreateNoWindow: " + processStartInfo.CreateNoWindow);
+            this.Log().Debug("ProcessStart.UseShellExecute: " + processStartInfo.UseShellExecute);
 
             var process = Process.Start(processStartInfo);
             var procInfo = new ProcessDto(process);

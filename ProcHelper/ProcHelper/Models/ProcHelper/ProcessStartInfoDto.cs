@@ -63,5 +63,10 @@ namespace ProcHelper
             get { return _processStartInfo.Verb; }
         }
 
+        public string[] Verbs
+        {
+            get { return _processStartInfo.Verbs; }
+        }
+
     }
 }

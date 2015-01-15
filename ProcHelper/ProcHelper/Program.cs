@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 
@@ -12,6 +11,8 @@ namespace ProcHelper
 
         static void Main(string[] args)
         {
+            typeof(Program).Log().Log().Debug("Starting ProcHelper");
+
             // Load config
             ApplySearchFolders();
 
@@ -104,6 +105,9 @@ namespace ProcHelper
                 Environment.SetEnvironmentVariable("PathExt", val, EnvironmentVariableTarget.Process);
                 _envChanged = true;
             }
+
+            typeof (Program).Log().Log().Debug("Path: " + Environment.GetEnvironmentVariable("Path"));
+            typeof (Program).Log().Log().Debug("PathExt: " + Environment.GetEnvironmentVariable("PathExt"));
         }
     }
 }
