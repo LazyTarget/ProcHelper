@@ -16,8 +16,8 @@ namespace ProcHelper
             serviceInstaller = new ServiceInstaller();
 
             serviceProcessInstaller.Account = ServiceAccount.LocalSystem;
-            serviceProcessInstaller.Username = null;
-            serviceProcessInstaller.Password = null;
+            //serviceProcessInstaller.Username = "PETER-PC\\Peter";
+            //serviceProcessInstaller.Password = null;
 
             serviceInstaller.Description = WinService.Description;
             serviceInstaller.DisplayName = WinService.DisplayName;
