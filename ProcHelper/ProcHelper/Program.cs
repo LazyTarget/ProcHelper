@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -72,12 +73,14 @@ namespace ProcHelper
             var t = System.Configuration.ConfigurationManager.AppSettings.Get("SearchPaths");
             if (!string.IsNullOrEmpty(t))
             {
-                var paths = t.Split(';').ToList();
-                for (var i = 0; i < paths.Count; i++)
+                var paths = new List<string>();
+                foreach (var x in t.Split(';'))
                 {
-                    var x = paths[i];
-                    if (string.IsNullOrWhiteSpace(x) || !Directory.Exists(x))
-                        paths.RemoveAt(i--);
+                    if (x == null)
+                        continue;
+                    var p = x.Replace('\n', ' ').Replace('\r', ' ').Trim();
+                    if (!string.IsNullOrWhiteSpace(p) && Directory.Exists(p))
+                        paths.Add(p);
                 }
 
                 var val = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine) ?? "";
@@ -91,12 +94,14 @@ namespace ProcHelper
             t = System.Configuration.ConfigurationManager.AppSettings.Get("SearchFileExt");
             if (!string.IsNullOrEmpty(t))
             {
-                var exts = t.Split(';').ToList();
-                for (var i = 0; i < exts.Count; i++)
+                var exts = new List<string>();
+                foreach (var x in t.Split(';'))
                 {
-                    var x = exts[i];
-                    if (string.IsNullOrWhiteSpace(x))
-                        exts.RemoveAt(i--);
+                    if (x == null)
+                        continue;
+                    var p = x.Replace('\n', ' ').Replace('\r', ' ').Trim();
+                    if (!string.IsNullOrWhiteSpace(p))
+                        exts.Add(p);
                 }
 
                 var val = Environment.GetEnvironmentVariable("PathExt", EnvironmentVariableTarget.Machine) ?? "";
