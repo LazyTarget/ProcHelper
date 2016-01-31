@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
+using Microsoft.Win32;
 
 namespace ProcHelper
 {
     public class WinServiceDto
     {
         private readonly ServiceController _winServiceController;
+        private string _imagePath;
 
         public WinServiceDto(ServiceController winServiceController)
         {
@@ -37,6 +40,18 @@ namespace ProcHelper
         public ServiceControllerStatus Status
         {
             get { return _winServiceController.Status; }
+        }
+
+        public string ImagePath
+        {
+            get
+            {
+                if (_imagePath == null)
+                {
+                    _imagePath = GetImagePath();
+                }
+                return _imagePath;
+            }
         }
 
         public bool CanPauseAndContinue
@@ -70,5 +85,75 @@ namespace ProcHelper
             //get { return _winServiceController.DependentServices.Select(x => new WinServiceDto(x)).ToList(); }
             get { return null; }        // todo: prevent infinite loops
         }
+
+
+        
+        private string GetImagePath()
+        {
+            try
+            {
+                string registryPath = @"SYSTEM\CurrentControlSet\Services\" + ServiceName;
+                
+                RegistryKey key;
+                if (!string.IsNullOrEmpty(MachineName) && 
+                    MachineName != "." && 
+                    MachineName.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    key = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, this.MachineName).OpenSubKey(registryPath);
+                }
+                else
+                {
+                    key = Registry.LocalMachine.OpenSubKey(registryPath);
+                }
+
+                var value = key.GetValue("ImagePath").ToString();
+                key.Close();
+                var var = ExpandEnvironmentVariables(value);
+                return var;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        
+        private string ExpandEnvironmentVariables(string path)
+        {
+            if (!string.IsNullOrEmpty(MachineName) &&
+                MachineName != "." &&
+                MachineName.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var systemRootKey = @"Software\Microsoft\Windows NT\CurrentVersion\";
+
+                var key = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, MachineName)
+                                     .OpenSubKey(systemRootKey);
+                var expandedSystemRoot = key.GetValue("SystemRoot").ToString();
+                key.Close();
+
+                path = path.Replace("%SystemRoot%", expandedSystemRoot);
+                return path;
+            }
+            else
+            {
+                var var = Environment.ExpandEnvironmentVariables(path);
+                return var;
+            }
+        }
+
+
+        public override string ToString()
+        {
+            if (ServiceName != null)
+            {
+                var res = ServiceName;
+                if (!string.IsNullOrEmpty(MachineName) && MachineName != ".")
+                    res = string.Format("{0} @{1}", ServiceName, MachineName);
+                res = string.Format("{0} [{1}]", res, Status);
+                return res;
+            }
+            else
+                return base.ToString();
+        }
+
     }
 }

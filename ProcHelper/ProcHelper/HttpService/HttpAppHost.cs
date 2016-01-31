@@ -38,6 +38,9 @@ namespace ProcHelper
                   .Add<ContinueWinServiceRequest>("/WinService/Continue/{ServiceName}")
                   .Add<StopWinServiceRequest>("/WinService/Stop")
                   .Add<StopWinServiceRequest>("/WinService/Stop/{ServiceName}");
+
+            Routes.Add<PowershellFileRequest>("/Powershell/FileName/{FileName}")
+                  .Add<PowershellQueryRequest>("/Powershell/Query/{Query}");
         }
 
     }

@@ -6,6 +6,9 @@ namespace ProcHelper
     public class ProcessDto
     {
         private readonly Process _process;
+        private string _standardOutput;
+        private string _standardError;
+
 
         public ProcessDto(Process process)
         {
@@ -85,5 +88,70 @@ namespace ProcHelper
                 return _process.TryGetProp(x => x.MainModule) != null ? new ProcessModuleDto(_process.MainModule) : null;
             }
         }
+
+
+        public string StandardOutput
+        {
+            get
+            {
+                string res;
+                try
+                {
+                    res = ReadStandardOutput();
+                    _standardOutput += res;
+                    res = _standardOutput;
+                }
+                catch (Exception ex)
+                {
+                    res = _standardOutput;
+                }
+                return res;
+            }
+        }
+
+        public string StandardError
+        {
+            get
+            {
+                string res;
+                try
+                {
+                    res = ReadStandardError();
+                    _standardError += res;
+                    res = _standardError;
+                }
+                catch (Exception ex)
+                {
+                    res = _standardError;
+                }
+                return res;
+            }
+        }
+
+
+        private string ReadStandardOutput()
+        {
+            string res = null;
+            var proc = GetBase();
+            var startInfo = proc?.StartInfo;
+            if (startInfo != null && startInfo.RedirectStandardOutput)
+            {
+                res = proc.StandardOutput.ReadToEnd();
+            }
+            return res;
+        }
+
+        private string ReadStandardError()
+        {
+            string res = null;
+            var proc = GetBase();
+            var startInfo = proc?.StartInfo;
+            if (startInfo != null && startInfo.RedirectStandardError)
+            {
+                res = proc.StandardError.ReadToEnd();
+            }
+            return res;
+        }
+
     }
 }

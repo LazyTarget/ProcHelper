@@ -32,30 +32,36 @@ namespace ProcHelper
 
         public ProcessDto StartProcess(string fileName, string arguments)
         {
-            var procInfo = StartProcess(fileName, null, null);
+            var procInfo = StartProcess(fileName, arguments, null);
             return procInfo;
         }
 
         public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory)
         {
-            var procInfo = StartProcess(fileName, null, null, false);
+            var procInfo = StartProcess(fileName, arguments, workingDirectory, false);
             return procInfo;
         }
 
         public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput)
         {
+            Credentials credentials = null;
+#if DEBUG
+            credentials = Credentials.Debug;
+#endif
+
+            var procInfo = StartProcess(fileName, arguments, workingDirectory, redirectStOutput, credentials);
+            return procInfo;
+        }
+
+        public ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput, Credentials credentials)
+        {
             var processStartInfo = new ProcessStartInfo(fileName, arguments)
             {
                 WorkingDirectory = workingDirectory,
             };
-
-            var credentials = new Credentials();
-            if (!credentials.IsEmpty)
+            
+            if (credentials != null && !credentials.IsEmpty)
             {
-                // todo: Able to pass credentials as parameter
-                // todo: Credentials.Debug.cs should only be loaded if #Debug
-                // todo: Full credential config can be made in App.config
-
                 processStartInfo.UserName = credentials.Username;
                 processStartInfo.Password = credentials.SecurePassword;
                 processStartInfo.Domain = credentials.Domain;

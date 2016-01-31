@@ -53,13 +53,6 @@ namespace ProcHelper
             return response;
         }
 
-
-        public PowershellResponse RunPowershellQuery(PowershellQueryRequest request)
-        {
-            var response = _powershellHelper.RunQuery(request);
-            return response;
-        }
-
         public KillProcessResponse KillProcess(KillProcessRequest request)
         {
             var process = _processHelper.KillProcess(request.ProcessID);
@@ -67,6 +60,24 @@ namespace ProcHelper
             {
                 Process = process,
             };
+            return response;
+        }
+
+        #endregion
+
+
+        #region Powershell
+
+        
+        public PowershellResponse RunPowershellFile(PowershellFileRequest request)
+        {
+            var response = _powershellHelper.RunFile(request);
+            return response;
+        }
+
+        public PowershellResponse RunPowershellQuery(PowershellQueryRequest request)
+        {
+            var response = _powershellHelper.RunQuery(request);
             return response;
         }
 

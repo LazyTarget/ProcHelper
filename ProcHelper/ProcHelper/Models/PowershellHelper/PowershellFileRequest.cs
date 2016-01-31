@@ -2,7 +2,7 @@
 {
     public class PowershellFileRequest : ServiceStack.IReturn<PowershellResponse>
     {
-        public string File { get; set; }
+        public string FileName { get; set; }
 
         public bool RedirectStandardOutput { get; set; }
     }
