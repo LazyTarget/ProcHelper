@@ -75,6 +75,9 @@
     <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="HttpService\HttpService.Process.cs" />
+    <Compile Include="HttpService\HttpService.Mouse.cs" />
+    <Compile Include="HttpService\HttpService.Powershell.cs" />
     <Compile Include="HttpService\HttpAppHost.cs" />
     <Compile Include="HttpService\HttpService.cs" />
     <Compile Include="Interfaces\IInputHelper.cs" />
