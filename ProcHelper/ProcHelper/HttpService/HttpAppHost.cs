@@ -19,6 +19,7 @@ namespace ProcHelper
 
         public override void Configure(Container container)
         {
+            // Process
             Routes.Add<GetProcessesRequest>("/Process")
                   .Add<GetProcessesRequest>("/Process/{Name}")
                   .Add<StartProcessRequest>("/Process/Start")
@@ -27,6 +28,7 @@ namespace ProcHelper
                   .Add<StartProcessRequest>("/Process/Start/{FileName}/{Arguments}/{WorkingDirectory}")
                   .Add<KillProcessRequest>("/Process/Kill/{ProcessID}");
 
+            // WinService
             Routes.Add<GetWinServicesRequest>("/WinService")
                   .Add<GetWinServicesRequest>("/WinService/{Name}")
                   .Add<StartWinServiceRequest>("/WinService/Start")
@@ -39,8 +41,17 @@ namespace ProcHelper
                   .Add<StopWinServiceRequest>("/WinService/Stop")
                   .Add<StopWinServiceRequest>("/WinService/Stop/{ServiceName}");
 
+            // Powershell
             Routes.Add<PowershellFileRequest>("/Powershell/FileName/{FileName}")
                   .Add<PowershellQueryRequest>("/Powershell/Query/{Query}");
+
+
+
+            // Input
+            Routes.Add<GetMousePositionRequest>("/Input/Mouse/Position")
+                  .Add<MoveMouseBy>("/Input/Mouse/MoveBy/{X}/{Y}")
+                  .Add<MoveMouseTo>("/Input/Mouse/MoveTo/{X}/{Y}")
+                  .Add<MoveMouseToPositionOnVirtualDesktop>("/Input/Mouse/MoveToVirtual/{X}/{Y}");
         }
 
     }

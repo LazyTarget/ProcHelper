@@ -49,7 +49,8 @@
 
 
         #region WinServiceHelper
-        
+
+        /*
         public WinServicesResponse Any(GetWinServicesRequest request)
         {
             var response = _worker.GetWinServices(request);
@@ -79,7 +80,37 @@
             var response = _worker.StopWinService(request);
             return response;
         }
-        
+        */
+
+        #endregion
+
+
+        #region InputHelper
+
+        public MoveMouseResponse Any(GetMousePositionRequest request)
+        {
+            var response = _worker.GetMousePosition(request);
+            return response;
+        }
+
+        public MoveMouseResponse Any(MoveMouseBy request)
+        {
+            var response = _worker.MoveMouseBy(request);
+            return response;
+        }
+
+        public MoveMouseResponse Any(MoveMouseTo request)
+        {
+            var response = _worker.MoveMouseTo(request);
+            return response;
+        }
+
+        public MoveMouseResponse Any(MoveMouseToPositionOnVirtualDesktop request)
+        {
+            var response = _worker.MoveMouseToPositionOnVirtualDesktop(request);
+            return response;
+        }
+
         #endregion
 
     }

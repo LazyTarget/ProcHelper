@@ -60,6 +60,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad, processorArchitecture=MSIL">
+      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Credentials.Debug.cs" />
@@ -73,10 +77,17 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="HttpService\HttpAppHost.cs" />
     <Compile Include="HttpService\HttpService.cs" />
+    <Compile Include="Interfaces\IInputHelper.cs" />
     <Compile Include="Interfaces\IPowershellHelper.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseTo.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseToPositionOnVirtualDesktop.cs" />
+    <Compile Include="Models\InputHelper\GetMousePositionRequest.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseBy.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseResponse.cs" />
+    <Compile Include="Models\InputHelper\Point.cs" />
     <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
@@ -105,6 +116,7 @@
     <Compile Include="WinService\WinServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Workers\InputHelper.cs" />
     <Compile Include="Workers\PowershellHelper.cs" />
     <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\ProcessFinder.cs" />

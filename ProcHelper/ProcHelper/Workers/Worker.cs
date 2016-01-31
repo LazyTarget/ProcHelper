@@ -8,12 +8,14 @@ namespace ProcHelper
         private IProcessHelper _processHelper;
         private IWinServiceHelper _winServiceHelper;
         private IPowershellHelper _powershellHelper;
+        private IInputHelper _inputHelper;
 
         public Worker()
         {
             _processHelper = new ProcessHelper();
             _winServiceHelper = new WinServiceHelper();
             _powershellHelper = new PowershellHelper(_processHelper);
+            _inputHelper = new InputHelper();
         }
 
 
@@ -144,5 +146,63 @@ namespace ProcHelper
 
         #endregion
 
+
+        #region InputHelper
+        
+        public MoveMouseResponse GetMousePosition(GetMousePositionRequest request)
+        {
+            var pos = _inputHelper.GetMousePosition();
+
+            var response = new MoveMouseResponse
+            {
+                Request = request,
+                Position = pos,
+            };
+            return response;
+        }
+
+        public MoveMouseResponse MoveMouseBy(MoveMouseBy request)
+        {
+            _inputHelper.MoveMouseBy(request.X, request.Y);
+
+            var pos = _inputHelper.GetMousePosition();
+
+            var response = new MoveMouseResponse
+            {
+                Request = request,
+                Position = pos,
+            };
+            return response;
+        }
+
+        public MoveMouseResponse MoveMouseTo(MoveMouseTo request)
+        {
+            _inputHelper.MoveMouseTo(request.X, request.Y);
+
+            var pos = _inputHelper.GetMousePosition();
+
+            var response = new MoveMouseResponse
+            {
+                Request = request,
+                Position = pos,
+            };
+            return response;
+        }
+
+        public MoveMouseResponse MoveMouseToPositionOnVirtualDesktop(MoveMouseToPositionOnVirtualDesktop request)
+        {
+            _inputHelper.MoveMouseToPositionOnVirtualDesktop(request.X, request.Y);
+
+            var pos = _inputHelper.GetMousePosition();
+
+            var response = new MoveMouseResponse
+            {
+                Request = request,
+                Position = pos,
+            };
+            return response;
+        }
+
+        #endregion
     }
 }
