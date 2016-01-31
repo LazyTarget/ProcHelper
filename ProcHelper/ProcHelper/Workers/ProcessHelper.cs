@@ -7,7 +7,7 @@ namespace ProcHelper
 {
     public class ProcessHelper : IProcessHelper
     {
-        private ProcessFinder _processFinder = new ProcessFinder();
+        private IProcessFinder _processFinder = new ProcessFinder();
 
 
 
@@ -49,6 +49,18 @@ namespace ProcHelper
                 WorkingDirectory = workingDirectory,
             };
 
+            var credentials = new Credentials();
+            if (!credentials.IsEmpty)
+            {
+                // todo: Able to pass credentials as parameter
+                // todo: Credentials.Debug.cs should only be loaded if #Debug
+                // todo: Full credential config can be made in App.config
+
+                processStartInfo.UserName = credentials.Username;
+                processStartInfo.Password = credentials.SecurePassword;
+                processStartInfo.Domain = credentials.Domain;
+            }
+
             if (redirectStOutput)
             {
                 processStartInfo.UseShellExecute = false;
@@ -57,13 +69,17 @@ namespace ProcHelper
                 processStartInfo.RedirectStandardOutput = true;
             }
             if (Program._envChanged)
+            {
+                // todo: Add config 'ManualSearchPaths' and ignore setting EnvironmentVar "Path"
                 processStartInfo.UseShellExecute = false;
+            }
 
 
             this.Log().Debug("ProcessStart.UserName: " + processStartInfo.UserName);
             this.Log().Debug("ProcessStart.LoadUserProfile: " + processStartInfo.LoadUserProfile);
             this.Log().Debug("ProcessStart.CreateNoWindow: " + processStartInfo.CreateNoWindow);
             this.Log().Debug("ProcessStart.UseShellExecute: " + processStartInfo.UseShellExecute);
+            this.Log().Debug("ProcessStart.WorkingDirectory: " + processStartInfo.WorkingDirectory);
 
             var process = Process.Start(processStartInfo);
             var procInfo = new ProcessDto(process);

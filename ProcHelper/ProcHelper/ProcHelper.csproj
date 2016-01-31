@@ -62,6 +62,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Credentials.Debug.cs" />
+    <Compile Include="Credentials.cs" />
     <Compile Include="Diagnostics\ILog.cs" />
     <Compile Include="Diagnostics\LogExtensions.cs" />
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
@@ -71,9 +73,13 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="HttpService\HttpAppHost.cs" />
     <Compile Include="HttpService\HttpService.cs" />
+    <Compile Include="Interfaces\IPowershellHelper.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
     <Compile Include="Models\ProcHelper\ProcessModuleDto.cs" />
     <Compile Include="Models\WinServiceHelper\GetWinServicesRequest.cs" />
     <Compile Include="Models\ProcHelper\KillProcessRequest.cs" />
@@ -99,6 +105,7 @@
     <Compile Include="WinService\WinServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Workers\PowershellHelper.cs" />
     <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\ProcessFinder.cs" />
     <Compile Include="Workers\WinServiceHelper.cs" />
@@ -109,8 +116,15 @@
     <Compile Include="Workers\WorkerService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

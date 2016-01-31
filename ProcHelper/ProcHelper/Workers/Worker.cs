@@ -5,8 +5,17 @@ namespace ProcHelper
 {
     public class Worker
     {
-        private IProcessHelper _processHelper = new ProcessHelper();
-        private IWinServiceHelper _winServiceHelper = new WinServiceHelper();
+        private IProcessHelper _processHelper;
+        private IWinServiceHelper _winServiceHelper;
+        private IPowershellHelper _powershellHelper;
+
+        public Worker()
+        {
+            _processHelper = new ProcessHelper();
+            _winServiceHelper = new WinServiceHelper();
+            _powershellHelper = new PowershellHelper(_processHelper);
+        }
+
 
 
         #region ProcHelper
@@ -44,6 +53,12 @@ namespace ProcHelper
             return response;
         }
 
+
+        public PowershellResponse RunPowershellQuery(PowershellQueryRequest request)
+        {
+            var response = _powershellHelper.RunQuery(request);
+            return response;
+        }
 
         public KillProcessResponse KillProcess(KillProcessRequest request)
         {
