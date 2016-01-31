@@ -2,9 +2,9 @@
 {
     public partial class HttpService
     {
-        public MoveMouseResponse Any(GetMousePositionRequest request)
+        public MouseInfoResponse Any(MouseInfoRequest request)
         {
-            var response = _worker.GetMousePosition(request);
+            var response = _worker.GetMouseInfo(request);
             return response;
         }
 

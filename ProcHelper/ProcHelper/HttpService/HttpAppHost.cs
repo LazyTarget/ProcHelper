@@ -47,8 +47,8 @@ namespace ProcHelper
 
 
 
-            // Input
-            Routes.Add<GetMousePositionRequest>("/Input/Mouse/Position")
+            // Input - Mouse
+            Routes.Add<MouseInfoRequest>("/Input/Mouse")
                   .Add<MoveMouseBy>("/Input/Mouse/MoveBy/{X}/{Y}")
                   .Add<MoveMouseTo>("/Input/Mouse/MoveTo/{X}/{Y}")
                   .Add<MoveMouseToPositionOnVirtualDesktop>("/Input/Mouse/MoveToVirtual/{X}/{Y}");

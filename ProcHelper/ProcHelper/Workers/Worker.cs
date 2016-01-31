@@ -149,15 +149,34 @@ namespace ProcHelper
 
         #region InputHelper
         
-        public MoveMouseResponse GetMousePosition(GetMousePositionRequest request)
+        public MouseInfoResponse GetMouseInfo(MouseInfoRequest request)
         {
             var pos = _inputHelper.GetMousePosition();
-
-            var response = new MoveMouseResponse
+            
+            var response = new MouseInfoResponse
             {
                 Request = request,
-                Position = pos,
+                CursorPosition = pos,
             };
+            
+
+            var screens = System.Windows.Forms.Screen.AllScreens;
+            response.ScreenCount = screens.Length;
+
+
+            // The screen size of the current screen (based on cursor position)
+            var rect = System.Windows.Forms.Screen.GetBounds(new System.Drawing.Point(pos.X, pos.Y));
+            response.ScreenSize = new Point(rect.Width, rect.Height);
+
+            
+            // The combined screen size
+            rect = new System.Drawing.Rectangle();
+            foreach (var screen in screens)
+            {
+                rect = System.Drawing.Rectangle.Union(rect, screen.Bounds);
+            }
+            response.VirtualScreenSize = new Point(rect.Width, rect.Height);
+
             return response;
         }
 

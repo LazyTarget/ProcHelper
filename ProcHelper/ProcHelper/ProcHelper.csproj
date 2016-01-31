@@ -54,7 +54,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,7 +77,7 @@
     <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="HttpService\HttpService.WinService.cs" />
+    <Content Include="HttpService\HttpService.WinService.cs" />
     <Compile Include="HttpService\HttpService.Process.cs" />
     <Compile Include="HttpService\HttpService.Mouse.cs" />
     <Compile Include="HttpService\HttpService.Powershell.cs" />
@@ -86,9 +88,10 @@
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Models\InputHelper\MouseInfoRequest.cs" />
+    <Compile Include="Models\InputHelper\MouseInfoResponse.cs" />
     <Compile Include="Models\InputHelper\MoveMouseTo.cs" />
     <Compile Include="Models\InputHelper\MoveMouseToPositionOnVirtualDesktop.cs" />
-    <Compile Include="Models\InputHelper\GetMousePositionRequest.cs" />
     <Compile Include="Models\InputHelper\MoveMouseBy.cs" />
     <Compile Include="Models\InputHelper\MoveMouseResponse.cs" />
     <Compile Include="Models\InputHelper\Point.cs" />
