@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using WindowsInput;
+using WindowsInput.Native;
 
 namespace ProcHelper
 {
@@ -35,7 +36,47 @@ namespace ProcHelper
         }
 
 
-        
+
+        public bool IsKeyDown(VirtualKeyCode keyCode)
+        {
+            var res = _inputSimulator.InputDeviceState.IsKeyDown(keyCode);
+            return res;
+        }
+
+        public bool IsKeyUp(VirtualKeyCode keyCode)
+        {
+            var res = _inputSimulator.InputDeviceState.IsKeyUp(keyCode);
+            return res;
+        }
+
+        public bool IsTogglingKeyInEffect(VirtualKeyCode keyCode)
+        {
+            var res = _inputSimulator.InputDeviceState.IsTogglingKeyInEffect(keyCode);
+            return res;
+        }
+
+
+        public void KeyDown(VirtualKeyCode keyCode)
+        {
+            _inputSimulator.Keyboard.KeyDown(keyCode);
+        }
+
+        public void KeyUp(VirtualKeyCode keyCode)
+        {
+            _inputSimulator.Keyboard.KeyUp(keyCode);
+        }
+
+        public void KeyPress(VirtualKeyCode keyCode)
+        {
+            _inputSimulator.Keyboard.KeyPress(keyCode);
+        }
+
+        public void WriteTextEntry(string text)
+        {
+            _inputSimulator.Keyboard.TextEntry(text);
+        }
+
+
 
         private class Win32
         {

@@ -148,7 +148,10 @@ namespace ProcHelper
 
 
         #region InputHelper
-        
+
+
+        #region Mouse
+
         public MouseInfoResponse GetMouseInfo(MouseInfoRequest request)
         {
             var pos = _inputHelper.GetMousePosition();
@@ -223,5 +226,93 @@ namespace ProcHelper
         }
 
         #endregion
+
+
+        #region Keyboard
+
+        public KeyResponse IsKeyDown(IsKeyDown request)
+        {
+            var isDown = _inputHelper.IsKeyDown(request.VirtualKeyCode);
+
+            var response = new KeyResponse
+            {
+                Request = request,
+                VirtualKeyCode = request.VirtualKeyCode,
+                IsDown = isDown,
+            };
+            return response;
+        }
+
+        public KeyResponse IsKeyUp(IsKeyUp request)
+        {
+            var isUp = _inputHelper.IsKeyUp(request.VirtualKeyCode);
+
+            var response = new KeyResponse
+            {
+                Request = request,
+                VirtualKeyCode = request.VirtualKeyCode,
+                IsDown = !isUp,
+            };
+            return response;
+        }
+
+        public KeyResponse KeyDown(KeyDownRequest request)
+        {
+            _inputHelper.KeyDown(request.VirtualKeyCode);
+
+            var response = new KeyResponse
+            {
+                Request = request,
+                VirtualKeyCode = request.VirtualKeyCode,
+                IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
+                //IsDown = true,
+            };
+            return response;
+        }
+
+        public KeyResponse KeyUp(KeyUpRequest request)
+        {
+            _inputHelper.KeyUp(request.VirtualKeyCode);
+
+            var response = new KeyResponse
+            {
+                Request = request,
+                VirtualKeyCode = request.VirtualKeyCode,
+                IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
+                //IsDown = false,
+            };
+            return response;
+        }
+
+        public KeyResponse KeyPress(KeyPressRequest request)
+        {
+            _inputHelper.KeyPress(request.VirtualKeyCode);
+
+            var response = new KeyResponse
+            {
+                Request = request,
+                VirtualKeyCode = request.VirtualKeyCode,
+                IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
+            };
+            return response;
+        }
+
+        public WriteTextResponse WriteTextEntry(WriteTextRequest request)
+        {
+            _inputHelper.WriteTextEntry(request.Text);
+
+            var response = new WriteTextResponse
+            {
+                Request = request,
+                Text = request.Text,
+            };
+            return response;
+        }
+
+        #endregion
+
+
+        #endregion
+
     }
 }

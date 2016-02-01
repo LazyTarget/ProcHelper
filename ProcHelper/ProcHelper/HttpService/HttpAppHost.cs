@@ -52,6 +52,21 @@ namespace ProcHelper
                   .Add<MoveMouseBy>("/Input/Mouse/MoveBy/{X}/{Y}")
                   .Add<MoveMouseTo>("/Input/Mouse/MoveTo/{X}/{Y}")
                   .Add<MoveMouseToPositionOnVirtualDesktop>("/Input/Mouse/MoveToVirtual/{X}/{Y}");
+
+            // Input - Keyboard
+            Routes.Add<IsKeyDown>           ("/Input/Key/IsDown")
+                  .Add<IsKeyDown>           ("/Input/Key/IsDown/{VirtualKeyCode}")
+                  .Add<IsKeyUp>             ("/Input/Key/IsUp")
+                  .Add<IsKeyUp>             ("/Input/Key/IsUp/{VirtualKeyCode}")
+                  .Add<KeyDownRequest>      ("/Input/Key/Down")
+                  .Add<KeyDownRequest>      ("/Input/Key/Down/{VirtualKeyCode}")
+                  .Add<KeyUpRequest>        ("/Input/Key/Up")
+                  .Add<KeyUpRequest>        ("/Input/Key/Up/{VirtualKeyCode}")
+                  .Add<KeyPressRequest>     ("/Input/Key/Press")
+                  .Add<KeyPressRequest>     ("/Input/Key/Press/{VirtualKeyCode}")
+
+                  .Add<WriteTextRequest>    ("/Input/Text/Write")
+                  .Add<WriteTextRequest>    ("/Input/Text/Write/{Text}");
         }
 
     }

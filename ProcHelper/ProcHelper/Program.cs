@@ -44,25 +44,26 @@ namespace ProcHelper
 
         private static void StartServiceWithConsole(string[] args)
         {
-            _service = new WorkerService();
-            _service.Start(args);
-
-            string input = null;
-            while (true)
+            using (_service = new WorkerService())
             {
-                var prevInput = input;
-                if (input == "exit")
-                    break;
-                if (input == "stop")
-                    Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
+                _service.Start(args);
 
-                input = Console.ReadLine();
-                Console.WriteLine();
-                if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
+                string input = null;
+                while (true)
                 {
-                    _service.Stop();
-                    _service.Dispose();
-                    break;
+                    var prevInput = input;
+                    if (input == "exit")
+                        break;
+                    if (input == "stop")
+                        Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
+
+                    input = Console.ReadLine();
+                    Console.WriteLine();
+                    if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
+                    {
+                        _service.Stop();
+                        break;
+                    }
                 }
             }
         }
