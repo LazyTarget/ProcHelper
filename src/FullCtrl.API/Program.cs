@@ -1,88 +1,62 @@
 ﻿using System;
-using System.Net.Http;
-using System.Threading;
-using Microsoft.Owin.Hosting;
+using FullCtrl.Base;
 
 namespace FullCtrl.API
 {
     class Program
     {
-        private static ManualResetEvent _stopEvent = new ManualResetEvent(false);
-        private static string _baseAddress = "http://localhost:9000/";
-        private static IDisposable _server;
-        private static bool _shouldExit;
+        private static ApiService _service;
 
 
         static void Main(string[] args)
         {
-            if (Environment.UserInteractive)
+            if (!Environment.UserInteractive)
             {
-                Start(args);
-
-                while (!_shouldExit)
-                {
-                    var input = Console.ReadLine();
-                    if (input == "exit")
-                    {
-                        _shouldExit = true;
-                        _stopEvent.Set();
-                    }
-                }
+                // If run via Service Control Manager
+                LogManager.InitializeWith<TraceLogger>();
+                RunService(args);
             }
             else
             {
-                Start(args);
-
-                while (!_shouldExit)
-                {
-                    _stopEvent.WaitOne();
-                }
+                // If run via Explorer, Command prompt or other
+                LogManager.InitializeWith<ConsoleLogger>();
+                RunServiceWithConsole(args);
             }
 
-            // Stop
-            Stop();
-
         }
-
-
-        public static void Start(string[] args)
+        
+        
+        private static void RunService(string[] args)
         {
-            Stop();
-
-
-            Console.WriteLine("Server starting");
-            
-            var server = StartAsSelftHost();
-
-            Console.WriteLine("Server started");
-
-
-
-            var client = new HttpClient();
-            var response = client.GetAsync(_baseAddress + "api/process").Result;
-
-            Console.WriteLine(response);
-            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
-
-
-
-
-            _server = server;
+            _service = new ApiService();
+            var winService = new WinService(_service);
+            var services = new System.ServiceProcess.ServiceBase[] { winService };
+            System.ServiceProcess.ServiceBase.Run(services);
         }
-
-        public static IDisposable StartAsSelftHost()
+        
+        private static void RunServiceWithConsole(string[] args)
         {
-            return WebApp.Start<Startup>(_baseAddress);
-        }
-
-        public static void Stop()
-        {
-            if (_server != null)
+            using (_service = new ApiService())
             {
-                Console.WriteLine("Server stopping");
-                _server.Dispose();
-                _server = null;
-                Console.WriteLine("Server stopped");
+                _service.Start(args);
+
+                string input = null;
+                while (true)
+                {
+                    var prevInput = input;
+                    if (input == "exit")
+                        break;
+                    if (input == "stop")
+                        Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
+
+                    input = Console.ReadLine();
+                    Console.WriteLine();
+                    if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
+                    {
+                        _service.Stop();
+                        break;
+                    }
+                }
             }
         }
 

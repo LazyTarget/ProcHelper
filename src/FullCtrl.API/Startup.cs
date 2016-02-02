@@ -3,13 +3,18 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Owin;
 
-//[assembly: OwinStartup(typeof(FullCtrl.API.Startup), nameof(FullCtrl.API.Startup.Configuration))]
+[assembly: OwinStartup(typeof(FullCtrl.API.Startup), nameof(FullCtrl.API.Startup.Configuration2))]
 
 namespace FullCtrl.API
 {
     public class Startup
     {
         public void Configuration(IAppBuilder app)
+        {
+            ConfigureWebApi(app);
+        }
+
+        public void Configuration2(IAppBuilder app)
         {
             ConfigureWebApi(app);
         }

@@ -53,11 +53,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
@@ -78,6 +80,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="WinService\WinService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinService\WinServiceInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ApiService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -85,6 +94,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FullCtrl.Base\FullCtrl.Base.csproj">
+      <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
+      <Name>FullCtrl.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FullCtrl\FullCtrl.csproj">
+      <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
+      <Name>FullCtrl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

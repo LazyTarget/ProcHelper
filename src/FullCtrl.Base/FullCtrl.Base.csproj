@@ -32,19 +32,77 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad, processorArchitecture=MSIL">
+      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Credentials.cs" />
+    <Compile Include="Credentials.Debug.cs" />
+    <Compile Include="Diagnostics\ILog.cs" />
+    <Compile Include="Diagnostics\LogExtensions.cs" />
+    <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\NullLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
+    <Compile Include="Diagnostics\LogManager.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Interfaces\IInputHelper.cs" />
+    <Compile Include="Interfaces\IPowershellHelper.cs" />
+    <Compile Include="Interfaces\IProcessFinder.cs" />
+    <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Interfaces\IReturn.cs" />
+    <Compile Include="Interfaces\IWinServiceHelper.cs" />
+    <Compile Include="Models\InputHelper\IsKeyDown.cs" />
+    <Compile Include="Models\InputHelper\IsKeyUp.cs" />
+    <Compile Include="Models\InputHelper\KeyDownRequest.cs" />
+    <Compile Include="Models\InputHelper\KeyPressRequest.cs" />
+    <Compile Include="Models\InputHelper\KeyResponse.cs" />
+    <Compile Include="Models\InputHelper\KeyUpRequest.cs" />
+    <Compile Include="Models\InputHelper\MouseInfoRequest.cs" />
+    <Compile Include="Models\InputHelper\MouseInfoResponse.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseBy.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseResponse.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseTo.cs" />
+    <Compile Include="Models\InputHelper\MoveMouseToPositionOnVirtualDesktop.cs" />
+    <Compile Include="Models\InputHelper\Point.cs" />
+    <Compile Include="Models\InputHelper\WriteTextRequest.cs" />
+    <Compile Include="Models\InputHelper\WriteTextResponse.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
+    <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
+    <Compile Include="Models\ProcHelper\GetProcessesRequest.cs" />
+    <Compile Include="Models\ProcHelper\KillProcessRequest.cs" />
+    <Compile Include="Models\ProcHelper\KillProcessResponse.cs" />
+    <Compile Include="Models\ProcHelper\ProcessDto.cs" />
+    <Compile Include="Models\ProcHelper\ProcessesResponse.cs" />
+    <Compile Include="Models\ProcHelper\ProcessModuleDto.cs" />
+    <Compile Include="Models\ProcHelper\ProcessStartInfoDto.cs" />
+    <Compile Include="Models\ProcHelper\StartProcessRequest.cs" />
+    <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
+    <Compile Include="Models\WinServiceHelper\ContinueWinServiceRequest.cs" />
+    <Compile Include="Models\WinServiceHelper\ContinueWinServiceResponse.cs" />
+    <Compile Include="Models\WinServiceHelper\GetWinServicesRequest.cs" />
+    <Compile Include="Models\WinServiceHelper\PauseWinServiceRequest.cs" />
+    <Compile Include="Models\WinServiceHelper\PauseWinServiceResponse.cs" />
+    <Compile Include="Models\WinServiceHelper\StartWinServiceRequest.cs" />
+    <Compile Include="Models\WinServiceHelper\StartWinServiceResponse.cs" />
+    <Compile Include="Models\WinServiceHelper\StopWinServiceRequest.cs" />
+    <Compile Include="Models\WinServiceHelper\StopWinServiceResponse.cs" />
+    <Compile Include="Models\WinServiceHelper\WinServiceDto.cs" />
+    <Compile Include="Models\WinServiceHelper\WinServicesResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Models\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
