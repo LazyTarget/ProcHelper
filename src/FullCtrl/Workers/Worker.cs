@@ -27,7 +27,7 @@ namespace FullCtrl
         {
             List<ProcessDto> processes;
             if (request != null && !string.IsNullOrEmpty(request.Name))
-                processes = _processHelper.GetProcesses(request.Name);
+                processes = _processHelper.GetProcessesByName(request.Name);
             else
                 processes = _processHelper.GetProcesses();
 

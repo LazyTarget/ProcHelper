@@ -2,10 +2,10 @@
 
 namespace FullCtrl.Base
 {
-    public interface IProcessHelper
+    public interface IProcessHelper : IProcessFinder
     {
-        List<ProcessDto> GetProcesses();
-        List<ProcessDto> GetProcesses(string processName);
+        //List<ProcessDto> GetProcesses();
+        //List<ProcessDto> GetProcessesByName(string processName);
         ProcessDto StartProcess(string fileName);
         ProcessDto StartProcess(string fileName, string arguments);
         ProcessDto StartProcess(string fileName, string arguments, string workingDirectory);

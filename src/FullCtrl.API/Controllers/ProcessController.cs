@@ -1,15 +1,46 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
+using FullCtrl.Base;
 
 namespace FullCtrl.API.Controllers
 {
-    public class ProcessController : ApiController
+    public class ProcessController : BaseController
     {
-        // GET api/process
-        public IEnumerable<string> Get()
+        [Route("api/process")]
+        [Route("api/process/{Name}")]
+        public IEnumerable<ProcessDto> Get(string name)
         {
-            return new List<string> { {"qwerty"}, {"azerty"} };
+            var result = ProcessHelper.GetProcessesByName(name);
+            return result;
         }
+        
+        [Route("api/process/{pid}")]
+        public ProcessDto Get(int pid)
+        {
+            var result = ProcessHelper.GetProcess(pid);
+            return result;
+        }
+        
+        [HttpPost, HttpPut]
+        [Route("api/process/start")]
+        [Route("api/process/start/{FileName}")]
+        [Route("api/process/start/{FileName}/{Arguments}")]
+        [Route("api/process/start/{FileName}/{Arguments}/{WorkingDirectory}")]
+        public StartProcessResponse Post(StartProcessRequest request)
+        {
+            var response = Worker.StartProcess(request);
+            return response;
+        }
+
+        //[HttpPost, HttpPut, HttpDelete]
+        [Route("api/process/kill")]
+        [Route("api/process/kill/{ProcessID}")]
+        public KillProcessResponse Delete(KillProcessRequest request)
+        {
+            var response = Worker.KillProcess(request);
+            return response;
+        }
+        
 
     }
 }

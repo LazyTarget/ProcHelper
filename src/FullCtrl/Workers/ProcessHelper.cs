@@ -5,12 +5,16 @@ using FullCtrl.Base;
 
 namespace FullCtrl
 {
-    public class ProcessHelper : IProcessHelper
+    public class ProcessHelper : IProcessHelper, IProcessFinder
     {
         private IProcessFinder _processFinder = new ProcessFinder();
 
 
-
+        public ProcessDto GetProcess(int processID)
+        {
+            var process = _processFinder.GetProcess(processID);
+            return process;
+        }
 
         public List<ProcessDto> GetProcesses()
         {
@@ -18,7 +22,7 @@ namespace FullCtrl
             return processes;
         }
 
-        public List<ProcessDto> GetProcesses(string processName)
+        public List<ProcessDto> GetProcessesByName(string processName)
         {
             var processes = _processFinder.GetProcessesByName(processName);
             return processes;
