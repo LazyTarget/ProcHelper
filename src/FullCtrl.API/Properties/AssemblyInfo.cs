@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FullCtrl.API.Owin")]
+[assembly: AssemblyTitle("FullCtrl.API")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FullCtrl.API.Owin")]
+[assembly: AssemblyProduct("FullCtrl.API")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("98995c73-ff81-47c3-b682-35a9dd67009a")]
+[assembly: Guid("c259b631-17cd-4123-b520-c8212239535a")]
 
 // Version information for an assembly consists of the following four values:
 //
