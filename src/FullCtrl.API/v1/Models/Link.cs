@@ -13,6 +13,13 @@ namespace FullCtrl.API.v1.Models
         public string Relative { get; set; }
 
 
+        public Uri ToUri()
+        {
+            var uri = new Uri(Href);
+            return uri;
+        }
+
+
         public static Link FromUri(Uri uri)
         {
             var link = new Link

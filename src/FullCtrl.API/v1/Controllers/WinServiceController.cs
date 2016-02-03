@@ -5,12 +5,29 @@ using System.ServiceProcess;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using FullCtrl.API.Interfaces;
+using FullCtrl.API.v1.Models;
 using FullCtrl.Base;
 
 namespace FullCtrl.API.v1.Controllers
 {
     public class WinServiceController : BaseController
     {
+        private void AppendLinks(IResponseBase response)
+        {
+            var service = response.Result as WinServiceDto;
+            var serviceName = service?.ServiceName;
+            if (service == null || string.IsNullOrWhiteSpace(serviceName))
+                return;
+
+            var rootUri = response.Links["root"];
+            response.Links["get-service"] =         Link.FromUri(new Uri(rootUri.Href + "/winservice/get/" + serviceName));
+            response.Links["start-service"] =       Link.FromUri(new Uri(rootUri.Href + "/winservice/start/" + serviceName));
+            response.Links["pause-service"] =       Link.FromUri(new Uri(rootUri.Href + "/winservice/pause/" + serviceName));
+            response.Links["continue-service"] =    Link.FromUri(new Uri(rootUri.Href + "/winservice/continue/" + serviceName));
+            response.Links["stop-service"] =        Link.FromUri(new Uri(rootUri.Href + "/winservice/stop/" + serviceName));
+        }
+
+
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/winservice")]
         [Route("api/v1/winservice/{serviceName}")]
@@ -20,6 +37,7 @@ namespace FullCtrl.API.v1.Controllers
             var result = WinServiceHelper.GetService(serviceName);
 
             var response = CreateResponse(result);
+            AppendLinks(response);
             return response;
         }
 
@@ -78,7 +96,7 @@ namespace FullCtrl.API.v1.Controllers
         }
 
 
-        [HttpPost, HttpPut]
+        [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/winservice/start")]
         [Route("api/v1/winservice/start/{serviceName}")]
         [Route("api/v1/winservice/start/{serviceName}/{arguments}")]
@@ -87,11 +105,12 @@ namespace FullCtrl.API.v1.Controllers
             var result = WinServiceHelper.StartService(serviceName);
 
             var response = CreateResponse(result);
+            AppendLinks(response);
             return response;
         }
 
 
-        [HttpPost, HttpPut]
+        [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/winservice/pause")]
         [Route("api/v1/winservice/pause/{serviceName}")]
         public IResponseBase<WinServiceDto> Pause(string serviceName)
@@ -99,11 +118,12 @@ namespace FullCtrl.API.v1.Controllers
             var result = WinServiceHelper.PauseService(serviceName);
 
             var response = CreateResponse(result);
+            AppendLinks(response);
             return response;
         }
 
 
-        [HttpPost, HttpPut]
+        [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/winservice/continue")]
         [Route("api/v1/winservice/continue/{serviceName}")]
         public IResponseBase<WinServiceDto> Continue(string serviceName)
@@ -111,11 +131,12 @@ namespace FullCtrl.API.v1.Controllers
             var result = WinServiceHelper.ContinueService(serviceName);
 
             var response = CreateResponse(result);
+            AppendLinks(response);
             return response;
         }
 
 
-        [HttpPost, HttpPut]
+        [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/winservice/stop")]
         [Route("api/v1/winservice/stop/{serviceName}")]
         public IResponseBase<WinServiceDto> Stop(string serviceName)
@@ -123,6 +144,7 @@ namespace FullCtrl.API.v1.Controllers
             var result = WinServiceHelper.StopService(serviceName);
 
             var response = CreateResponse(result);
+            AppendLinks(response);
             return response;
         }
     }
