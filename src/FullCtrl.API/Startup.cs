@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using Microsoft.Owin;
 using Owin;
 
@@ -24,6 +25,9 @@ namespace FullCtrl.API
         {
             var config = new HttpConfiguration();
             
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+
+
             config.MapHttpAttributeRoutes();
 
             //config.Routes.MapHttpRoute(

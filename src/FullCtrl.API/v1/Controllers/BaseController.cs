@@ -6,7 +6,7 @@ using FullCtrl.Base;
 
 namespace FullCtrl.API.v1.Controllers
 {
-    public abstract class BaseController : ApiController
+    public abstract class BaseController : ApiController, IBaseController
     {
         protected Worker Worker => new Worker();
         protected IProcessHelper ProcessHelper => new ProcessHelper();
@@ -17,27 +17,10 @@ namespace FullCtrl.API.v1.Controllers
         }
 
 
-        protected ResponseBase<TResult> CreateResponse<TResult>(TResult result = default(TResult))
+        public ResponseBase<TResult> CreateResponse<TResult>(TResult result = default(TResult))
         {
-            var serverRootUri = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
-
-            var response = new ResponseBase<TResult>();
-            response.Links["self"] = LinkFromUri(Request.RequestUri);
-            response.Links["root"] = LinkFromUri(new Uri(serverRootUri, "api/v1"));
-
-            response.Result = result;
+            var response = ResponseBase.Create<TResult>(Request, result);
             return response;
-        } 
-
-
-        protected ILink LinkFromUri(Uri uri)
-        {
-            var link = new Link
-            {
-                Href = uri.AbsoluteUri,
-                Relative = uri.AbsolutePath,
-            };
-            return link;
         }
 
     }

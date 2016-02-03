@@ -1,8 +1,60 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using FullCtrl.API.Interfaces;
 
 namespace FullCtrl.API.v1.Models
 {
+    public static class ResponseBase
+    {
+        public static ResponseBase<TResult> Create<TResult>(HttpRequestMessage request)
+        {
+            var serverRootUri = new Uri(request.RequestUri.GetLeftPart(UriPartial.Authority));
+
+            var response = new ResponseBase<TResult>();
+            response.Links["self"] = Link.FromUri(request.RequestUri);
+            response.Links["root"] = Link.FromUri(new Uri(serverRootUri, "api/v1"));
+            return response;
+        }
+
+        public static ResponseBase<TResult> Create<TResult>(HttpRequestMessage request, TResult result)
+        {
+            var response = Create<TResult>(request);
+            response.Result = result;
+            return response;
+        }
+
+        public static ResponseBase<TResult> Create<TResult>(HttpRequestMessage request, TResult result, IError error)
+        {
+            var response = Create<TResult>(request);
+            response.Result = result;
+            response.Error = error;
+            return response;
+        }
+
+        public static ResponseBase<TResult> CreateError<TResult>(HttpRequestMessage request, IError error)
+        {
+            var response = Create<TResult>(request);
+            response.Error = error;
+            return response;
+        }
+
+        public static ResponseBase<object> Create(HttpRequestMessage request, object result)
+        {
+            var response = Create<object>(request);
+            response.Result = result;
+            return response;
+        }
+
+        public static ResponseBase<object> CreateError(HttpRequestMessage request, IError error)
+        {
+            var response = Create<object>(request);
+            response.Error = error;
+            return response;
+        }
+    }
+
+
     public class ResponseBase<TResult> : IResponseBase<TResult>
     {
         public ResponseBase()
@@ -12,6 +64,13 @@ namespace FullCtrl.API.v1.Models
 
         public IDictionary<string, ILink> Links { get; private set; }
 
+        public IError Error { get; set; }
+
         public TResult Result { get; set; }
+
+        object IResponseBase.Result
+        {
+            get { return Result; }
+        }
     }
 }

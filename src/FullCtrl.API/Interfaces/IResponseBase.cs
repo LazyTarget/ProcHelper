@@ -2,10 +2,17 @@
 
 namespace FullCtrl.API.Interfaces
 {
-    public interface IResponseBase<TResult>
+    public interface IResponseBase
     {
         IDictionary<string, ILink> Links { get; }
 
-        TResult Result { get; }
+        IError Error { get; }
+
+        object Result { get; }
+    }
+
+    public interface IResponseBase<TResult> : IResponseBase
+    {
+        new TResult Result { get; }
     }
 }
