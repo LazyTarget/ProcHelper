@@ -1,9 +1,7 @@
 ﻿namespace FullCtrl.Base
 {
-    public class MouseInfoResponse
+    public class MouseInfo
     {
-        public IReturn<MouseInfoResponse> Request { get; set; }
-
         public Point CursorPosition { get; set; }
 
         public Point ScreenSize { get; set; }

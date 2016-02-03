@@ -10,7 +10,10 @@ namespace FullCtrl.API.v1.Controllers
     {
         protected Worker Worker => new Worker();
         protected IProcessHelper ProcessHelper => new ProcessHelper();
-        
+        protected IPowershellHelper PowershellHelper => new PowershellHelper(ProcessHelper);
+        protected IInputHelper InputHelper => new InputHelper();
+        protected IWinServiceHelper WinServiceHelper => new WinServiceHelper();
+
         protected BaseController()
         {
             

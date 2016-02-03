@@ -153,13 +153,12 @@ namespace FullCtrl
 
         #region Mouse
 
-        public MouseInfoResponse GetMouseInfo(MouseInfoRequest request)
+        public MouseInfo GetMouseInfo()
         {
             var pos = _inputHelper.GetMousePosition();
             
-            var response = new MouseInfoResponse
+            var response = new MouseInfo
             {
-                Request = request,
                 CursorPosition = pos,
             };
             
@@ -184,46 +183,25 @@ namespace FullCtrl
             return response;
         }
 
-        public MoveMouseResponse MoveMouseBy(MoveMouseBy request)
+        public MouseInfo MoveMouseBy(MoveMouseBy request)
         {
             _inputHelper.MoveMouseBy(request.X, request.Y);
-
-            var pos = _inputHelper.GetMousePosition();
-
-            var response = new MoveMouseResponse
-            {
-                Request = request,
-                Position = pos,
-            };
-            return response;
+            var info = GetMouseInfo();
+            return info;
         }
 
-        public MoveMouseResponse MoveMouseTo(MoveMouseTo request)
+        public MouseInfo MoveMouseTo(MoveMouseTo request)
         {
             _inputHelper.MoveMouseTo(request.X, request.Y);
-
-            var pos = _inputHelper.GetMousePosition();
-
-            var response = new MoveMouseResponse
-            {
-                Request = request,
-                Position = pos,
-            };
-            return response;
+            var info = GetMouseInfo();
+            return info;
         }
 
-        public MoveMouseResponse MoveMouseToPositionOnVirtualDesktop(MoveMouseToPositionOnVirtualDesktop request)
+        public MouseInfo MoveMouseToPositionOnVirtualDesktop(MoveMouseToPositionOnVirtualDesktop request)
         {
             _inputHelper.MoveMouseToPositionOnVirtualDesktop(request.X, request.Y);
-
-            var pos = _inputHelper.GetMousePosition();
-
-            var response = new MoveMouseResponse
-            {
-                Request = request,
-                Position = pos,
-            };
-            return response;
+            var info = GetMouseInfo();
+            return info;
         }
 
         #endregion

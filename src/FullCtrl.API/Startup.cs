@@ -25,6 +25,8 @@ namespace FullCtrl.API
         {
             var config = new HttpConfiguration();
             
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
 
 

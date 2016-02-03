@@ -65,8 +65,7 @@
     <Compile Include="Models\InputHelper\KeyPressRequest.cs" />
     <Compile Include="Models\InputHelper\KeyResponse.cs" />
     <Compile Include="Models\InputHelper\KeyUpRequest.cs" />
-    <Compile Include="Models\InputHelper\MouseInfoRequest.cs" />
-    <Compile Include="Models\InputHelper\MouseInfoResponse.cs" />
+    <Compile Include="Models\InputHelper\MouseInfo.cs" />
     <Compile Include="Models\InputHelper\MoveMouseBy.cs" />
     <Compile Include="Models\InputHelper\MoveMouseResponse.cs" />
     <Compile Include="Models\InputHelper\MoveMouseTo.cs" />
