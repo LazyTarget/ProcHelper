@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FullCtrl.API.Interfaces;
 
-namespace FullCtrl.API.Models
+namespace FullCtrl.API.v1.Models
 {
     public class ResponseBase<TResult> : IResponseBase<TResult>
     {
@@ -11,8 +11,6 @@ namespace FullCtrl.API.Models
         }
 
         public IDictionary<string, ILink> Links { get; private set; }
-
-        public object Request { get; set; }
 
         public TResult Result { get; set; }
     }

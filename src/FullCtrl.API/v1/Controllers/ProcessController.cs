@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using FullCtrl.API.Interfaces;
-using FullCtrl.API.Models;
 using FullCtrl.Base;
 
-namespace FullCtrl.API.Controllers
+namespace FullCtrl.API.v1.Controllers
 {
     public class ProcessController : BaseController
     {

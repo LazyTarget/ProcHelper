@@ -6,8 +6,6 @@ namespace FullCtrl.API.Interfaces
     {
         IDictionary<string, ILink> Links { get; }
 
-        object Request { get; }
-
         TResult Result { get; }
     }
 }

@@ -26,11 +26,16 @@ namespace FullCtrl.API
             
             config.MapHttpAttributeRoutes();
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            //config.Routes.MapHttpRoute(
+            //    name: "DefaultApi",
+            //    routeTemplate: "api/{version}/{controller}/{id}",
+            //    defaults: new
+            //    {
+            //        id = RouteParameter.Optional,
+            //        version = "v1",
+            //    }
+            //);
+
             app.UseWebApi(config);
         }
 

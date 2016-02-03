@@ -1,7 +1,7 @@
 ﻿using FullCtrl.API.Interfaces;
 using Newtonsoft.Json;
 
-namespace FullCtrl.API.Models
+namespace FullCtrl.API.v1.Models
 {
     public class Link : ILink
     {
