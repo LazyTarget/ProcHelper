@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace FullCtrl.Base
 {
-    public class ProcessDto
+    public class ProcessDto : IProcessDto
     {
         private readonly Process _process;
         private string _standardOutput;

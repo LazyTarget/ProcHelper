@@ -28,17 +28,6 @@ namespace FullCtrl.API
 
             Console.WriteLine("Server started");
 
-
-
-            var client = new HttpClient();
-            var response = client.GetAsync(_baseAddress + "api/process").Result;
-
-            Console.WriteLine(response);
-            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
-
-
-
-
             _server = server;
         }
 

@@ -88,6 +88,10 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
+    <Compile Include="Interfaces\ILink.cs" />
+    <Compile Include="Interfaces\IResponseBase.cs" />
+    <Compile Include="Models\Link.cs" />
+    <Compile Include="Models\ResponseBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -105,9 +109,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\FullCtrl.Base\FullCtrl.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>

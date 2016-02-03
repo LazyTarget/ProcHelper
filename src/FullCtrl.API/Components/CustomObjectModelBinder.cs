@@ -18,23 +18,31 @@ namespace FullCtrl.API
 
         public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
-            var model = bindingContext.Model;
-            if (model == null)
+            try
             {
-                model = bindingContext.Model = Activator.CreateInstance(bindingContext.ModelType);
-            }
-            
-            foreach (var routeValue in actionContext.RequestContext.RouteData.Values)
-            {
-                var propertyName = routeValue.Key;
-                var propertyInfo = bindingContext.ModelType.GetProperty(propertyName);
-                if (propertyInfo != null)
+                var model = bindingContext.Model;
+                if (model == null)
                 {
-                    var value = Converter.Convert(routeValue.Value, propertyInfo.PropertyType);
-                    propertyInfo.SetValue(model, value);
+                    model = bindingContext.Model = Activator.CreateInstance(bindingContext.ModelType);
                 }
+                
+                foreach (var routeValue in actionContext.RequestContext.RouteData.Values)
+                {
+                    var propertyName = routeValue.Key;
+                    var propertyInfo = bindingContext.ModelType.GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        var value = Converter.Convert(routeValue.Value, propertyInfo.PropertyType);
+                        propertyInfo.SetValue(model, value);
+                    }
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                throw;
+                return false;
+            }
         }
     }
 }

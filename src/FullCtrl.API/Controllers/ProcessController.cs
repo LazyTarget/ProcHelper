@@ -1,46 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using System.Web.Http.ModelBinding.Binders;
+using FullCtrl.API.Interfaces;
+using FullCtrl.API.Models;
 using FullCtrl.Base;
 
 namespace FullCtrl.API.Controllers
 {
     public class ProcessController : BaseController
     {
-        [Route("api/process")]
-        [Route("api/process/{Name}")]
-        public IEnumerable<ProcessDto> Get(string name)
-        {
-            var result = ProcessHelper.GetProcessesByName(name);
-            return result;
-        }
-        
-        [Route("api/process/{pid}")]
-        public ProcessDto Get(int pid)
+        [HttpGet]
+        [Route("api/v1/process/{pid}")]
+        public IResponseBase<IProcessDto> Get([FromBody] int pid)
         {
             var result = ProcessHelper.GetProcess(pid);
-            return result;
-        }
-        
-        [HttpPost, HttpPut]
-        [Route("api/process/start")]
-        [Route("api/process/start/{FileName}")]
-        [Route("api/process/start/{FileName}/{Arguments}")]
-        [Route("api/process/start/{FileName}/{Arguments}/{WorkingDirectory}")]
-        public StartProcessResponse Post(StartProcessRequest request)
-        {
-            var response = Worker.StartProcess(request);
+
+            var response = CreateResponse<IProcessDto>(result);
             return response;
         }
 
-        //[HttpPost, HttpPut, HttpDelete]
-        [Route("api/process/kill")]
-        [Route("api/process/kill/{ProcessID}")]
-        public KillProcessResponse Delete([ModelBinder(typeof(CustomObjectModelBinder))] KillProcessRequest request)
+        [HttpGet]
+        [Route("api/v1/process")]
+        public IResponseBase<IEnumerable<IProcessDto>> Get()
         {
-            var response = Worker.KillProcess(request);
+            var result = ProcessHelper.GetProcesses();
+
+            var response = CreateResponse<IEnumerable<IProcessDto>>(result);
+            return response;
+        }
+
+        [HttpGet]
+        [Route("api/v1/process/Search/{Name}")]
+        public IResponseBase<IEnumerable<IProcessDto>> GetByName([FromBody] string name)
+        {
+            var result = ProcessHelper.GetProcessesByName(name);
+
+            var response = CreateResponse<IEnumerable<IProcessDto>>(result);
+            return response;
+        }
+        
+        [HttpPost, HttpPut]
+        [Route("api/v1/process/start")]
+        [Route("api/v1/process/start/{FileName}")]
+        [Route("api/v1/process/start/{FileName}/{Arguments}")]
+        [Route("api/v1/process/start/{FileName}/{Arguments}/{WorkingDirectory}")]
+        public IResponseBase<StartProcessResponse> StartProcess([ModelBinder(typeof(CustomObjectModelBinder))] StartProcessRequest request)
+        {
+            var result = Worker.StartProcess(request);
+
+            var response = CreateResponse(result);
+            return response;
+        }
+
+        [HttpPost, HttpPut, HttpDelete]
+        [Route("api/v1/process/kill")]
+        [Route("api/v1/process/kill/{ProcessID}")]
+        public IResponseBase<KillProcessResponse> KillProcess([ModelBinder(typeof(CustomObjectModelBinder))] KillProcessRequest request)
+        {
+            var result = Worker.KillProcess(request);
+
+            var response = CreateResponse(result);
             return response;
         }
 

@@ -7,8 +7,8 @@
 		
         public static Credentials Debug = new Credentials
         {
-            Username = null,
-            Password = null,
+            Username = "Peter",
+            Password = "814cKGH0$t",
             Domain = null,
         };
     }

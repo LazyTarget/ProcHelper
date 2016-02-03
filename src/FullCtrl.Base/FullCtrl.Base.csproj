@@ -79,6 +79,7 @@
     <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
     <Compile Include="Models\ProcHelper\GetProcessesRequest.cs" />
+    <Compile Include="Models\ProcHelper\IProcessDto.cs" />
     <Compile Include="Models\ProcHelper\KillProcessRequest.cs" />
     <Compile Include="Models\ProcHelper\KillProcessResponse.cs" />
     <Compile Include="Models\ProcHelper\ProcessDto.cs" />
