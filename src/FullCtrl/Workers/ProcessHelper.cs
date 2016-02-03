@@ -50,7 +50,7 @@ namespace FullCtrl
         {
             Credentials credentials = null;
 #if DEBUG
-            credentials = Credentials.Debug;
+            //credentials = Credentials.Debug;
 #endif
 
             var procInfo = StartProcess(fileName, arguments, workingDirectory, redirectStOutput, credentials);
