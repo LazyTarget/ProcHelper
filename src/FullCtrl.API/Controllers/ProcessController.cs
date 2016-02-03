@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
+using System.Web.Http.ModelBinding.Binders;
 using FullCtrl.Base;
 
 namespace FullCtrl.API.Controllers
@@ -35,12 +38,11 @@ namespace FullCtrl.API.Controllers
         //[HttpPost, HttpPut, HttpDelete]
         [Route("api/process/kill")]
         [Route("api/process/kill/{ProcessID}")]
-        public KillProcessResponse Delete(KillProcessRequest request)
+        public KillProcessResponse Delete([ModelBinder(typeof(CustomObjectModelBinder))] KillProcessRequest request)
         {
             var response = Worker.KillProcess(request);
             return response;
         }
-        
 
     }
 }
