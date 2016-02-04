@@ -12,7 +12,7 @@ namespace FullCtrl.API.v1.Controllers
         [Route("api/v1/process")]
         [Route("api/v1/process/{pid}")]
         [Route("api/v1/process/get/{pid}")]
-        public IResponseBase<IProcessDto> Get([FromBody] int pid)
+        public IResponseBase<IProcessDto> Get(int pid)
         {
             var result = ProcessHelper.GetProcess(pid);
 

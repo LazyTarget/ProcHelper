@@ -1,5 +1,5 @@
 ﻿using System;
-using FullCtrl.API.Interfaces;
+using FullCtrl.Base;
 using Newtonsoft.Json;
 
 namespace FullCtrl.API.v1.Models

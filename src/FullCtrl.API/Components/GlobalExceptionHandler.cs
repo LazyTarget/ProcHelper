@@ -7,6 +7,7 @@ using System.Web.Http.Results;
 using FullCtrl.API.Interfaces;
 using FullCtrl.API.Models;
 using FullCtrl.API.v1.Models;
+using FullCtrl.Base;
 
 namespace FullCtrl.API
 {

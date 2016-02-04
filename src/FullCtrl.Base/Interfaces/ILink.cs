@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl.API.Interfaces
+namespace FullCtrl.Base
 {
     public interface ILink
     {

@@ -1,5 +1,7 @@
 ﻿using System;
 using FullCtrl.Base;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FullCtrl.API
 {
@@ -56,8 +58,29 @@ namespace FullCtrl.API
                         _service.Stop();
                         break;
                     }
+
+
+                    var api = new FullCtrlAPI();
+                    int pid = 3104;
+                    Console.WriteLine("Sending request");
+                    var response = api.Process.Get(pid).WaitForResult();
+                    var json = Serialize(response);
+                    Console.WriteLine(json);
                 }
             }
+        }
+
+        private static string Serialize(object obj)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+            };
+            settings.Converters.Add(new StringEnumConverter());
+
+            var json = JsonConvert.SerializeObject(obj, settings);
+            return json;
+
         }
 
     }

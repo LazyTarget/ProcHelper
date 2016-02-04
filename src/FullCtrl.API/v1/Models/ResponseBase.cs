@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using FullCtrl.API.Interfaces;
+using FullCtrl.Base;
 
 namespace FullCtrl.API.v1.Models
 {

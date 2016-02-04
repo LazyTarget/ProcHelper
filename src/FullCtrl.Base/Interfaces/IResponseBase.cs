@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FullCtrl.API.Interfaces
+namespace FullCtrl.Base
 {
     public interface IResponseBase
     {

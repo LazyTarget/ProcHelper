@@ -1,18 +1,17 @@
 ﻿using System;
-using FullCtrl.API.Interfaces;
 using FullCtrl.Base;
 
-namespace FullCtrl.API.Models
+namespace FullCtrl.Internal
 {
-    public class Error : IError
+    public class DefaultError : IError
     {
-        public Error(Exception exception)
+        public DefaultError(Exception exception)
             : this(exception.Message)
         {
             Exception = exception;
         }
 
-        public Error(string errorMessage)
+        public DefaultError(string errorMessage)
         {
             ErrorMessage = errorMessage;
         }
@@ -22,9 +21,9 @@ namespace FullCtrl.API.Models
         public Exception Exception { get; private set; }
 
 
-        public static Error FromException(Exception exception)
+        public static DefaultError FromException(Exception exception)
         {
-            var error = new Error(exception);
+            var error = new DefaultError(exception);
             return error;
         }
     }
