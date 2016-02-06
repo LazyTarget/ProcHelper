@@ -85,6 +85,7 @@
     <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
+    <Compile Include="Models\ProcHelper\FileVersionInfoDto.cs" />
     <Compile Include="Models\ProcHelper\GetProcessesRequest.cs" />
     <Compile Include="Models\ProcHelper\IProcessDto.cs" />
     <Compile Include="Models\ProcHelper\KillProcessRequest.cs" />

@@ -61,7 +61,7 @@ namespace FullCtrl.API
 
 
                     var api = new FullCtrlAPI();
-                    int pid = 3104;
+                    int pid = 528;
                     Console.WriteLine("Sending request");
                     var response = api.Process.Get(pid).WaitForResult();
                     var json = Serialize(response);

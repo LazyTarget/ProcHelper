@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using FullCtrl.Base;
 using FullCtrl.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using RestSharp;
 
 namespace FullCtrl
 {
@@ -16,56 +14,47 @@ namespace FullCtrl
     {
         public ProcessAPI()
         {
-            BaseUri = new Uri("http://localhost:9000/api/v1");
+            BaseUri = new Uri("http://localhost:9000/api/v1/");
         }
 
         public Uri BaseUri { get; set; }
 
 
-        protected virtual HttpClient GetClient()
+        protected virtual IRestClient GetClient()
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json", 1));
-            client.BaseAddress = BaseUri;
+            var jsonSerializer = new CustomJsonSerializer();
+            jsonSerializer.Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
+            jsonSerializer.Container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
+            jsonSerializer.Container.Bind(typeof(IError), typeof(DefaultError));
+            jsonSerializer.Container.Bind(typeof(ILink), typeof(DefaultLink));
+            jsonSerializer.Container.Bind(typeof(IProcessDto), typeof(ProcessDto));
+
+            var client = new RestClient(BaseUri);
+            client.AddHandler("application/json", jsonSerializer);
+            client.AddHandler("text/json", jsonSerializer);
+            client.AddHandler("text/x-json", jsonSerializer);
+            client.AddHandler("*+json", jsonSerializer);
+            client.AddHandler("*", jsonSerializer);
+
+            //client.AddDefaultHeader("Accept", "application/json");
             return client;
         }
 
-        protected virtual JsonSerializer GetSerializer()
+        protected virtual IRestRequest BuildRequest(Uri resource, Method method)
         {
-            var settings = new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented,
-            };
-            settings.Converters.Add(new StringEnumConverter());
-
-            var serializer = JsonSerializer.Create(settings);
-            return serializer;
+            var request = new RestRequest(resource, method);
+            request.AddHeader("accept", "application/json");
+            return request;
         }
 
-        protected virtual TResult Deserialize<TResult>(string json)
-        {
-            TextReader textReader = new StringReader(json);
-            JsonReader jsonReader = new JsonTextReader(textReader);
-
-            var serializer = GetSerializer();
-            var result = serializer.Deserialize<TResult>(jsonReader);
-            return result;
-        }
-
-        protected async Task<IResponseBase<TResult>> GetResponse<TResult>(HttpRequestMessage request)
+        protected async Task<IResponseBase<TResult>> GetResponse<TResult>(IRestRequest request)
         {
             IResponseBase<TResult> response;
             try
             {
                 var client = GetClient();
-                var httpResponse = await client.SendAsync(request);
-                var content = await httpResponse.Content.ReadAsStringAsync();
-                var result = Deserialize<TResult>(content);
-                
-                response = new DefaultResponseBase<TResult>
-                {
-                    Result = result,
-                };
+                var httpResponse = await client.ExecuteTaskAsync<IResponseBase<TResult>>(request);
+                response = httpResponse.Data;
             }
             catch (Exception ex)
             {
@@ -79,8 +68,10 @@ namespace FullCtrl
         
         public async Task<IResponseBase<IProcessDto>> Get(int pid)
         {
-            var uri = new Uri(BaseUri, "process/get/" + pid);
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            //var uri = new Uri(BaseUri, "process/get/" + pid);
+            //var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            var uri = new Uri("process/get/" + pid, UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
 
             var response = await GetResponse<IProcessDto>(request);
             return response;

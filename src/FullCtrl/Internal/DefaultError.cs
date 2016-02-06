@@ -5,25 +5,21 @@ namespace FullCtrl.Internal
 {
     public class DefaultError : IError
     {
-        public DefaultError(Exception exception)
-            : this(exception.Message)
+        public DefaultError()
         {
-            Exception = exception;
+
         }
 
-        public DefaultError(string errorMessage)
-        {
-            ErrorMessage = errorMessage;
-        }
+        public string ErrorMessage { get; set; }
 
-        public string ErrorMessage { get; private set; }
-
-        public Exception Exception { get; private set; }
+        public Exception Exception { get; set; }
 
 
         public static DefaultError FromException(Exception exception)
         {
-            var error = new DefaultError(exception);
+            var error = new DefaultError();
+            error.Exception = exception;
+            error.ErrorMessage = exception.Message;
             return error;
         }
     }

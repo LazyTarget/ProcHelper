@@ -5,8 +5,16 @@ namespace FullCtrl.Base
     public class ProcessModuleDto
     {
         private readonly ProcessModule _processModule;
+        private string _fileName;
+        private FileVersionInfoDto _fileVersionInfo;
+
+        public ProcessModuleDto()
+        {
+            
+        }
 
         public ProcessModuleDto(ProcessModule processModule)
+            : this()
         {
             _processModule = processModule;
         }
@@ -19,12 +27,19 @@ namespace FullCtrl.Base
 
         public string FileName
         {
-            get { return _processModule.FileName; }
+            get { return _processModule?.FileName ?? _fileName; }
+            set { _fileName = value; }
         }
 
-        public FileVersionInfo FileVersionInfo
+        public FileVersionInfoDto FileVersionInfo
         {
-            get { return _processModule.FileVersionInfo; }
+            get
+            {
+                if (_processModule != null)
+                    return new FileVersionInfoDto(_processModule.FileVersionInfo);
+                return _fileVersionInfo;
+            }
+            set { _fileVersionInfo = value; }
         }
     }
 }
