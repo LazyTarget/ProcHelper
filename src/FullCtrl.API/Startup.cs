@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using Microsoft.Owin;
+using Newtonsoft.Json;
 using Owin;
 
 [assembly: OwinStartup(typeof(FullCtrl.API.Startup), nameof(FullCtrl.API.Startup.Configuration2))]
@@ -26,6 +28,7 @@ namespace FullCtrl.API
             var config = new HttpConfiguration();
             
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProcessToNullConverter());
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
 
@@ -43,6 +46,25 @@ namespace FullCtrl.API
             //);
 
             app.UseWebApi(config);
+        }
+
+        private class ProcessToNullConverter : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                var res = objectType.IsAssignableFrom(typeof (System.Diagnostics.Process));
+                return res;
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return existingValue;
+            }
         }
 
     }

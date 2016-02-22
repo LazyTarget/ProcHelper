@@ -33,6 +33,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CoreAudioApi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\third party\CoreAudioApi.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreAudioExtended, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\third party\CoreAudioExtended.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreAudioServer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\third party\CoreAudioServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Lux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lux.1.0.0\lib\net46\Lux.dll</HintPath>
       <Private>True</Private>
@@ -64,6 +80,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -90,6 +107,7 @@
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Models\Error.cs" />
+    <Compile Include="v1\Controllers\AudioController.cs" />
     <Compile Include="v1\Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
     <Compile Include="v1\Controllers\KeyboardController.cs" />
