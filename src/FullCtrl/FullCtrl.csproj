@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\AudioControllerAPI.cs" />
     <Compile Include="Components\CustomJsonSerializer.cs" />
     <Compile Include="API\FullCtrlAPI.cs" />
     <Compile Include="Components\IContainer.cs" />

@@ -21,7 +21,7 @@ namespace FullCtrl.API.v1.Controllers
     {
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/audio")]
-        public IResponseBase<object> Test([ModelBinder(typeof(CustomObjectModelBinder))] object request)
+        public IResponseBase<IEnumerable<AudioSession>> Test([ModelBinder(typeof(CustomObjectModelBinder))] object request)
         {
             var sessionManager = new SessionManager();
             sessionManager.Start();
@@ -35,46 +35,28 @@ namespace FullCtrl.API.v1.Controllers
                 sessions = sessionManager.GetSessionList();
             }
 
-            var res = sessions.Select(x => new AudioSession(x.Session));
-            object result = res.ToList();
+            //var res = sessions.Select(x => new AudioSession(x.Session));
+            var res = sessions.Select(FromAudioControllerState);
+            IEnumerable<AudioSession> result = res.ToList();
 
             var response = CreateResponse(result);
             return response;
         }
 
 
-        private class AudioSession : EasyAudioSession
+        private AudioSession FromAudioControllerState(IAudioControllerState state)
         {
-            private string _iconBase64 = null;
-
-            public AudioSession(AudioSessionControl session) : base(session)
+            var result = new AudioSession
             {
-            }
-
-            //[JsonIgnore]
-            public override string ID { get { return base.ID; } }
-
-            [JsonIgnore]
-            public override Process SessionProcess { get { return base.SessionProcess; } }
-
-
-            public string IconBase64
-            {
-                get
-                {
-                    if (_iconBase64 == null)
-                    {
-                        using (var memStream = new MemoryStream())
-                        {
-                            Icon.Save(memStream, ImageFormat.Jpeg);
-                            var imgData = memStream.ToArray();
-                            _iconBase64 = Convert.ToBase64String(imgData);
-                        }
-                    }
-                    return _iconBase64;
-                }
-            }
-
+                ID = state.ID,
+                Name = state.Name,
+                Icon = state.Icon,
+                GroupingParam = state.GroupingParam,
+                Muted = state.Muted,
+                Volume = state.Volume,
+            };
+            return result;
         }
+
     }
 }

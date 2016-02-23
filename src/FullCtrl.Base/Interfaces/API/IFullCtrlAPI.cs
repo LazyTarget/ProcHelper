@@ -7,5 +7,6 @@
         IPowershellAPI Powershell { get; }
         IMouseAPI Mouse { get; }
         IKeyboardAPI Keyboard { get; }
+        IAudioControllerAPI AudioController { get; }
     }
 }

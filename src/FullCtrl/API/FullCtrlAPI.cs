@@ -11,6 +11,7 @@ namespace FullCtrl
             //Powershell = new PowershellAPI();
             //Mouse = new MouseAPI();
             //Keyboard = new KeyboardAPI();
+            AudioController = new AudioControllerAPI();
         }
 
         public IProcessAPI Process { get; }
@@ -18,5 +19,6 @@ namespace FullCtrl
         public IPowershellAPI Powershell { get; }
         public IMouseAPI Mouse { get; }
         public IKeyboardAPI Keyboard { get; }
+        public IAudioControllerAPI AudioController { get; }
     }
 }
