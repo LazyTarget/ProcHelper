@@ -65,16 +65,35 @@ namespace FullCtrl
 
 
 
-        public async Task<IResponseBase<IEnumerable<AudioSession>>> GetAudioEndpoints()
+        public async Task<IResponseBase<IEnumerable<AudioSession>>> GetAudioSessions()
         {
             //var uri = new Uri(BaseUri, "process/get/" + pid);
             //var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            var uri = new Uri("audio", UriKind.Relative);
+            var uri = new Uri("audio/sessions", UriKind.Relative);
             var request = BuildRequest(uri, Method.GET);
 
             var response = await GetResponse<IEnumerable<AudioSession>>(request);
             return response;
         }
 
+        public async Task<IResponseBase<IEnumerable<AudioDevice>>> GetAudioDevices()
+        {
+            var uri = new Uri("audio/devices/list", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+
+            var response = await GetResponse<IEnumerable<AudioDevice>>(request);
+            return response;
+        }
+
+
+        public async Task<IResponseBase<object>> SetDefaultDevice(string deviceID)
+        {
+            var uri = new Uri("audio/device/set", UriKind.Relative);
+            var request = BuildRequest(uri, Method.POST);
+            request.AddQueryParameter("deviceID", deviceID);
+
+            var response = await GetResponse<object>(request);
+            return response;
+        }
     }
 }

@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CoreAudioApi">
+      <HintPath>..\third party\CoreAudioApi.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -64,6 +67,7 @@
     <Compile Include="Interfaces\API\IPowershellAPI.cs" />
     <Compile Include="Interfaces\API\IWinServiceAPI.cs" />
     <Compile Include="Interfaces\API\IProcessAPI.cs" />
+    <Compile Include="Interfaces\IAudioController.cs" />
     <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />
     <Compile Include="Interfaces\API\IKeyboardAPI.cs" />
@@ -75,7 +79,9 @@
     <Compile Include="Interfaces\IResponseBase.cs" />
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
+    <Compile Include="Models\AudioController\AudioDevice.cs" />
     <Compile Include="Models\AudioController\AudioSession.cs" />
+    <Compile Include="Models\AudioController\GetSessionsRequest.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
     <Compile Include="Models\InputHelper\IsKeyUp.cs" />
     <Compile Include="Models\InputHelper\KeyDownRequest.cs" />

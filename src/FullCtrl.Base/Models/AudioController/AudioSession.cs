@@ -4,21 +4,14 @@ using Newtonsoft.Json;
 
 namespace FullCtrl.Base
 {
-    [JsonObject(MemberSerialization.OptIn)]
     public class AudioSession
     {
-        [JsonProperty]
-        public int Volume { get; set; }
-        [JsonProperty]
-        public bool Muted { get; set; }
-        [JsonProperty]
+        public string ID { get; set; }
         public string Name { get; set; }
-        [JsonProperty]
+        public float Volume { get; set; }
+        public bool Muted { get; set; }
         [JsonConverter(typeof(BitmapConverter))]
         public Bitmap Icon { get; set; }
-        [JsonProperty]
-        public string ID { get; set; }
-        [JsonProperty]
         public Guid GroupingParam { get; set; }
     }
 }

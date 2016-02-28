@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FullCtrl.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -60,13 +61,33 @@ namespace FullCtrl.API
                     }
 
 
+                    string json;
                     var api = new FullCtrlAPI();
-                    int pid = 528;
-                    Console.WriteLine("Sending request");
+
+                    //int pid = 528;
+                    //Console.WriteLine("Sending request");
                     //var response = api.Process.Get(pid).WaitForResult();
-                    var response = api.AudioController.GetAudioEndpoints().WaitForResult();
-                    var json = Serialize(response);
+                    //json = Serialize(response);
+                    //Console.WriteLine(json);
+
+                    Console.WriteLine("Sending request");
+                    var response = api.AudioController.GetAudioDevices().WaitForResult();
+                    json = Serialize(response);
                     Console.WriteLine(json);
+
+                    Console.WriteLine("Sending request");
+                    var response2 = api.AudioController.GetAudioSessions().WaitForResult();
+                    json = Serialize(response2);
+                    Console.WriteLine(json);
+
+                    var deviceID = response?.Result?.FirstOrDefault()?.ID;
+                    if (deviceID != null)
+                    {
+                        Console.WriteLine("Sending request");
+                        var response3 = api.AudioController.SetDefaultDevice(deviceID).WaitForResult();
+                        json = Serialize(response3);
+                        Console.WriteLine(json);
+                    }
                 }
             }
         }
