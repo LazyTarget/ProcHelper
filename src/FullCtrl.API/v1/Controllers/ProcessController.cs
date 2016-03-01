@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using FullCtrl.API.Interfaces;
@@ -34,8 +35,7 @@ namespace FullCtrl.API.v1.Controllers
 
 
         [HttpGet]
-        [Route("api/v1/process/list")]
-        [Route("api/v1/process/list/{Name}")]
+        [Route("api/v1/process/list/{name}")]
         public IResponseBase<IEnumerable<IProcessDto>> ListByName([FromBody] string name)
         {
             var result = ProcessHelper.GetProcessesByName(name);
@@ -53,6 +53,19 @@ namespace FullCtrl.API.v1.Controllers
         public IResponseBase<StartProcessResponse> Start([ModelBinder(typeof(CustomObjectModelBinder))] StartProcessRequest request)
         {
             var result = Worker.StartProcess(request);
+
+            var response = CreateResponse(result);
+            return response;
+        }
+        
+
+        [HttpPost, HttpPut]
+        [Route("api/v1/process/switchto")]
+        [Route("api/v1/process/switchto/{processID}")]
+        public IResponseBase<ProcessDto> SwitchToMainWindow(int processID)
+        {
+            var proc = ProcessHelper.GetProcess(processID);
+            var result = ProcessHelper.SwitchToMainWindow(new IntPtr(proc.MainWindowHandle));
 
             var response = CreateResponse(result);
             return response;

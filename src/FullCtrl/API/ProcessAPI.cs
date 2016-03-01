@@ -49,18 +49,31 @@ namespace FullCtrl
 
         protected async Task<IResponseBase<TResult>> GetResponse<TResult>(IRestRequest request)
         {
-            IResponseBase<TResult> response;
+            IResponseBase<TResult> response = null;
             try
             {
                 var client = GetClient();
                 var httpResponse = await client.ExecuteTaskAsync<IResponseBase<TResult>>(request);
                 response = httpResponse.Data;
+
+                if (httpResponse.ResponseStatus == ResponseStatus.Error)
+                {
+                    var error = DefaultError.FromException(httpResponse.ErrorException);
+                    if (!string.IsNullOrEmpty(httpResponse.ErrorMessage))
+                        error.ErrorMessage = httpResponse.ErrorMessage;
+                    response = new DefaultResponseBase<TResult>
+                    {
+                        Error = error,
+                        Result = response != null ? response.Result : default(TResult),
+                    };
+                }
             }
             catch (Exception ex)
             {
                 response = new DefaultResponseBase<TResult>
                 {
                     Error = DefaultError.FromException(ex),
+                    Result = response != null ? response.Result : default(TResult),
                 };
             }
             return response;
@@ -79,17 +92,35 @@ namespace FullCtrl
 
         public async Task<IResponseBase<IEnumerable<IProcessDto>>> List()
         {
-            throw new System.NotImplementedException();
+            var uri = new Uri("process/list", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+            var response = await GetResponse<IEnumerable<IProcessDto>>(request);
+            return response;
         }
 
         public async Task<IResponseBase<IEnumerable<IProcessDto>>> ListByName(string name)
         {
-            throw new System.NotImplementedException();
+            var uri = new Uri("process/list/{name}", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+            request.AddQueryParameter("name", name);
+            var response = await GetResponse<IEnumerable<IProcessDto>>(request);
+            return response;
         }
 
         public async Task<IResponseBase<StartProcessResponse>> Start(StartProcessRequest request)
         {
             throw new System.NotImplementedException();
+        }
+        
+        public async Task<IResponseBase<IProcessDto>> SwitchToMainWindow(int processID)
+        {
+            var uri = new Uri("process/switchto/" + processID, UriKind.Relative);
+            var request = BuildRequest(uri, Method.POST);
+            request.AddQueryParameter("processID", processID.ToString());
+
+            var response = await GetResponse<IProcessDto>(request);
+            return response;
+
         }
 
         public async Task<IResponseBase<KillProcessResponse>> Kill(KillProcessRequest request)

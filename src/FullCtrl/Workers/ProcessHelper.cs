@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using FullCtrl.Base;
 
 namespace FullCtrl
@@ -16,13 +18,13 @@ namespace FullCtrl
             return process;
         }
 
-        public List<ProcessDto> GetProcesses()
+        public IEnumerable<ProcessDto> GetProcesses()
         {
             var processes = _processFinder.GetProcesses();
             return processes;
         }
 
-        public List<ProcessDto> GetProcessesByName(string processName)
+        public IEnumerable<ProcessDto> GetProcessesByName(string processName)
         {
             var processes = _processFinder.GetProcessesByName(processName);
             return processes;
@@ -96,6 +98,37 @@ namespace FullCtrl
             return procInfo;
         }
 
+        public ProcessDto SwitchToMainWindow(IntPtr mainWindowHandle)
+        {
+            var hdl = mainWindowHandle.ToInt32();
+            if (hdl <= 0)
+            {
+                return null;
+            }
+
+            var processes = GetProcesses();
+            var proc = processes.FirstOrDefault(x => x.MainWindowHandle == hdl);
+
+            var doWork = proc != null && !proc.HasExited && proc.MainWindowHandle == hdl;
+            if (doWork)
+            {
+                try
+                {
+                    SwitchToThisWindow(mainWindowHandle, false);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+            else
+            {
+                
+            }
+
+            return proc;
+        }
+
         public ProcessDto KillProcess(int processID)
         {
             var processDto = _processFinder.GetProcess(processID);
@@ -117,5 +150,8 @@ namespace FullCtrl
         }
 
 
+
+        [DllImport("user32.dll")]
+        protected static extern void SwitchToThisWindow(IntPtr hWnd, bool turnon);
     }
 }

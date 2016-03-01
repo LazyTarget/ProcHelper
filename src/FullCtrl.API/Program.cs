@@ -69,6 +69,13 @@ namespace FullCtrl.API
                     //var response = api.Process.Get(pid).WaitForResult();
                     //json = Serialize(response);
                     //Console.WriteLine(json);
+                    
+                    Console.WriteLine("Sending request");
+                    var response4 = api.Process.List().WaitForResult();
+                    foreach (var proc in response4.Result)
+                    {
+                        var p = api.Process.SwitchToMainWindow(proc.Id).WaitForResult();
+                    }
 
                     Console.WriteLine("Sending request");
                     var response = api.AudioController.GetAudioDevices().WaitForResult();
