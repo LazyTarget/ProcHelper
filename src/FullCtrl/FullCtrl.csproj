@@ -87,6 +87,7 @@
     <Compile Include="Workers\PowershellHelper.cs" />
     <Compile Include="Workers\ProcessFinder.cs" />
     <Compile Include="Workers\ProcessHelper.cs" />
+    <Compile Include="Workers\ResourceMonitor.cs" />
     <Compile Include="Workers\WinServiceHelper.cs" />
     <Compile Include="Workers\Worker.cs" />
   </ItemGroup>

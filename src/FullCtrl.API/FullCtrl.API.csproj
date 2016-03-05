@@ -121,6 +121,7 @@
     <Compile Include="Components\CustomObjectModelBinder.cs" />
     <Compile Include="v1\Controllers\KeyboardController.cs" />
     <Compile Include="v1\Controllers\MouseController.cs" />
+    <Compile Include="v1\Controllers\ResourceMonitorController.cs" />
     <Compile Include="v1\Controllers\WinServiceController.cs" />
     <Compile Include="v1\Controllers\PowershellController.cs" />
     <Compile Include="v1\Controllers\ProcessController.cs" />
