@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FullCtrl.Base;
 
@@ -27,9 +28,9 @@ namespace FullCtrl
         {
             List<ProcessDto> processes;
             if (request != null && !string.IsNullOrEmpty(request.Name))
-                processes = _processHelper.GetProcessesByName(request.Name);
+                processes = _processHelper.GetProcessesByName(request.Name).ToList();
             else
-                processes = _processHelper.GetProcesses();
+                processes = _processHelper.GetProcesses().ToList();
 
             var response = new ProcessesResponse
             {

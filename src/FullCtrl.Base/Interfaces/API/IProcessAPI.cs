@@ -9,6 +9,7 @@ namespace FullCtrl.Base
         Task<IResponseBase<IEnumerable<IProcessDto>>> List();
         Task<IResponseBase<IEnumerable<IProcessDto>>> ListByName(string name);
         Task<IResponseBase<StartProcessResponse>> Start(StartProcessRequest request);
+        Task<IResponseBase<IProcessDto>> SwitchToMainWindow(int processID);
         Task<IResponseBase<KillProcessResponse>> Kill(KillProcessRequest request);
     }
 }

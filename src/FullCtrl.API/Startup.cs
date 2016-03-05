@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using Microsoft.Owin;
@@ -31,7 +30,7 @@ namespace FullCtrl.API
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProcessToNullConverter());
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
-
+            config.Filters.Add(new DebugActionFilter());
 
             config.MapHttpAttributeRoutes();
 

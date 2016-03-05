@@ -74,23 +74,39 @@ namespace FullCtrl.API
                     //Console.WriteLine(json);
 
                     Console.WriteLine("Sending request");
-                    var response = api.AudioController.GetAudioDevices().WaitForResult();
-                    json = Serialize(response);
+                    var response4 = api.Process.List().WaitForResult();
+                    var l = response4.Result.Where(
+                        x => !x.HasExited && !string.IsNullOrEmpty(x.MainWindowTitle) && x.MainWindowHandle > 0)
+                        .ToList();
+                    json = Serialize(l);
                     Console.WriteLine(json);
 
-                    Console.WriteLine("Sending request");
-                    var response2 = api.AudioController.GetAudioSessions().WaitForResult();
-                    json = Serialize(response2);
-                    Console.WriteLine(json);
+                    int pid = 0;
+                    Console.WriteLine("");
+                    Console.Write("Enter Pid: ");
+                    input = Console.ReadLine();
+                    int.TryParse(input, out pid);
 
-                    var deviceID = response?.Result?.FirstOrDefault()?.ID;
-                    if (deviceID != null)
-                    {
-                        Console.WriteLine("Sending request");
-                        var response3 = api.AudioController.SetDefaultDevice(deviceID.ToString()).WaitForResult();
-                        json = Serialize(response3);
-                        Console.WriteLine(json);
-                    }
+                    var p = api.Process.SwitchToMainWindow(pid).WaitForResult();
+
+                    //Console.WriteLine("Sending request");
+                    //var response = api.AudioController.GetAudioDevices().WaitForResult();
+                    //json = Serialize(response);
+                    //Console.WriteLine(json);
+
+                    //Console.WriteLine("Sending request");
+                    //var response2 = api.AudioController.GetAudioSessions().WaitForResult();
+                    //json = Serialize(response2);
+                    //Console.WriteLine(json);
+
+                    //var deviceID = response?.Result?.FirstOrDefault()?.ID;
+                    //if (deviceID != null)
+                    //{
+                    //    Console.WriteLine("Sending request");
+                    //    var response3 = api.AudioController.SetDefaultDevice(deviceID).WaitForResult();
+                    //    json = Serialize(response3);
+                    //    Console.WriteLine(json);
+                    //}
                 }
             }
         }

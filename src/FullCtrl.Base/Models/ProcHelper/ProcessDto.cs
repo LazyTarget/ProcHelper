@@ -21,6 +21,8 @@ namespace FullCtrl.Base
         private TimeSpan _totalProcessorTime;
         private TimeSpan _userProcessorTime;
         private ProcessModuleDto _mainModule;
+        private int _mainWindowHandle;
+        private string _mainWindowTitle;
 
 
         public ProcessDto()
@@ -115,6 +117,18 @@ namespace FullCtrl.Base
         {
             get { return _process?.TryGetProp(x => x.UserProcessorTime) ?? _userProcessorTime; }
             set { _userProcessorTime = value; }
+        }
+
+        public string MainWindowTitle
+        {
+            get { return _process?.TryGetProp(x => x.MainWindowTitle) ?? _mainWindowTitle; }
+            set { _mainWindowTitle = value; }
+        }
+
+        public int MainWindowHandle
+        {
+            get { return _process?.TryGetProp(x => x.MainWindowHandle.ToInt32()) ?? _mainWindowHandle; }
+            set { _mainWindowHandle = value; }
         }
 
         public ProcessModuleDto MainModule

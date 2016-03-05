@@ -16,6 +16,8 @@ namespace FullCtrl.Base
         TimeSpan PrivilegedProcessorTime { get; }
         TimeSpan TotalProcessorTime { get; }
         TimeSpan UserProcessorTime { get; }
+        string MainWindowTitle { get; }
+        int MainWindowHandle { get; }
         ProcessModuleDto MainModule { get; }
         string StandardError { get; }
         string StandardOutput { get; }

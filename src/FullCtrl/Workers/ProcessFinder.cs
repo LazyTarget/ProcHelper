@@ -14,18 +14,18 @@ namespace FullCtrl
             return result;
         }
 
-        public List<ProcessDto> GetProcesses()
+        public IEnumerable<ProcessDto> GetProcesses()
         {
-            var processes = Process.GetProcesses().ToList();
-            var result = processes.Select(x => new ProcessDto(x)).ToList();
+            var processes = Process.GetProcesses();
+            var result = processes.Select(x => new ProcessDto(x));
             return result;
         }
 
 
-        public List<ProcessDto> GetProcessesByName(string processName)
+        public IEnumerable<ProcessDto> GetProcessesByName(string processName)
         {
-            var processes = Process.GetProcessesByName(processName).ToList();
-            var result = processes.Select(x => new ProcessDto(x)).ToList();
+            var processes = Process.GetProcessesByName(processName);
+            var result = processes.Select(x => new ProcessDto(x));
             return result;
         }
 

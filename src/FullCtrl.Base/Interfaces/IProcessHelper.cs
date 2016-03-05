@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FullCtrl.Base
 {
@@ -11,6 +12,7 @@ namespace FullCtrl.Base
         ProcessDto StartProcess(string fileName, string arguments, string workingDirectory);
         ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput);
         ProcessDto StartProcess(string fileName, string arguments, string workingDirectory, bool redirectStOutput, Credentials credentials);
+        ProcessDto SwitchToMainWindow(IntPtr mainWindowHandle);
         ProcessDto KillProcess(int processID);
         bool IsRunning(string processName);
     }

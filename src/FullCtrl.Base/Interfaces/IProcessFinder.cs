@@ -5,7 +5,7 @@ namespace FullCtrl.Base
     public interface  IProcessFinder
     {
         ProcessDto GetProcess(int processID);
-        List<ProcessDto> GetProcesses();
-        List<ProcessDto> GetProcessesByName(string processName);
+        IEnumerable<ProcessDto> GetProcesses();
+        IEnumerable<ProcessDto> GetProcessesByName(string processName);
     }
 }

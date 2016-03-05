@@ -9,13 +9,19 @@ namespace FullCtrl.API
     internal class ApiService : IDisposable
     {
         private IDisposable _server;
-        private string _baseAddress = "http://localhost:9000/";
 
         public ApiService()
         {
             
         }
-        
+
+        public virtual StartOptions GetStartOptions()
+        {
+            var options = new StartOptions();
+            options.Urls.Add("http://+:9000");
+            return options;
+        }
+
         
         public void Start(string[] args)
         {
@@ -34,7 +40,9 @@ namespace FullCtrl.API
 
         public IDisposable StartAsSelftHost()
         {
-            return WebApp.Start<Startup>(_baseAddress);
+            var options = GetStartOptions();
+            var res = WebApp.Start<Startup>(options);
+            return res;
         }
 
 
