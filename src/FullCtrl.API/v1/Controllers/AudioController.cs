@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using AudioSwitcher.AudioApi;
@@ -113,6 +114,7 @@ namespace FullCtrl.API.v1.Controllers
 
 
 
+        
 
 
         private AudioSession FromAudioControllerState(IAudioSession state)
@@ -120,9 +122,7 @@ namespace FullCtrl.API.v1.Controllers
             if (state == null)
                 return null;
 
-            var icon = !string.IsNullOrWhiteSpace(state.IconPath) && File.Exists(state.IconPath)
-                ? new Bitmap(state.IconPath)
-                : null;
+            var icon = GetIcon(state.IconPath, state.ExecutablePath);
             var result = new AudioSession
             {
                 ID = state.Id,
@@ -142,9 +142,7 @@ namespace FullCtrl.API.v1.Controllers
             if (state == null)
                 return null;
 
-            var icon = !string.IsNullOrWhiteSpace(state.IconPath) && File.Exists(state.IconPath)
-                ? new Bitmap(state.IconPath)
-                : null;
+            var icon = GetIcon(state.IconPath, null);
             var result = new AudioDevice
             {
                 ID = state.Id,
@@ -161,6 +159,74 @@ namespace FullCtrl.API.v1.Controllers
                 IsDefaultCommunicationsDevice = state.IsDefaultCommunicationsDevice,
             };
             return result;
+        }
+
+
+
+
+        [DllImport("shell32.dll", EntryPoint = "ExtractIcon")]
+        private extern static IntPtr ExtractIcon(IntPtr hInst, string lpszExeFileName, int nIconIndex);
+
+        private Bitmap GetIcon(string iconReference, string exePath)
+        {
+            Bitmap icon = null;
+            if (string.IsNullOrWhiteSpace(iconReference) && string.IsNullOrWhiteSpace(exePath))
+                return null;
+
+            if (!string.IsNullOrWhiteSpace(iconReference))
+            {
+                try
+                {
+                    var iconPath = iconReference;
+                    var iconIdx = 0;
+                    if (iconPath.IndexOf(',') >= 0)
+                    {
+                        var i = iconPath.IndexOf(',');
+                        iconPath = iconReference.Substring(0, i).Trim('@').Trim();
+                        iconPath = Environment.ExpandEnvironmentVariables(iconPath);
+                        int.TryParse(iconReference.Substring(i + 1).Trim(), out iconIdx);
+                    }
+                    
+                    if (File.Exists(iconPath))
+                    {
+                        var ptr = ExtractIcon(IntPtr.Zero, iconPath, iconIdx);
+                        Icon ico = Icon.FromHandle(ptr);
+                        icon = ico?.ToBitmap();
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                if (icon != null)
+                    return icon;
+                else
+                {
+                    
+                }
+            }
+            
+            if (!string.IsNullOrWhiteSpace(exePath))
+            {
+                try
+                {
+                    var ico = Icon.ExtractAssociatedIcon(exePath);
+                    icon = ico?.ToBitmap();
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                if (icon != null)
+                    return icon;
+                else
+                {
+                    
+                }
+            }
+            return icon;
         }
 
     }

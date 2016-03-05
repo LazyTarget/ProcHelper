@@ -18,7 +18,8 @@ namespace FullCtrl.API
         public virtual StartOptions GetStartOptions()
         {
             var options = new StartOptions();
-            options.Urls.Add("http://+:9000");
+            //options.Urls.Add("http://+:9000");
+            options.Urls.Add("http://localhost:9000");
             return options;
         }
 
