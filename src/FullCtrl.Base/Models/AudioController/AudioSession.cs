@@ -8,10 +8,13 @@ namespace FullCtrl.Base
     {
         public string ID { get; set; }
         public string Name { get; set; }
-        public float Volume { get; set; }
+        public double Volume { get; set; }
         public bool Muted { get; set; }
+        public Guid DeviceID { get; set; }
+        public bool IsSystemSession { get; set; }
+
+        public string IconPath { get; set; }
         [JsonConverter(typeof(BitmapConverter))]
-        public Bitmap Icon { get; set; }
-        public Guid GroupingParam { get; set; }
+        public Bitmap IconRaw { get; set; }
     }
 }

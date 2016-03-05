@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Drawing;
-using CoreAudioApi;
 using Newtonsoft.Json;
 
 namespace FullCtrl.Base
 {
     public class AudioDevice
     {
-        public string ID { get; set; }
+        public Guid ID { get; set; }
         public string FriendlyName { get; set; }
+        public string InterfaceName { get; set; }
         public bool Muted { get; set; }
-        public float Volume { get; set; }
-        public EDeviceState State { get; set; }
+        public double Volume { get; set; }
+        public AudioDeviceState State { get; set; }
+        public AudioDeviceType DeviceType { get; set; }
         public bool DefaultDevice { get; set; }
+        public bool IsDefaultCommunicationsDevice { get; set; }
+
+        public AudioDeviceIcon DeviceIconType { get; set; }
+        public string IconPath { get; set; }
+        [JsonConverter(typeof(BitmapConverter))]
+        public Bitmap IconRaw { get; set; }
     }
 }

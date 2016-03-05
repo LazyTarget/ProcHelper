@@ -81,6 +81,7 @@
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
     <Compile Include="Models\AudioController\AudioDevice.cs" />
     <Compile Include="Models\AudioController\AudioSession.cs" />
+    <Compile Include="Models\AudioController\Enums.cs" />
     <Compile Include="Models\AudioController\GetSessionsRequest.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
     <Compile Include="Models\InputHelper\IsKeyUp.cs" />

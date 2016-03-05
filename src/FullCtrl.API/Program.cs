@@ -53,7 +53,10 @@ namespace FullCtrl.API
                         Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
 
                     input = Console.ReadLine();
-                    Console.WriteLine();
+                    if (input == "exit" || input == "stop")
+                    {
+                        continue;
+                    }
                     if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
                     {
                         _service.Stop();
@@ -84,7 +87,7 @@ namespace FullCtrl.API
                     if (deviceID != null)
                     {
                         Console.WriteLine("Sending request");
-                        var response3 = api.AudioController.SetDefaultDevice(deviceID).WaitForResult();
+                        var response3 = api.AudioController.SetDefaultDevice(deviceID.ToString()).WaitForResult();
                         json = Serialize(response3);
                         Console.WriteLine(json);
                     }

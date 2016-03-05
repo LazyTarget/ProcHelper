@@ -1,30 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Imaging;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using CoreAudioApi;
-using CoreAudioExtended;
-using CoreAudioServer;
+using AudioSwitcher.AudioApi;
+using AudioSwitcher.AudioApi.CoreAudio;
+using AudioSwitcher.AudioApi.Session;
 using FullCtrl.Base;
-using Newtonsoft.Json;
 
 namespace FullCtrl.API.v1.Controllers
 {
     public class AudioController : BaseController
     {
-        private static SessionManager _sessionManager;
+        private static readonly CoreAudioController _audioController;
 
         static AudioController()
         {
-            _sessionManager = new SessionManager();
-            _sessionManager.Start();
+            _audioController = new CoreAudioController();
         }
 
         [HttpGet, HttpPost, HttpPut]
@@ -32,37 +26,55 @@ namespace FullCtrl.API.v1.Controllers
         [Route("api/v1/audio/sessions/list")]
         public IResponseBase<IEnumerable<AudioSession>> GetSessions([ModelBinder(typeof(CustomObjectModelBinder))] object request)
         {
-            List<EasyAudioSession> sessions;
-            sessions = _sessionManager?.GetSessionList();
+            var device = _audioController.DefaultPlaybackDevice;
+            var sessions = device?.SessionController?.All();
+            var res = sessions?.Select(FromAudioControllerState).Where(x => x != null).ToList();
 
-            //var res = sessions.Select(x => new AudioSession(x.Session));
-            var res = sessions?.Select(FromAudioControllerState);
-            IEnumerable<AudioSession> result = res?.ToList();
-            
+            IEnumerable<AudioSession> result = res;
             var response = CreateResponse(result);
             return response;
         }
 
 
         [HttpGet, HttpPost, HttpPut]
-        [Route("api/v1/audio/device/list")]
         [Route("api/v1/audio/devices")]
         [Route("api/v1/audio/devices/list")]
         public IResponseBase<IEnumerable<AudioDevice>> GetDevices()
         {
-            var stateFilter = EDeviceState.DEVICE_STATEMASK_ALL;
-            stateFilter = EDeviceState.DEVICE_STATE_ACTIVE;
+            var response = GetDevices(null);
+            return response;
+        }
+        
+        [HttpGet, HttpPost, HttpPut]
+        [Route("api/v1/audio/devices/list/{deviceType}")]
+        public IResponseBase<IEnumerable<AudioDevice>> GetDevices(DeviceType? deviceType)
+        {
+            var response = GetDevices(deviceType, null);
+            return response;
+        }
 
-            var devices = _sessionManager?._devEnum?.EnumerateAudioEndPoints(EDataFlow.eRender, stateFilter);
-            IList<AudioDevice> res = devices?.Select(FromAudioDevice).ToList();
-            if (res != null)
+        [HttpGet, HttpPost, HttpPut]
+        [Route("api/v1/audio/devices/list/{deviceType}/{deviceState}")]
+        public IResponseBase<IEnumerable<AudioDevice>> GetDevices(DeviceType? deviceType, DeviceState? deviceState)
+        {
+            IEnumerable<CoreAudioDevice> devices;
+            if (deviceType.HasValue && deviceState.HasValue)
             {
-                foreach (var audioDevice in res)
-                {
-                    if (audioDevice.ID == _sessionManager?._defaultDevice?.ID)
-                        audioDevice.DefaultDevice = true;
-                }
+                devices = _audioController.GetDevices(deviceType.Value, deviceState.Value);
             }
+            else if (deviceType.HasValue)
+            {
+                devices = _audioController.GetDevices(deviceType.Value);
+            }
+            else if (deviceState.HasValue)
+            {
+                devices = _audioController.GetDevices(deviceState.Value);
+            }
+            else
+            {
+                devices = _audioController.GetDevices();
+            }
+            var res = devices?.Select(FromAudioDevice).Where(x => x != null).ToList();
 
             IEnumerable<AudioDevice> result = res;
             var response = CreateResponse(result);
@@ -75,9 +87,25 @@ namespace FullCtrl.API.v1.Controllers
         [Route("api/v1/audio/device/set/{deviceID}")]
         public IResponseBase<object> SetDefaultDevice(string deviceID)
         {
-            var r = _sessionManager?.OnDefaultDeviceChanged(EDataFlow.eRender, ERole.eMultimedia, deviceID);
-
             object result = null;
+            Guid guid;
+            if (Guid.TryParse(deviceID, out guid))
+            {
+                var device = _audioController.GetDevice(guid);
+                if (device != null)
+                {
+                    result = _audioController.SetDefaultDevice(device);
+                }
+                else
+                {
+                    result = -1;
+                }
+            }
+            else
+            {
+                result = -1;
+            }
+            
             var response = CreateResponse(result);
             return response;
         }
@@ -87,30 +115,50 @@ namespace FullCtrl.API.v1.Controllers
 
 
 
-        private AudioSession FromAudioControllerState(IAudioControllerState state)
+        private AudioSession FromAudioControllerState(IAudioSession state)
         {
+            if (state == null)
+                return null;
+
+            var icon = !string.IsNullOrWhiteSpace(state.IconPath) && File.Exists(state.IconPath)
+                ? new Bitmap(state.IconPath)
+                : null;
             var result = new AudioSession
             {
-                ID = state.ID,
-                Name = state.Name,
-                Icon = state.Icon,
-                GroupingParam = state.GroupingParam,
-                Muted = state.Muted,
+                ID = state.Id,
+                DeviceID = state.Device.Id,
+                Name = state.DisplayName,
+                IconPath = state.IconPath,
+                IconRaw = icon,
+                Muted = state.IsMuted,
                 Volume = state.Volume,
+                IsSystemSession = state.IsSystemSession,
             };
             return result;
         }
 
-        private AudioDevice FromAudioDevice(MMDevice state)
+        private AudioDevice FromAudioDevice(CoreAudioDevice state)
         {
+            if (state == null)
+                return null;
+
+            var icon = !string.IsNullOrWhiteSpace(state.IconPath) && File.Exists(state.IconPath)
+                ? new Bitmap(state.IconPath)
+                : null;
             var result = new AudioDevice
             {
-                ID = state.ID,
-                FriendlyName = state.FriendlyName,
-                Muted = state.AudioEndpointVolume.Mute,
-                Volume = state.AudioEndpointVolume.MasterVolumeLevel,
-                State = state.State,
-                DefaultDevice = false,
+                ID = state.Id,
+                FriendlyName = state.Name,
+                InterfaceName = state.InterfaceName,
+                Muted = state.IsMuted,
+                Volume = state.Volume,
+                DeviceType = (AudioDeviceType)Enum.Parse(typeof(AudioDeviceType), ((int)state.DeviceType).ToString()),
+                State = (AudioDeviceState)Enum.Parse(typeof(AudioDeviceState), ((int)state.State).ToString()),
+                DeviceIconType = (AudioDeviceIcon)Enum.Parse(typeof(AudioDeviceIcon), ((int)state.Icon).ToString()),
+                IconPath = state.IconPath,
+                IconRaw = icon,
+                DefaultDevice = state.IsDefaultDevice,
+                IsDefaultCommunicationsDevice = state.IsDefaultCommunicationsDevice,
             };
             return result;
         }
