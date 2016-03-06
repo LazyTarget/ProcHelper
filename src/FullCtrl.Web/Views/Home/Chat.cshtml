@@ -21,12 +21,21 @@
         $(function () {
             // Reference the auto-generated proxy for the hub.
             var chat = $.connection.chatHub;
+            var eventHub = $.connection.eventHub;
+
             // Create a function that the hub can call back to display messages.
             chat.client.addNewMessageToPage = function (name, message) {
                 // Add the message to the page.
                 $('#discussion').append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
             };
+
+            // Create a function that the hub can call back to display messages.
+            eventHub.client.onEvent = function (channelName, eventName, jsonData) {
+                // Add the message to the page.
+                $('#discussion').append('<li><strong>' + htmlEncode(channelName) + "/" + htmlEncode(eventName) + '</strong>: ' + htmlEncode(jsonData) + '</li>');
+            };
+
             // Get the user name and store it to prepend to messages.
             $('#displayname').val(prompt('Enter your name:', ''));
             // Set initial focus to message input box.
