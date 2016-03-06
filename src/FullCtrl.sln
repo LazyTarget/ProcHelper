@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.Base", "FullCtrl.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.API", "FullCtrl.API\FullCtrl.API.csproj", "{C259B631-17CD-4123-B520-C8212239535A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.Web", "FullCtrl.Web\FullCtrl.Web.csproj", "{09C735D2-DD37-4AF0-8AE1-BF701363D027}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C259B631-17CD-4123-B520-C8212239535A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C259B631-17CD-4123-B520-C8212239535A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C259B631-17CD-4123-B520-C8212239535A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
