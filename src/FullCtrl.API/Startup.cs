@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using FullCtrl.Base;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
@@ -28,6 +29,7 @@ namespace FullCtrl.API
             
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProcessToNullConverter());
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BitmapConverter());
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Filters.Add(new DebugActionFilter());

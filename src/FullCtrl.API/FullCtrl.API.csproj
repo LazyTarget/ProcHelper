@@ -119,6 +119,7 @@
     <Compile Include="v1\Controllers\AudioController.cs" />
     <Compile Include="v1\Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
+    <Compile Include="v1\Controllers\DeviceController.cs" />
     <Compile Include="v1\Controllers\KeyboardController.cs" />
     <Compile Include="v1\Controllers\MouseController.cs" />
     <Compile Include="v1\Controllers\ResourceMonitorController.cs" />

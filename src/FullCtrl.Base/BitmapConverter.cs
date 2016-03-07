@@ -51,21 +51,28 @@ namespace FullCtrl.Base
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value == null)
-                writer.WriteNull();
-            else if (value is Bitmap)
+            try
             {
-                var img = value as Bitmap;
-                var format = System.Drawing.Imaging.ImageFormat.Png;
-                using (var stream = new MemoryStream())
+                if (value == null)
+                    writer.WriteNull();
+                else if (value is Bitmap)
                 {
-                    img.Save(stream, format);
-                    var imgData = stream.ToArray();
-                    writer.WriteValue(imgData);
+                    var img = value as Bitmap;
+                    var format = System.Drawing.Imaging.ImageFormat.Png;
+                    using (var stream = new MemoryStream())
+                    {
+                        img.Save(stream, format);
+                        var imgData = stream.ToArray();
+                        writer.WriteValue(imgData);
+                    }
                 }
+                else
+                    throw new Exception("Expected Bitmap object value");
             }
-            else
-                throw new Exception("Expected Bitmap object value");
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

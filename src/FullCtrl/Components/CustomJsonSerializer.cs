@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using FullCtrl.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RestSharp;
@@ -35,6 +36,7 @@ namespace FullCtrl
             };
             _serializer.Converters.Add(new StringEnumConverter());
             _serializer.Converters.Add(new IoCJsonConverter(_container));
+            _serializer.Converters.Add(new BitmapConverter());
         }
 
         /// <summary>

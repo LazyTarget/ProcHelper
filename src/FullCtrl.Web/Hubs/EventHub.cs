@@ -47,7 +47,6 @@ namespace FullCtrl.Web.Hubs
         {
             _instanceCount--;
             Debug.WriteLine("EventHub::OnDisconnected() Instance count: " + _instanceCount);
-
             if (_instanceCount <= 0)
             {
                 _loop.CancellationToken.Cancel();
@@ -57,9 +56,11 @@ namespace FullCtrl.Web.Hubs
         }
 
 
+
         public class ExecuteLoop
         {
-            private readonly CancellationTokenSource _cancellationTokenSource;
+            private readonly AutoResetEvent _resetEvent = new AutoResetEvent(false);
+            private CancellationTokenSource _cancellationTokenSource;
 
             public ExecuteLoop()
             {
@@ -74,6 +75,14 @@ namespace FullCtrl.Web.Hubs
             {
                 try
                 {
+                    while (Executing)
+                    {
+                        if (!_cancellationTokenSource.IsCancellationRequested)
+                            _cancellationTokenSource.Cancel();
+                        _resetEvent.WaitOne();
+                    }
+                    
+                    _cancellationTokenSource = new CancellationTokenSource();
                     var loopCount = 0;
                     while (true)
                     {
@@ -85,11 +94,12 @@ namespace FullCtrl.Web.Hubs
                         }
 
                         Debug.WriteLine("ExecuteLoop::" + loopCount);
-                        hub.Send("test", "ads", "{ name: 'peter' }");
+                        hub.Send(hub.GetHashCode().ToString(), "ads", "{ name: 'peter' }");
                         Debug.WriteLine("Sending message...");
 
 
                         Thread.Sleep(TimeSpan.FromSeconds(1));
+                        _resetEvent.Set();
                     }
                     return 0;
                 }
@@ -100,6 +110,7 @@ namespace FullCtrl.Web.Hubs
                 finally
                 {
                     Executing = false;
+                    _resetEvent.Set();
                 }
             }
 

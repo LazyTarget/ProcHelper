@@ -12,6 +12,7 @@ namespace FullCtrl
             //Mouse = new MouseAPI();
             //Keyboard = new KeyboardAPI();
             AudioController = new AudioControllerAPI();
+            DeviceController = new DeviceControllerAPI();
         }
 
         public IProcessAPI Process { get; }
@@ -20,5 +21,6 @@ namespace FullCtrl
         public IMouseAPI Mouse { get; }
         public IKeyboardAPI Keyboard { get; }
         public IAudioControllerAPI AudioController { get; }
+        public IDeviceControllerAPI DeviceController { get; }
     }
 }

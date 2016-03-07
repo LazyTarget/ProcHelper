@@ -62,6 +62,7 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Interfaces\API\IDeviceControllerAPI.cs" />
     <Compile Include="Interfaces\API\IAudioControllerAPI.cs" />
     <Compile Include="Interfaces\API\IFullCtrlAPI.cs" />
     <Compile Include="Interfaces\API\IPowershellAPI.cs" />

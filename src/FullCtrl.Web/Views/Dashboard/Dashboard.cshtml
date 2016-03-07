@@ -1,7 +1,38 @@
-﻿
-@{
-    ViewBag.Title = "Dashboard";
+﻿@section SPAViews {
+    @Html.Partial("_MouseParital")
 }
+@section Scripts{
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/app")
 
-<h2>Dashboard</h2>
+    <script type="text/javascript">
 
+        $(function () {
+            loadScreenshot();
+        });
+
+        function loadScreenshot() {
+            $.ajax({
+                method: 'post',
+                url: '@Url.Action("ScreenshotBase64Async", "Dashboard")',
+                contentType: "image/jpeg",
+                headers: {
+                    'Authorization': 'Bearer ' + app.dataModel.getAccessToken()
+                },
+                success: function (data) {
+                    var $canvas = $('canvas.TouchPadCanvas');
+                    if ($canvas.length) {
+                        var ctx = $canvas[0].getContext('2d');
+                        var img = $('.TouchPadCanvas .Background')[0];
+                        img.src = data;
+                        ctx.drawImage(img, 0, 0);
+                    }
+                },
+                error: function (data) {
+                    console.log("err", arguments);
+                }
+            });
+        }
+
+    </script>
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using FullCtrl.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -13,6 +14,9 @@ namespace FullCtrl.API
 
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
+
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager
@@ -27,8 +31,18 @@ namespace FullCtrl.API
             }
 
         }
-        
-        
+
+        private static void CurrentDomain_OnFirstChanceException(object sender, FirstChanceExceptionEventArgs eventArgs)
+        {
+            LogManager.GetLoggerFor("OnFirstChanceException").Error(() => "FirstChanceException", eventArgs.Exception);
+        }
+
+        private static void CurrentDomain_OnUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
+        {
+            LogManager.GetLoggerFor("OnUnhandledException").Fatal(() => "UnhandledException", eventArgs.ExceptionObject as Exception);
+        }
+
+
         private static void RunService(string[] args)
         {
             _service = new ApiService();
