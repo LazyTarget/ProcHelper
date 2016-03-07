@@ -25,14 +25,14 @@ namespace FullCtrl.Web.Hubs
 
             if (name == "Time")
             {
-                while (true)
-                {
-                    object data = DateTime.Now.ToString();
-                    string json = JsonConvert.SerializeObject(data);
-                    EventHub.Instance?.Send("Time", "GetTime", json);
+                //while (true)
+                //{
+                //    object data = DateTime.Now.ToString();
+                //    string json = JsonConvert.SerializeObject(data);
+                //    EventHub.Instance?.Send("Time", "GetTime", json);
 
-                    Thread.Sleep(500);
-                }
+                //    Thread.Sleep(500);
+                //}
             }
 
         }
