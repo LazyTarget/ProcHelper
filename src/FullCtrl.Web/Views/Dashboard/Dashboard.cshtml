@@ -7,29 +7,40 @@
 
     <script type="text/javascript">
 
-        $(function () {
+        var _resources = {};
+
+        $(function() {
             loadScreenshot();
         });
 
+
+        function loadImage(key, url, callback) {
+            if (_resources[key]) {
+                callback(_resources[key]);
+                return;
+            }
+            else {
+                console.log("loading", arguments);
+                var img = new Image();
+                img.onload = function () {
+                    console.log("onLoad", arguments);
+                    _resources[key] = img;
+                    callback(_resources[key]);
+                };
+                _resources[key] = false;
+                img.src = url;
+            }
+        }
+
         function loadScreenshot() {
-            $.ajax({
-                method: 'post',
-                url: '@Url.Action("ScreenshotBase64Async", "Dashboard")',
-                contentType: "image/jpeg",
-                headers: {
-                    'Authorization': 'Bearer ' + app.dataModel.getAccessToken()
-                },
-                success: function (data) {
-                    var $canvas = $('canvas.TouchPadCanvas');
-                    if ($canvas.length) {
-                        var ctx = $canvas[0].getContext('2d');
-                        var img = $('.TouchPadCanvas .Background')[0];
-                        img.src = data;
-                        ctx.drawImage(img, 0, 0);
-                    }
-                },
-                error: function (data) {
-                    console.log("err", arguments);
+            loadImage("Screenshot", 'http://localhost:16196@(Url.Action("ScreenshotBase64Async", "Dashboard"))', function (img) {
+                var $canvas = $('canvas.TouchPadCanvas');
+                if ($canvas.length) {
+                    var ratio = img.width / img.height;
+                    var canvas = $canvas[0];
+                    canvas.height = canvas.width / ratio;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 }
             });
         }
