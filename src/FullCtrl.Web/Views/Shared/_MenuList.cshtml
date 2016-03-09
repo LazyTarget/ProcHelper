@@ -1,0 +1,47 @@
+﻿@model FullCtrl.Web.Models.MenuListViewModel
+
+<div class="MenuListGroup">
+    @if (Model.Profile != null)
+    {
+        <div class="Profile">
+            <img class="Icon" src="@Model.Profile.ImgSrc" alt="" />
+            <a class="Link" href="@Model.Profile.Href">
+                @Model.Profile.Name
+            </a>
+        </div>
+    }
+
+
+    @foreach (var navListGroup in Model.Groups)
+    {
+        <span>@navListGroup.Text</span>
+
+        <div class="list-group">
+
+            @foreach (var navListItem in navListGroup.Items)
+            {
+                if (navListItem.Hidden)
+                {
+                    continue;
+                }
+
+                var isActive = Request.Url?.AbsolutePath.Contains(navListItem.Href) ?? false;
+                var isDisabled = navListItem.Disabled || string.IsNullOrWhiteSpace(navListItem.Href);
+
+                <a class="list-group-item SideBarItem@(isActive ? " active" : "") @(isDisabled ? " disabled" : "")" href="@navListItem.Href">
+                    @if (!string.IsNullOrWhiteSpace(navListItem.Glyphicon))
+                    {
+                        <span class="glyphicon @(navListItem.Glyphicon)"></span>
+                    }
+
+                    @navListItem.Text
+
+                    @if (navListItem.BadgeCount > 0)
+                    {
+                        <span class="badge">@navListItem.BadgeCount</span>
+                    }
+                </a>
+            }
+        </div>
+    }
+</div>
