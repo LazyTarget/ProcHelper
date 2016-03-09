@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace FullCtrl.Web.Controllers
 {
-    public class MeController : Controller
+    public class ProfileController : Controller
     {
 
     }
