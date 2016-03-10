@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="SoundFunctionPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToggleMuteAudioDeviceFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FullCtrl.Base\FullCtrl.Base.csproj">
