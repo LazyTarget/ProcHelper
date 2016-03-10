@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FullCtrl.Base;
@@ -6,9 +6,9 @@ using FullCtrl.Internal;
 
 namespace FullCtrl.Plugins.Sound
 {
-    public class ToggleMuteAudioDeviceFunction : IFunctionDescriptor, IFunction
+    public class GetAudioSessionsFunction : IFunctionDescriptor, IFunction
     {
-        public string Name => nameof(ToggleMuteAudioDeviceFunction);
+        public string Name => nameof(GetAudioSessionsFunction);
         public bool CanExecuteRemotely => true;
 
         public IParameterCollection GetParameters()
@@ -44,30 +44,17 @@ namespace FullCtrl.Plugins.Sound
                 api.BaseUri = (Uri)arguments.Parameters["ApiAddress"].Value;
 
                 string deviceID = null;
-                IParameter deviceIDParam;
-                if (arguments.Parameters.TryGetValue("DeviceID", out deviceIDParam))
-                    deviceID = (string)deviceIDParam.Value;
+                IParameter param;
+                if (arguments.Parameters.TryGetValue("DeviceID", out param))
+                    deviceID = (string)param.Value;
 
-                if (string.IsNullOrEmpty(deviceID))
-                {
-                    AudioDeviceType? deviceType = null;
-                    AudioDeviceState? deviceState = null;
-                    var response = await api.GetAudioDevices(deviceType, deviceState);
-                    if (response?.Error != null)
-                        return new FunctionResult {Arguments = arguments, Error = response.Error};
-
-                    var defaultDevice = response?.Result?.FirstOrDefault(x => x.DefaultDevice);
-                    if (defaultDevice != null)
-                        deviceID = defaultDevice.ID.ToString();
-                }
-
-                var response2 = await api.ToggleDeviceMute(deviceID);
-                if (response2?.Error != null)
-                    return new FunctionResult { Arguments = arguments, Error = response2.Error };
+                var response = await api.GetAudioSessions(deviceID);
+                if (response?.Error != null)
+                    return new FunctionResult { Arguments = arguments, Error = response.Error };
                 
                 var result = new FunctionResult();
                 result.Arguments = arguments;
-                result.Result = response2?.Result;
+                result.Result = response?.Result;
                 return result;
             }
             catch (Exception ex)

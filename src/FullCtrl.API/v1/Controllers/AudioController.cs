@@ -25,9 +25,25 @@ namespace FullCtrl.API.v1.Controllers
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/audio/sessions")]
         [Route("api/v1/audio/sessions/list")]
-        public IResponseBase<IEnumerable<AudioSession>> GetSessions([ModelBinder(typeof(CustomObjectModelBinder))] object request)
+        public IResponseBase<IEnumerable<AudioSession>> GetSessions(string deviceID)
         {
-            var device = _audioController.DefaultPlaybackDevice;
+            Guid guid;
+            CoreAudioDevice device = null;
+            if (string.IsNullOrEmpty(deviceID))
+            {
+                device = _audioController.DefaultPlaybackDevice;
+            }
+            else if(Guid.TryParse(deviceID, out guid))
+            {
+                device = _audioController.GetDevice(guid);
+            }
+
+
+            if (device == null)
+            {
+                throw new Exception("Device not found");
+            }
+
             var sessions = device?.SessionController?.All();
             var res = sessions?.Select(FromAudioControllerState).Where(x => x != null).ToList();
 

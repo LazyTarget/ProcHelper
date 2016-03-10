@@ -58,3 +58,12 @@ textarea {
     min-height: 60px;
     /*background: cyan;*/
 }
+
+
+.FunctionList {
+    max-width: 300px;
+}
+
+.ParameterCollection tr.Required {
+    /*font-style: italic;*/
+}

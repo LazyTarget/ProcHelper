@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using FullCtrl.Base;
 using FullCtrl.Plugins.Sound;
 using FullCtrl.Web.Models;
+using Lux;
 
 namespace FullCtrl.Web.Controllers
 {
@@ -52,7 +53,7 @@ namespace FullCtrl.Web.Controllers
         }
 
 
-        public async Task<IFunctionResult> Execute(string pluginName, string functionName, object param)
+        public async Task<IFunctionResult> Execute(string pluginName, string functionName)
         {
             var plugin = GetFunctionPlugins().FirstOrDefault(x => x.Name == pluginName);
             if (plugin == null)
@@ -62,8 +63,17 @@ namespace FullCtrl.Web.Controllers
             if (functionDescriptor == null)
                 throw new Exception($"Function '{functionName}' not found");
 
+            var converter = new Converter();
             var parameters = functionDescriptor.GetParameters();
-            // todo: set params
+            foreach (var param in parameters)
+            {
+                var str = Request.Form["Param_" + param.Key];
+                if (str != null)
+                {
+                    var val = converter.Convert(str, param.Value.Type);
+                    param.Value.Value = val;
+                }
+            }
 
             var arg = new FunctionArguments();
             arg.Parameters = parameters;

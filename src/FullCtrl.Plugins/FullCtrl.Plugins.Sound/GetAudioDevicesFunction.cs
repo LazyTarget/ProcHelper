@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FullCtrl.Base;
@@ -6,9 +6,9 @@ using FullCtrl.Internal;
 
 namespace FullCtrl.Plugins.Sound
 {
-    public class ToggleMuteAudioDeviceFunction : IFunctionDescriptor, IFunction
+    public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction
     {
-        public string Name => nameof(ToggleMuteAudioDeviceFunction);
+        public string Name => nameof(GetAudioDevicesFunction);
         public bool CanExecuteRemotely => true;
 
         public IParameterCollection GetParameters()
@@ -21,11 +21,18 @@ namespace FullCtrl.Plugins.Sound
                 Type = typeof(Uri),
                 Value = new Uri("http://localhost:9000/api/v1/"),
             };
-            res["DeviceID"] = new Parameter
+            res["DeviceType"] = new Parameter
             {
-                Name = "DeviceID",
+                Name = "DeviceType",
                 Required = false,
-                Type = typeof(string),
+                Type = typeof(AudioDeviceType?),
+                Value = null,
+            };
+            res["DeviceState"] = new Parameter
+            {
+                Name = "DeviceState",
+                Required = false,
+                Type = typeof(AudioDeviceState?),
                 Value = null,
             };
             return res;
@@ -43,31 +50,22 @@ namespace FullCtrl.Plugins.Sound
                 var api = new AudioControllerAPI();
                 api.BaseUri = (Uri)arguments.Parameters["ApiAddress"].Value;
 
-                string deviceID = null;
-                IParameter deviceIDParam;
-                if (arguments.Parameters.TryGetValue("DeviceID", out deviceIDParam))
-                    deviceID = (string)deviceIDParam.Value;
+                AudioDeviceType? deviceType = null;
+                AudioDeviceState? deviceState = null;
 
-                if (string.IsNullOrEmpty(deviceID))
-                {
-                    AudioDeviceType? deviceType = null;
-                    AudioDeviceState? deviceState = null;
-                    var response = await api.GetAudioDevices(deviceType, deviceState);
-                    if (response?.Error != null)
-                        return new FunctionResult {Arguments = arguments, Error = response.Error};
+                IParameter param;
+                if (arguments.Parameters.TryGetValue("DeviceType", out param))
+                    deviceType = (AudioDeviceType?) param.Value;
+                if (arguments.Parameters.TryGetValue("DeviceState", out param))
+                    deviceState = (AudioDeviceState?)param.Value;
 
-                    var defaultDevice = response?.Result?.FirstOrDefault(x => x.DefaultDevice);
-                    if (defaultDevice != null)
-                        deviceID = defaultDevice.ID.ToString();
-                }
-
-                var response2 = await api.ToggleDeviceMute(deviceID);
-                if (response2?.Error != null)
-                    return new FunctionResult { Arguments = arguments, Error = response2.Error };
+                var response = await api.GetAudioDevices(deviceType, deviceState);
+                if (response?.Error != null)
+                    return new FunctionResult { Arguments = arguments, Error = response.Error };
                 
                 var result = new FunctionResult();
                 result.Arguments = arguments;
-                result.Result = response2?.Result;
+                result.Result = response?.Result;
                 return result;
             }
             catch (Exception ex)
