@@ -95,5 +95,15 @@ namespace FullCtrl
             var response = await GetResponse<object>(request);
             return response;
         }
+
+        public async Task<IResponseBase<object>> ToggleDeviceMute(string deviceID)
+        {
+            var uri = new Uri("audio/device/togglemute", UriKind.Relative);
+            var request = BuildRequest(uri, Method.POST);
+            request.AddQueryParameter("deviceID", deviceID);
+
+            var response = await GetResponse<object>(request);
+            return response;
+        }
     }
 }

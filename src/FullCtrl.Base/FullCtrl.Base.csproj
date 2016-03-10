@@ -41,6 +41,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,6 +63,7 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="FunctionResult.cs" />
     <Compile Include="Interfaces\API\IDeviceControllerAPI.cs" />
     <Compile Include="Interfaces\API\IAudioControllerAPI.cs" />
     <Compile Include="Interfaces\API\IFullCtrlAPI.cs" />
@@ -72,11 +74,20 @@
     <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />
     <Compile Include="Interfaces\API\IKeyboardAPI.cs" />
+    <Compile Include="Interfaces\IFunction.cs" />
+    <Compile Include="Interfaces\IFunctionArguments.cs" />
+    <Compile Include="Interfaces\IFunctionDescriptor.cs" />
+    <Compile Include="Interfaces\IFunctionPlugin.cs" />
+    <Compile Include="Interfaces\IFunctionResult.cs" />
     <Compile Include="Interfaces\IInputHelper.cs" />
     <Compile Include="Interfaces\ILink.cs" />
+    <Compile Include="Interfaces\IParameter.cs" />
+    <Compile Include="Interfaces\IParameterCollection.cs" />
+    <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Interfaces\IPowershellHelper.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
+    <Compile Include="Interfaces\IRemoteConfiguration.cs" />
     <Compile Include="Interfaces\IResponseBase.cs" />
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
@@ -123,6 +134,8 @@
     <Compile Include="Models\WinServiceHelper\StopWinServiceResponse.cs" />
     <Compile Include="Models\WinServiceHelper\WinServiceDto.cs" />
     <Compile Include="Models\WinServiceHelper\WinServicesResponse.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="ParameterCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

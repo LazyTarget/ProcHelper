@@ -112,6 +112,35 @@ namespace FullCtrl.API.v1.Controllers
         }
 
 
+        [HttpPost, HttpPut]
+        [Route("api/v1/audio/device/togglemute")]
+        [Route("api/v1/audio/device/togglemute/{deviceID}")]
+        public IResponseBase<object> ToggleDeviceMute(string deviceID)
+        {
+            object result = null;
+            Guid guid;
+            if (Guid.TryParse(deviceID, out guid))
+            {
+                var device = _audioController.GetDevice(guid);
+                if (device != null)
+                {
+                    result = device.Mute(!device.IsMuted);
+                }
+                else
+                {
+                    result = -1;
+                }
+            }
+            else
+            {
+                result = -1;
+            }
+            
+            var response = CreateResponse(result);
+            return response;
+        }
+
+
 
 
         

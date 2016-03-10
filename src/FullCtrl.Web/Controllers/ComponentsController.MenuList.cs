@@ -91,7 +91,7 @@ namespace FullCtrl.Web.Controllers
                 Text = "Windows (Resolution / Default screen)",
                 Href = Url.Action("Windows", "Function"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
-                Glyphicon = "glyphicon-modal-window",
+                Glyphicon = "glyphicon-resize-full",
             });
             deviceItems.Add(new MenuListGroupItem
             {
@@ -105,7 +105,7 @@ namespace FullCtrl.Web.Controllers
                 Text = "Input",
                 Href = Url.Action("Input", "Function"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
-                Glyphicon = "glyphicon-cd",
+                Glyphicon = "glyphicon-italic",
             });
             deviceItems.Add(new MenuListGroupItem
             {

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.API", "FullCtrl.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.Web", "FullCtrl.Web\FullCtrl.Web.csproj", "{09C735D2-DD37-4AF0-8AE1-BF701363D027}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FullCtrl.Plugins", "FullCtrl.Plugins", "{6F1B1276-0FF8-4870-A526-1F9934A177F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullCtrl.Plugins.Sound", "FullCtrl.Plugins\FullCtrl.Plugins.Sound\FullCtrl.Plugins.Sound.csproj", "{3B22B620-56C3-44E6-8635-4EA1D8B09437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +37,15 @@ Global
 		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 	EndGlobalSection
 EndGlobal
