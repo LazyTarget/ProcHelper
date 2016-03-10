@@ -70,6 +70,7 @@
     <Compile Include="Interfaces\API\IPowershellAPI.cs" />
     <Compile Include="Interfaces\API\IWinServiceAPI.cs" />
     <Compile Include="Interfaces\API\IProcessAPI.cs" />
+    <Compile Include="FunctionArguments.cs" />
     <Compile Include="Interfaces\IAudioController.cs" />
     <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />

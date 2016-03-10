@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FullCtrl.Plugins.Sound;
 using FullCtrl.Web.Models;
 
 namespace FullCtrl.Web.Controllers
@@ -38,7 +39,7 @@ namespace FullCtrl.Web.Controllers
 
 
             #region Favorites
-            
+
             functionItems.Add(new MenuListGroupItem
             {
                 Text = "Shutdown",
@@ -93,13 +94,21 @@ namespace FullCtrl.Web.Controllers
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-resize-full",
             });
+            //deviceItems.Add(new MenuListGroupItem
+            //{
+            //    Text = "Sound",
+            //    Href = Url.Action("Sound", "Function"),
+            //    Disabled = !(User?.Identity?.IsAuthenticated ?? false),
+            //    Glyphicon = "glyphicon-volume-up",
+            //});
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Sound",
-                Href = Url.Action("Sound", "Function"),
+                Href = Url.Action("Plugin", "Function", new { pluginName = nameof(SoundFunctionPlugin) }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-volume-up",
             });
+
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Input",
@@ -213,6 +222,6 @@ namespace FullCtrl.Web.Controllers
             };
             return model;
         }
-        
+
     }
 }

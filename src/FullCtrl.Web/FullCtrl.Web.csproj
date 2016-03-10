@@ -246,6 +246,7 @@
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\FunctionModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MeViewModels.cs" />
@@ -347,10 +348,10 @@
     <Content Include="Views\Dashboard\Dashboard.cshtml" />
     <Content Include="Views\Dashboard\_MouseParital.cshtml" />
     <Content Include="Views\Shared\_MenuList.cshtml" />
+    <Content Include="Views\Function\Plugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Function\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -364,6 +365,10 @@
     <ProjectReference Include="..\FullCtrl.Base\FullCtrl.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>FullCtrl.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FullCtrl.Plugins\FullCtrl.Plugins.Sound\FullCtrl.Plugins.Sound.csproj">
+      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
+      <Name>FullCtrl.Plugins.Sound</Name>
     </ProjectReference>
     <ProjectReference Include="..\FullCtrl\FullCtrl.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
