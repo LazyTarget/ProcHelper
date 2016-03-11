@@ -1,28 +1,29 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AudioSwitcher.AudioApi.CoreAudio;
 using FullCtrl.Base;
 
 namespace FullCtrl.Plugins.Sound
 {
     public class ToggleMuteAudioDeviceFunction : IFunctionDescriptor, IFunction
     {
+        private CoreAudioController _audioController = new CoreAudioController();
+
+        public ToggleMuteAudioDeviceFunction()
+        {
+            
+        }
+
         public string Name => nameof(ToggleMuteAudioDeviceFunction);
         public bool CanExecuteRemotely => true;
 
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res["ApiAddress"] = new Parameter
+            res[ParameterKeys.DeviceID] = new Parameter
             {
-                Name = "ApiAddress",
-                Required = true,
-                Type = typeof(Uri),
-                Value = new Uri("http://localhost:9000/api/v1/"),
-            };
-            res["DeviceID"] = new Parameter
-            {
-                Name = "DeviceID",
+                Name = ParameterKeys.DeviceID,
                 Required = false,
                 Type = typeof(string),
                 Value = null,
@@ -30,7 +31,7 @@ namespace FullCtrl.Plugins.Sound
             return res;
         }
 
-        public IFunction Instantiate()
+        IFunction IFunctionDescriptor.Instantiate()
         {
             return this;
         }
@@ -39,34 +40,28 @@ namespace FullCtrl.Plugins.Sound
         {
             try
             {
-                var api = new AudioControllerAPI();
-                api.BaseUri = (Uri)arguments.Parameters["ApiAddress"].Value;
-
-                string deviceID = null;
-                IParameter deviceIDParam;
-                if (arguments.Parameters.TryGetValue("DeviceID", out deviceIDParam))
-                    deviceID = (string)deviceIDParam.Value;
-
-                if (string.IsNullOrEmpty(deviceID))
+                object res = null;
+                var guid = arguments?.Parameters.GetParamValue<Guid>(ParameterKeys.DeviceID);
+                if (guid.HasValue && guid != Guid.Empty)
                 {
-                    AudioDeviceType? deviceType = null;
-                    AudioDeviceState? deviceState = null;
-                    var response = await api.GetAudioDevices(deviceType, deviceState);
-                    if (response?.Error != null)
-                        return new FunctionResult {Arguments = arguments, Error = response.Error};
-
-                    var defaultDevice = response?.Result?.FirstOrDefault(x => x.DefaultDevice);
-                    if (defaultDevice != null)
-                        deviceID = defaultDevice.ID.ToString();
+                    var device = _audioController.GetDevice(guid.Value);
+                    if (device != null)
+                    {
+                        res = device.Mute(!device.IsMuted);
+                    }
+                    else
+                    {
+                        res = -1;
+                    }
                 }
-
-                var response2 = await api.ToggleDeviceMute(deviceID);
-                if (response2?.Error != null)
-                    return new FunctionResult { Arguments = arguments, Error = response2.Error };
+                else
+                {
+                    res = -1;
+                }
                 
                 var result = new FunctionResult();
                 result.Arguments = arguments;
-                result.Result = response2?.Result;
+                result.Result = res;
                 return result;
             }
             catch (Exception ex)
@@ -76,6 +71,12 @@ namespace FullCtrl.Plugins.Sound
                 result.Error = DefaultError.FromException(ex);
                 return result;
             }
+        }
+
+
+        public static class ParameterKeys
+        {
+            public const string DeviceID = "DeviceID";
         }
 
     }

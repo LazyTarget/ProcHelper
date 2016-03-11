@@ -20,17 +20,33 @@ namespace FullCtrl
             DeviceController = new DeviceControllerAPI();
         }
 
+        [Obsolete]
         public IProcessAPI Process { get; }
+
+        [Obsolete]
         public IWinServiceAPI WinService { get; }
+
+        [Obsolete]
         public IPowershellAPI Powershell { get; }
+
+        [Obsolete]
         public IMouseAPI Mouse { get; }
+
+        [Obsolete]
         public IKeyboardAPI Keyboard { get; }
+
+        [Obsolete]
         public IAudioControllerAPI AudioController { get; }
+
+        [Obsolete]
         public IDeviceControllerAPI DeviceController { get; }
 
 
         public async Task<IEnumerable<IPlugin>> GetPlugins(string clientID)
         {
+            //var client =      // todo: get client from db
+            // todo get clients for that client
+
             var plugins = new List<IPlugin>();
             plugins.Add(new SoundFunctionPlugin());
             return plugins;
@@ -40,8 +56,6 @@ namespace FullCtrl
         {
             try
             {
-                //var client =      // todo: get client from db
-
                 var plugins = await GetPlugins(clientID);
                 var plugin = plugins.FirstOrDefault(x => x.Name == pluginName);
                 if (plugin == null)

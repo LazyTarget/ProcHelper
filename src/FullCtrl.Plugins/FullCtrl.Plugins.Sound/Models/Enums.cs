@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl.Base
+namespace FullCtrl.Plugins.Sound
 {
     [Flags]
     public enum AudioDeviceType

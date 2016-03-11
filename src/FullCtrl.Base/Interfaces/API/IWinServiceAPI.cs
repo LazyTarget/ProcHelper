@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
+    [Obsolete]
     public interface IWinServiceAPI
     {
         Task<IResponseBase<WinServiceDto>> Get(string serviceName);

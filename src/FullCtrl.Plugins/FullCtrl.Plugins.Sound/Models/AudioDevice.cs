@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using FullCtrl.Base;
 using Newtonsoft.Json;
 
-namespace FullCtrl.Base
+namespace FullCtrl.Plugins.Sound
 {
     public class AudioDevice
     {

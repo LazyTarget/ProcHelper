@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
+    [Obsolete]
     public interface IPowershellAPI
     {
         Task<IResponseBase<PowershellResponse>> RunFile(string fileName, bool redirectStandardOutput = true);

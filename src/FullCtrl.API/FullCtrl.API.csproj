@@ -33,14 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AudioSwitcher.AudioApi.CoreAudio, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AudioSwitcher.AudioApi.CoreAudio.3.0.0.1\lib\net40\AudioSwitcher.AudioApi.CoreAudio.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="CoreAudioApi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\third party\CoreAudioApi.dll</HintPath>
@@ -145,11 +137,17 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="v1\Controllers\Functions\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FullCtrl.Base\FullCtrl.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>FullCtrl.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FullCtrl.Plugins\FullCtrl.Plugins.Sound\FullCtrl.Plugins.Sound.csproj">
+      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
+      <Name>FullCtrl.Plugins.Sound</Name>
     </ProjectReference>
     <ProjectReference Include="..\FullCtrl\FullCtrl.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>

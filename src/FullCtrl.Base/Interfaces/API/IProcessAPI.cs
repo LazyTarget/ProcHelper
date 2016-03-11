@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
+    [Obsolete]
     public interface IProcessAPI
     {
         Task<IResponseBase<IProcessDto>> Get(int pid);

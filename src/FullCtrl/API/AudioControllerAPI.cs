@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FullCtrl.Base;
+using FullCtrl.Plugins.Sound;
 using RestSharp;
 
 namespace FullCtrl

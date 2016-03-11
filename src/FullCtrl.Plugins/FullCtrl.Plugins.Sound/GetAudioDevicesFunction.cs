@@ -1,35 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AudioSwitcher.AudioApi.CoreAudio;
 using FullCtrl.Base;
+using Lux;
+using Lux.Interfaces;
 
 namespace FullCtrl.Plugins.Sound
 {
     public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction
     {
+        private CoreAudioController _audioController = new CoreAudioController();
+        private ModelConverter _modelConverter = new ModelConverter();
+        private IConverter _converter = new Converter();
+
+        public GetAudioDevicesFunction()
+        {
+            
+        }
+
         public string Name => nameof(GetAudioDevicesFunction);
-        public bool CanExecuteRemotely => true;
 
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res["ApiAddress"] = new Parameter
+            res[ParameterKeys.DeviceType] = new Parameter
             {
-                Name = "ApiAddress",
-                Required = true,
-                Type = typeof(Uri),
-                Value = new Uri("http://localhost:9000/api/v1/"),
-            };
-            res["DeviceType"] = new Parameter
-            {
-                Name = "DeviceType",
+                Name = ParameterKeys.DeviceType,
                 Required = false,
                 Type = typeof(AudioDeviceType?),
                 Value = null,
             };
-            res["DeviceState"] = new Parameter
+            res[ParameterKeys.DeviceState] = new Parameter
             {
-                Name = "DeviceState",
+                Name = ParameterKeys.DeviceState,
                 Required = false,
                 Type = typeof(AudioDeviceState?),
                 Value = null,
@@ -37,7 +42,7 @@ namespace FullCtrl.Plugins.Sound
             return res;
         }
 
-        public IFunction Instantiate()
+        IFunction IFunctionDescriptor.Instantiate()
         {
             return this;
         }
@@ -46,25 +51,42 @@ namespace FullCtrl.Plugins.Sound
         {
             try
             {
-                var api = new AudioControllerAPI();
-                api.BaseUri = (Uri)arguments.Parameters["ApiAddress"].Value;
+                //AudioDeviceType? deviceType = _converter.Convert<AudioDeviceType?>(arguments?.Parameters?["DeviceType"]?.Value);
+                //AudioDeviceState? deviceState = _converter.Convert<AudioDeviceState?>(arguments?.Parameters?["DeviceState"]?.Value);
 
-                AudioDeviceType? deviceType = null;
-                AudioDeviceState? deviceState = null;
+                //AudioSwitcher.AudioApi.DeviceType? deviceType2 = deviceType.HasValue
+                //    ? _converter.Convert<AudioSwitcher.AudioApi.DeviceType?>((int) deviceType.Value)
+                //    : null;
+                //AudioSwitcher.AudioApi.DeviceState? deviceState2 = deviceState.HasValue
+                //    ? _converter.Convert<AudioSwitcher.AudioApi.DeviceState?>((int)deviceState.Value)
+                //    : null;
 
-                IParameter param;
-                if (arguments.Parameters.TryGetValue("DeviceType", out param))
-                    deviceType = (AudioDeviceType?) param.Value;
-                if (arguments.Parameters.TryGetValue("DeviceState", out param))
-                    deviceState = (AudioDeviceState?)param.Value;
+                AudioSwitcher.AudioApi.DeviceType? deviceType2 = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType);
+                AudioSwitcher.AudioApi.DeviceState? deviceState2 = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceType);
 
-                var response = await api.GetAudioDevices(deviceType, deviceState);
-                if (response?.Error != null)
-                    return new FunctionResult { Arguments = arguments, Error = response.Error };
-                
+
+                IEnumerable<CoreAudioDevice> devices;
+                if (deviceType2.HasValue && deviceState2.HasValue)
+                {
+                    devices = _audioController.GetDevices(deviceType2.Value, deviceState2.Value);
+                }
+                else if (deviceType2.HasValue)
+                {
+                    devices = _audioController.GetDevices(deviceType2.Value);
+                }
+                else if (deviceState2.HasValue)
+                {
+                    devices = _audioController.GetDevices(deviceState2.Value);
+                }
+                else
+                {
+                    devices = _audioController.GetDevices();
+                }
+                var res = devices?.Select(_modelConverter.FromAudioDevice).Where(x => x != null).ToList();
+
                 var result = new FunctionResult();
                 result.Arguments = arguments;
-                result.Result = response?.Result;
+                result.Result = res;
                 return result;
             }
             catch (Exception ex)
@@ -74,6 +96,13 @@ namespace FullCtrl.Plugins.Sound
                 result.Error = DefaultError.FromException(ex);
                 return result;
             }
+        }
+
+
+        public static class ParameterKeys
+        {
+            public const string DeviceType = "DeviceType";
+            public const string DeviceState = "DeviceState";
         }
 
     }

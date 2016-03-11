@@ -15,6 +15,6 @@ namespace FullCtrl.Base
 
 
         Task<IEnumerable<IPlugin>> GetPlugins(string clientID);
-        Task<IFunctionResult> ExecuteFunction(string clientID, string pluginName, IFunctionArguments arguments);
+        Task<IFunctionResult> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments);
     }
 }

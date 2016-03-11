@@ -8,6 +8,5 @@
         }
 
         public IParameterCollection Parameters { get; set; }
-        public IRemoteConfiguration RemoteConfig { get; set; }
     }
 }

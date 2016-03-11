@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
+    [Obsolete]
     public interface IKeyboardAPI
     {
         Task<IResponseBase<KeyResponse>> IsKeyDown(IsKeyDown request);

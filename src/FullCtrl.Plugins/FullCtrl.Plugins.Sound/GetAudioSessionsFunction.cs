@@ -22,9 +22,9 @@ namespace FullCtrl.Plugins.Sound
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res["DeviceID"] = new Parameter
+            res[ParameterKeys.DeviceID] = new Parameter
             {
-                Name = "DeviceID",
+                Name = ParameterKeys.DeviceID,
                 Required = false,
                 Type = typeof(string),
                 Value = null,
@@ -32,7 +32,7 @@ namespace FullCtrl.Plugins.Sound
             return res;
         }
 
-        public IFunction Instantiate()
+        IFunction IFunctionDescriptor.Instantiate()
         {
             return this;
         }
@@ -41,7 +41,7 @@ namespace FullCtrl.Plugins.Sound
         {
             try
             {
-                var deviceID = (string)arguments?.Parameters?["DeviceID"]?.Value;
+                var deviceID = arguments?.Parameters.GetParamValue<string>(ParameterKeys.DeviceID);
 
                 Guid guid;
                 CoreAudioDevice device = null;
@@ -77,6 +77,12 @@ namespace FullCtrl.Plugins.Sound
                 result.Error = DefaultError.FromException(ex);
                 return result;
             }
+        }
+
+
+        public static class ParameterKeys
+        {
+            public const string DeviceID = "DeviceID";
         }
 
     }

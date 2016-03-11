@@ -11,6 +11,7 @@
     <AssemblyName>FullCtrl.Base</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +33,14 @@
   <ItemGroup>
     <Reference Include="CoreAudioApi">
       <HintPath>..\third party\CoreAudioApi.dll</HintPath>
+    </Reference>
+    <Reference Include="Lux, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lux.1.0.1\lib\net46\Lux.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -95,10 +104,6 @@
     <Compile Include="Interfaces\IResponseBase.cs" />
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
-    <Compile Include="Models\AudioController\AudioDevice.cs" />
-    <Compile Include="Models\AudioController\AudioSession.cs" />
-    <Compile Include="Models\AudioController\Enums.cs" />
-    <Compile Include="Models\AudioController\GetSessionsRequest.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
     <Compile Include="Models\InputHelper\IsKeyUp.cs" />
     <Compile Include="Models\InputHelper\KeyDownRequest.cs" />
@@ -142,7 +147,9 @@
     <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\AudioController\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
