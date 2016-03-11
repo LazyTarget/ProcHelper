@@ -63,14 +63,17 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="FunctionResult.cs" />
+    <Compile Include="Models\DefaultError.cs" />
+    <Compile Include="Models\DefaultLink.cs" />
+    <Compile Include="Models\DefaultResponseBase.cs" />
+    <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Interfaces\API\IDeviceControllerAPI.cs" />
     <Compile Include="Interfaces\API\IAudioControllerAPI.cs" />
     <Compile Include="Interfaces\API\IFullCtrlAPI.cs" />
     <Compile Include="Interfaces\API\IPowershellAPI.cs" />
     <Compile Include="Interfaces\API\IWinServiceAPI.cs" />
     <Compile Include="Interfaces\API\IProcessAPI.cs" />
-    <Compile Include="FunctionArguments.cs" />
+    <Compile Include="Models\FunctionArguments.cs" />
     <Compile Include="Interfaces\IAudioController.cs" />
     <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />
@@ -135,8 +138,8 @@
     <Compile Include="Models\WinServiceHelper\StopWinServiceResponse.cs" />
     <Compile Include="Models\WinServiceHelper\WinServiceDto.cs" />
     <Compile Include="Models\WinServiceHelper\WinServicesResponse.cs" />
-    <Compile Include="Parameter.cs" />
-    <Compile Include="ParameterCollection.cs" />
+    <Compile Include="Models\Parameter.cs" />
+    <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

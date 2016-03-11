@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FullCtrl.Base;
-using FullCtrl.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RestSharp;

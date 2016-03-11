@@ -1,26 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AudioSwitcher.AudioApi.CoreAudio;
 using FullCtrl.Base;
-using FullCtrl.Internal;
 
 namespace FullCtrl.Plugins.Sound
 {
     public class GetAudioSessionsFunction : IFunctionDescriptor, IFunction
     {
+        private CoreAudioController _audioController = new CoreAudioController();
+        private ModelConverter _modelConverter = new ModelConverter();
+
+        public GetAudioSessionsFunction()
+        {
+            
+        }
+
         public string Name => nameof(GetAudioSessionsFunction);
-        public bool CanExecuteRemotely => true;
 
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res["ApiAddress"] = new Parameter
-            {
-                Name = "ApiAddress",
-                Required = true,
-                Type = typeof(Uri),
-                Value = new Uri("http://localhost:9000/api/v1/"),
-            };
             res["DeviceID"] = new Parameter
             {
                 Name = "DeviceID",
@@ -35,26 +36,38 @@ namespace FullCtrl.Plugins.Sound
         {
             return this;
         }
-        
+
         public async Task<IFunctionResult> Execute(IFunctionArguments arguments)
         {
             try
             {
-                var api = new AudioControllerAPI();
-                api.BaseUri = (Uri)arguments.Parameters["ApiAddress"].Value;
+                var deviceID = (string)arguments?.Parameters?["DeviceID"]?.Value;
 
-                string deviceID = null;
-                IParameter param;
-                if (arguments.Parameters.TryGetValue("DeviceID", out param))
-                    deviceID = (string)param.Value;
+                Guid guid;
+                CoreAudioDevice device = null;
+                if (string.IsNullOrEmpty(deviceID))
+                {
+                    device = _audioController.DefaultPlaybackDevice;
+                }
+                else if (Guid.TryParse(deviceID, out guid))
+                {
+                    device = _audioController.GetDevice(guid);
+                }
 
-                var response = await api.GetAudioSessions(deviceID);
-                if (response?.Error != null)
-                    return new FunctionResult { Arguments = arguments, Error = response.Error };
-                
-                var result = new FunctionResult();
-                result.Arguments = arguments;
-                result.Result = response?.Result;
+
+                if (device == null)
+                {
+                    throw new Exception("Device not found");
+                }
+
+                var sessions = device?.SessionController?.All();
+                var res = sessions?.Select(_modelConverter.FromAudioControllerState).Where(x => x != null).ToList();
+
+                var result = new FunctionResult
+                {
+                    Arguments = arguments,
+                    Result = res,
+                };
                 return result;
             }
             catch (Exception ex)

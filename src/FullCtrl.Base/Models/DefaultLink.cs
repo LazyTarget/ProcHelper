@@ -1,8 +1,7 @@
 ﻿using System;
-using FullCtrl.Base;
 using Newtonsoft.Json;
 
-namespace FullCtrl.Internal
+namespace FullCtrl.Base
 {
     public class DefaultLink : ILink
     {

@@ -1,7 +1,6 @@
 ﻿using System;
-using FullCtrl.Base;
 
-namespace FullCtrl.Internal
+namespace FullCtrl.Base
 {
     public class DefaultError : IError
     {

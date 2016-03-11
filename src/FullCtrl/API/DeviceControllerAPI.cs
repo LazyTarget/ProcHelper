@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using FullCtrl.Base;
-using FullCtrl.Internal;
 using RestSharp;
 
 namespace FullCtrl

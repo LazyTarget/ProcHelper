@@ -1,4 +1,7 @@
-﻿namespace FullCtrl.Base
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace FullCtrl.Base
 {
     public interface IFullCtrlAPI
     {
@@ -8,5 +11,10 @@
         IMouseAPI Mouse { get; }
         IKeyboardAPI Keyboard { get; }
         IAudioControllerAPI AudioController { get; }
+        IDeviceControllerAPI DeviceController { get; }
+
+
+        Task<IEnumerable<IPlugin>> GetPlugins(string clientID);
+        Task<IFunctionResult> ExecuteFunction(string clientID, string pluginName, IFunctionArguments arguments);
     }
 }
