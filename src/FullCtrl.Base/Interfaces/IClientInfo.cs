@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
@@ -6,5 +8,7 @@ namespace FullCtrl.Base
     {
         string ClientID { get; }
         Uri ApiAddress { get; }
+
+        Task<IEnumerable<IPlugin>> GetPlugins();
     }
 }

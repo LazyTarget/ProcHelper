@@ -7,6 +7,7 @@ using FullCtrl.Plugins.Sound;
 
 namespace FullCtrl
 {
+    [Obsolete]
     public class FullCtrlAPI : IFullCtrlAPI
     {
         public FullCtrlAPI()
@@ -56,6 +57,7 @@ namespace FullCtrl
         [Obsolete]
         public async Task<IFunctionResult> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
         {
+            throw new NotSupportedException();
             try
             {
                 var plugins = await GetPlugins(clientID);
@@ -76,8 +78,9 @@ namespace FullCtrl
                     }
 
                     var function = functionDescriptor.Instantiate();
-                    var result = await function.Execute(arguments);
-                    return result;
+                    //var result = await function.Execute(arguments);
+                    //return result;
+                    return null;
                 }
                 else
                 {

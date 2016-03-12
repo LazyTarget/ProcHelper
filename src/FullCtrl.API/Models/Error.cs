@@ -23,6 +23,13 @@ namespace FullCtrl.API.Models
 
         public Exception Exception { get; private set; }
 
+        public void Throw()
+        {
+            if (Exception != null)
+                throw Exception;
+            throw new Exception(ErrorMessage);
+        }
+
 
         public static Error FromException(Exception exception)
         {

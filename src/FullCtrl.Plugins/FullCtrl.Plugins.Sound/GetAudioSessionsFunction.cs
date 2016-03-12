@@ -37,7 +37,7 @@ namespace FullCtrl.Plugins.Sound
             return this;
         }
 
-        public async Task<IFunctionResult> Execute(IFunctionArguments arguments)
+        public async Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {

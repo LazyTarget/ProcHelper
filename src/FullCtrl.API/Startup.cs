@@ -26,8 +26,16 @@ namespace FullCtrl.API
         public void ConfigureWebApi(IAppBuilder app)
         {
             var config = new HttpConfiguration();
+            config.Properties["InstanceID"] = Guid.NewGuid();
+            config.Properties["ApiRootAddress"] = new Uri($"http://{Environment.MachineName}:9000/api");
 
-            
+            // todo: read value from ApiService.GetStartOptions(..)
+            if (app.Properties.ContainsKey("host.Addresses"))
+            {
+                var addrs = app.Properties["host.Addresses"];
+            }
+
+
             var container = new UnityAdaptorContainer();
             container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
             container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
@@ -56,7 +64,7 @@ namespace FullCtrl.API
             config.Filters.Add(new DebugActionFilter());
 
             config.MapHttpAttributeRoutes();
-
+            
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
             //    routeTemplate: "api/{version}/{controller}/{id}",

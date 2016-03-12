@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Routing;
 using FullCtrl.API.Interfaces;
 using FullCtrl.API.Models;
 using FullCtrl.API.v1.Models;
@@ -25,12 +27,27 @@ namespace FullCtrl.API.v1.Controllers
         }
 
 
+        protected IClientInfo LoadClientInfo()
+        {
+            var clientInfo = new ClientInfo();
+            clientInfo.ClientID = Configuration.Properties["InstanceID"].ToString();
+
+            var rootAddress = (Uri) Configuration.Properties["ApiRootAddress"];
+            clientInfo.ApiAddress = new Uri(rootAddress, "/v1/");
+            return clientInfo;
+        }
+
 
         public async Task<IFunctionResult> ExecuteFunction(IFunction function, IFunctionArguments arguments)
         {
             try
             {
-                var result = await function.Execute(arguments);
+                IExecutionContext context = new ExecutionContext
+                {
+                    ClientInfo = LoadClientInfo(),
+                };
+
+                var result = await function.Execute(context, arguments);
                 return result;
             }
             catch (Exception ex)

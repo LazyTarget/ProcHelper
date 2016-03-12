@@ -47,10 +47,18 @@ namespace FullCtrl.Plugins.Sound
             return this;
         }
         
-        public async Task<IFunctionResult> Execute(IFunctionArguments arguments)
+        public async Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
+#if DEBUG
+                if (context?.ClientInfo != null)
+                {
+                    var plugs = await context.ClientInfo.GetPlugins();
+                    var l = plugs?.ToList();
+                }
+#endif
+
                 var deviceType = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType);
                 var deviceState = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceState);
 

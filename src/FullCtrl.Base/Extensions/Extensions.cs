@@ -102,5 +102,40 @@ namespace FullCtrl.Base
             return result;
         }
 
+
+
+        public static void ThrowIfNullResponse(this IResponseBase response)
+        {
+            if (response == null)
+                throw new Exception("Request resulted in a null response");
+        }
+
+        public static void ThrowIfNullResult(this IResponseBase response)
+        {
+            if (response?.Result == null)
+                throw new Exception("Request resulted in a null response result");
+        }
+
+        public static void ThrowIfError(this IResponseBase response)
+        {
+            if (response?.Error != null)
+                response.Error.Throw();
+        }
+
+        public static void EnsureSuccess(this IResponseBase response)
+        {
+            try
+            {
+                response.ThrowIfError();
+                response.ThrowIfNullResponse();
+                response.ThrowIfNullResult();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
     }
 }

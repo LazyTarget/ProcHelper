@@ -4,5 +4,6 @@
     {
         string ErrorMessage { get; }
         bool Handled { get; set; }
+        void Throw();
     }
 }

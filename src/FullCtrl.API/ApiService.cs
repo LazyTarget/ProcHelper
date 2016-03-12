@@ -20,6 +20,9 @@ namespace FullCtrl.API
             var options = new StartOptions();
             options.Urls.Add("http://+:9000");
             options.Urls.Add("http://localhost:9000");
+            options.Urls.Add($"http://{Environment.MachineName}:9000");
+
+            options.Settings["ApiRootAddress"] = new Uri($"http://{Environment.MachineName}:9000/api").ToString();
             return options;
         }
 

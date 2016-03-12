@@ -5,6 +5,6 @@ namespace FullCtrl.Base
 {
     public interface IFunction : IDisposable
     {
-        Task<IFunctionResult> Execute(IFunctionArguments arguments);
+        Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments);
     }
 }

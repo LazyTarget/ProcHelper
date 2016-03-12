@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using FullCtrl.API.Models;
 using FullCtrl.Base;
 
 namespace FullCtrl.API.v1.Controllers
 {
     public class RemoteController : BaseController
     {
-        protected v1.FullCtrlAPI GetLocalApi(string clientID)
+        protected IClientInfo LoadClientInfo(string clientID)
         {
             // todo: get client info from db?
             IClientInfo clientInfo = new ClientInfo
@@ -17,12 +18,14 @@ namespace FullCtrl.API.v1.Controllers
                 ClientID = clientID,
                 ApiAddress = new Uri($"http://{Environment.MachineName}:9000/api/v1/"),
             };
+            return clientInfo;
+        }
 
-            var localApi = new v1.FullCtrlAPI();
-            if (clientInfo?.ApiAddress != null)
-                localApi.BaseUri = clientInfo.ApiAddress;
-            else
-                throw new InvalidOperationException($"No api address defined for client '{clientID}'");
+
+        protected v1.FullCtrlAPI GetLocalApi(string clientID)
+        {
+            var clientInfo = LoadClientInfo(clientID);
+            var localApi = FullCtrlAPI.FromClientInfo(clientInfo);
             return localApi;
         }
 

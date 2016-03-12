@@ -21,7 +21,7 @@ namespace FullCtrl.API.v1
 
         public IFunction Instantiate()
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
     }
 }

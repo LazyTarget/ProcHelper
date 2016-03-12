@@ -85,7 +85,7 @@ namespace FullCtrl.API.v1.Controllers
 
                     
                     var function = functionDescriptor.Instantiate();
-                    var result = await function.Execute(arg);
+                    var result = await ExecuteFunction(function, arg);
 
                     var response = CreateResponse(result);
                     return response;

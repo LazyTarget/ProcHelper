@@ -15,6 +15,13 @@ namespace FullCtrl.Base
 
         public Exception Exception { get; set; }
 
+        public void Throw()
+        {
+            if (Exception != null)
+                throw Exception;
+            throw new Exception(ErrorMessage);
+        }
+
 
         public static DefaultError FromException(Exception exception)
         {
