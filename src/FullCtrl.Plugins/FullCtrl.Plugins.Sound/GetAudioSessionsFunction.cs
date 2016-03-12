@@ -85,5 +85,10 @@ namespace FullCtrl.Plugins.Sound
             public const string DeviceID = "DeviceID";
         }
 
+        public void Dispose()
+        {
+            _audioController.Dispose();
+        }
+
     }
 }

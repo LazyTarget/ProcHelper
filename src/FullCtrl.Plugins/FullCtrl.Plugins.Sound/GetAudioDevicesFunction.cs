@@ -95,5 +95,9 @@ namespace FullCtrl.Plugins.Sound
             public const string DeviceState = "DeviceState";
         }
 
+        public void Dispose()
+        {
+            _audioController.Dispose();
+        }
     }
 }
