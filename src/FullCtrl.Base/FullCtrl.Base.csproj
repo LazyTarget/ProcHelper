@@ -72,6 +72,8 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Interfaces\IClientInfo.cs" />
+    <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\DefaultError.cs" />
     <Compile Include="Models\DefaultLink.cs" />
     <Compile Include="Models\DefaultResponseBase.cs" />

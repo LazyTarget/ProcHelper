@@ -11,6 +11,8 @@ namespace FullCtrl.Base
 
         public string ErrorMessage { get; set; }
 
+        public bool Handled { get; set; }
+
         public Exception Exception { get; set; }
 
 

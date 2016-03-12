@@ -34,6 +34,11 @@ namespace FullCtrl
                 NullValueHandling = NullValueHandling.Include,
                 DefaultValueHandling = DefaultValueHandling.Include,
             };
+            _serializer.Converters.Add(new API.v1.TypeInfoJsonConverter());
+            _serializer.Converters.Add(new API.v1.ParameterConverter());
+            _serializer.Converters.Add(new API.v1.ParameterCollectionConverter());
+            _serializer.Converters.Add(new API.v1.FunctionDescriptorConverter());
+            _serializer.Converters.Add(new API.v1.FunctionPluginConverter());
             _serializer.Converters.Add(new StringEnumConverter());
             _serializer.Converters.Add(new IoCJsonConverter(_container));
             _serializer.Converters.Add(new BitmapConverter());
@@ -47,6 +52,17 @@ namespace FullCtrl
         {
             ContentType = "application/json";
             _serializer = serializer;
+        }
+
+        public JsonSerializerSettings GetSerializerSettings()
+        {
+            var settings = new JsonSerializerSettings();
+            settings.Converters = _serializer.Converters;
+            settings.MissingMemberHandling = _serializer.MissingMemberHandling;
+            settings.NullValueHandling = _serializer.NullValueHandling;
+            settings.DefaultValueHandling = _serializer.DefaultValueHandling;
+            settings.ContractResolver = _serializer.ContractResolver;
+            return settings;
         }
 
         public IContainer Container

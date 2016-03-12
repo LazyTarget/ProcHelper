@@ -38,25 +38,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var p in function.ParameterCollection)
+                            @if (function.ParameterCollection != null)
                             {
-                                var param = p.Value;
-                                <tr class="@(param.Required ? "Required" : "")">
-                                    <td>@param.Name</td>
-                                    <td>@param.Required</td>
-                                    <td>@param.Type</td>
+                                foreach (var p in function.ParameterCollection)
+                                {
+                                    var param = p.Value;
+                                    <tr class="@(param.Required ? "Required" : "")">
+                                        <td>@param.Name</td>
+                                        <td>@param.Required</td>
+                                        <td>@param.Type</td>
 
-                                    <td>
-                                        @if (param.Type == typeof (bool))
-                                        {
-                                            @Html.CheckBox("Param_" + param.Name, param.Value is bool && (bool) param.Value)
-                                        }
-                                        else
-                                        {
-                                            @Html.TextBox("Param_" + param.Name, param.Value)
-                                        }
-                                    </td>
-                                </tr>
+                                        <td>
+                                            @if (param.Type == typeof(bool))
+                                            {
+                                                @Html.CheckBox("Param_" + param.Name, param.Value is bool && (bool)param.Value)
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBox("Param_" + param.Name, param.Value)
+                                            }
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>

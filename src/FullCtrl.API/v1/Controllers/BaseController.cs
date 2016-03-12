@@ -63,9 +63,23 @@ namespace FullCtrl.API.v1.Controllers
         }
 
 
-        public ResponseBase<TResult> CreateResponse<TResult>(TResult result = default(TResult))
+        public ResponseBase<TResult> CreateResponse<TResult>(TResult result = default(TResult), IError error = null)
         {
-            var response = ResponseBase.Create<TResult>(Request, result);
+            var response = ResponseBase.Create<TResult>(Request, result, error);
+            return response;
+        }
+
+
+        public ResponseBase<object> CreateError(IError error)
+        {
+            var response = CreateError<object>(error);
+            return response;
+        }
+
+        public ResponseBase<TResult> CreateError<TResult>(IError error)
+        {
+            var response = ResponseBase.Create<TResult>(Request);
+            response.Error = error;
             return response;
         }
 

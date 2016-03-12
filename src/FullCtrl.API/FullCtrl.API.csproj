@@ -103,18 +103,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\DebugActionFilter.cs" />
+    <Compile Include="Data\IPluginStore.cs" />
+    <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
-    <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
+    <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Models\Error.cs" />
     <Compile Include="v1\Controllers\AudioController.cs" />
     <Compile Include="v1\Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
     <Compile Include="v1\Controllers\DeviceController.cs" />
     <Compile Include="v1\Controllers\KeyboardController.cs" />
+    <Compile Include="v1\Controllers\LocalController.cs" />
     <Compile Include="v1\Controllers\MouseController.cs" />
+    <Compile Include="v1\Controllers\RemoteController.cs" />
     <Compile Include="v1\Controllers\ResourceMonitorController.cs" />
+    <Compile Include="v1\Controllers\ServerController.cs" />
     <Compile Include="v1\Controllers\WinServiceController.cs" />
     <Compile Include="v1\Controllers\PowershellController.cs" />
     <Compile Include="v1\Controllers\ProcessController.cs" />

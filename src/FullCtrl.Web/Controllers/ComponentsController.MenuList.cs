@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FullCtrl.Plugins.Sound;
 using FullCtrl.Web.Models;
 
 namespace FullCtrl.Web.Controllers
@@ -104,7 +103,7 @@ namespace FullCtrl.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Sound",
-                Href = Url.Action("Plugin", "Function", new { pluginName = nameof(SoundFunctionPlugin) }),
+                Href = Url.Action("Plugin", "Function", new { pluginName = "SoundFunctionPlugin" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-volume-up",
             });

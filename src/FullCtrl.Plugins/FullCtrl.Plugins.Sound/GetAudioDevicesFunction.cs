@@ -51,32 +51,22 @@ namespace FullCtrl.Plugins.Sound
         {
             try
             {
-                //AudioDeviceType? deviceType = _converter.Convert<AudioDeviceType?>(arguments?.Parameters?["DeviceType"]?.Value);
-                //AudioDeviceState? deviceState = _converter.Convert<AudioDeviceState?>(arguments?.Parameters?["DeviceState"]?.Value);
-
-                //AudioSwitcher.AudioApi.DeviceType? deviceType2 = deviceType.HasValue
-                //    ? _converter.Convert<AudioSwitcher.AudioApi.DeviceType?>((int) deviceType.Value)
-                //    : null;
-                //AudioSwitcher.AudioApi.DeviceState? deviceState2 = deviceState.HasValue
-                //    ? _converter.Convert<AudioSwitcher.AudioApi.DeviceState?>((int)deviceState.Value)
-                //    : null;
-
-                AudioSwitcher.AudioApi.DeviceType? deviceType2 = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType);
-                AudioSwitcher.AudioApi.DeviceState? deviceState2 = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceType);
+                var deviceType = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType);
+                var deviceState = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceState);
 
 
                 IEnumerable<CoreAudioDevice> devices;
-                if (deviceType2.HasValue && deviceState2.HasValue)
+                if (deviceType.HasValue && deviceState.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceType2.Value, deviceState2.Value);
+                    devices = _audioController.GetDevices(deviceType.Value, deviceState.Value);
                 }
-                else if (deviceType2.HasValue)
+                else if (deviceType.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceType2.Value);
+                    devices = _audioController.GetDevices(deviceType.Value);
                 }
-                else if (deviceState2.HasValue)
+                else if (deviceState.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceState2.Value);
+                    devices = _audioController.GetDevices(deviceState.Value);
                 }
                 else
                 {

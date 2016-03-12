@@ -42,6 +42,7 @@ namespace FullCtrl
         public IDeviceControllerAPI DeviceController { get; }
 
 
+        [Obsolete]
         public async Task<IEnumerable<IPlugin>> GetPlugins(string clientID)
         {
             //var client =      // todo: get client from db
@@ -52,6 +53,7 @@ namespace FullCtrl
             return plugins;
         }
 
+        [Obsolete]
         public async Task<IFunctionResult> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
         {
             try

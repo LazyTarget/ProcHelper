@@ -19,6 +19,8 @@ namespace FullCtrl.API.Models
 
         public string ErrorMessage { get; private set; }
 
+        public bool Handled { get; set; }
+
         public Exception Exception { get; private set; }
 
 
