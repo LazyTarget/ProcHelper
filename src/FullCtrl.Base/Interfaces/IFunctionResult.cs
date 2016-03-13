@@ -1,9 +1,9 @@
 ﻿namespace FullCtrl.Base
 {
-    public interface IFunctionResult
+    public interface IFunctionResult : IResponseBase
     {
+        //object Result { get; }
+        //IError Error { get; }
         IFunctionArguments Arguments { get; }
-        IError Error { get; }
-        object Result { get; }
     }
 }

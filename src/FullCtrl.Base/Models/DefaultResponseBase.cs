@@ -47,14 +47,14 @@ namespace FullCtrl.Base
         }
     }
 
-    public class DefaultResponseBase<TResult> : IResponseBase<TResult>
+    public class DefaultResponseBase<TResult> : IResponseBase<TResult>, IResponseMetadata
     {
         public DefaultResponseBase()
         {
             Links = new Dictionary<string, ILink>();
-        } 
+        }
 
-        public IDictionary<string, ILink> Links { get; }
+        public IDictionary<string, ILink> Links { get; set; }
         public IError Error { get; set; }
         public TResult Result { get; set; }
 

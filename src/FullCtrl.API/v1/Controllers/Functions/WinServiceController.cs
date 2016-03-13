@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
-using FullCtrl.API.Interfaces;
 using FullCtrl.API.v1.Models;
 using FullCtrl.Base;
 
@@ -19,12 +17,16 @@ namespace FullCtrl.API.v1.Controllers
             if (service == null || string.IsNullOrWhiteSpace(serviceName))
                 return;
 
-            var rootUri = response.Links["root"];
-            response.Links["get-service"] =         Link.FromUri(new Uri(rootUri.Href + "/winservice/get/" + serviceName));
-            response.Links["start-service"] =       Link.FromUri(new Uri(rootUri.Href + "/winservice/start/" + serviceName));
-            response.Links["pause-service"] =       Link.FromUri(new Uri(rootUri.Href + "/winservice/pause/" + serviceName));
-            response.Links["continue-service"] =    Link.FromUri(new Uri(rootUri.Href + "/winservice/continue/" + serviceName));
-            response.Links["stop-service"] =        Link.FromUri(new Uri(rootUri.Href + "/winservice/stop/" + serviceName));
+            var metadata = response as IResponseMetadata;
+            if (metadata == null)
+                return;
+
+            var rootUri = metadata.Links["root"];
+            metadata.Links["get-service"] =         DefaultLink.FromUri(new Uri(rootUri.Href + "/winservice/get/" + serviceName));
+            metadata.Links["start-service"] =       DefaultLink.FromUri(new Uri(rootUri.Href + "/winservice/start/" + serviceName));
+            metadata.Links["pause-service"] =       DefaultLink.FromUri(new Uri(rootUri.Href + "/winservice/pause/" + serviceName));
+            metadata.Links["continue-service"] =    DefaultLink.FromUri(new Uri(rootUri.Href + "/winservice/continue/" + serviceName));
+            metadata.Links["stop-service"] =        DefaultLink.FromUri(new Uri(rootUri.Href + "/winservice/stop/" + serviceName));
         }
 
 

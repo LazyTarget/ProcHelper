@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FullCtrl.Base;
 using RestSharp;
-using RestSharp.Serializers;
 
 namespace FullCtrl.API.v1
 {
@@ -67,6 +66,31 @@ namespace FullCtrl.API.v1
                 var client = GetClient();
                 var httpResponse = await client.ExecuteTaskAsync<IResponseBase<TResult>>(request);
                 response = httpResponse.Data;
+
+                var isSuccessCode = ((int) httpResponse.StatusCode >= 200) &&
+                                    ((int) httpResponse.StatusCode <= 299);
+                if (httpResponse.ErrorException != null)
+                {
+                    var result = httpResponse.Data != null ? httpResponse.Data.Result : default(TResult);
+                    var error = DefaultError.FromException(httpResponse.ErrorException);
+                    if (httpResponse.ErrorMessage != null)
+                        error.ErrorMessage = httpResponse.ErrorMessage;
+                    response = DefaultResponseBase.Create(result, error);
+                }
+                else if (!isSuccessCode)
+                {
+                    var result = httpResponse.Data != null ? httpResponse.Data.Result : default(TResult);
+                    var error = new DefaultError
+                    {
+                        ErrorMessage = $"Rest request [{httpResponse.Request.Method} \"{httpResponse.ResponseUri}\" " +
+                                       $"resulted in an error status code: {(int) httpResponse.StatusCode} \"{httpResponse.StatusDescription}\"",
+                    };
+                    response = DefaultResponseBase.Create(result, error);
+                }
+                else
+                {
+
+                }
             }
             catch (Exception ex)
             {

@@ -12,8 +12,8 @@ namespace FullCtrl.API.v1.Models
             var serverRootUri = new Uri(request.RequestUri.GetLeftPart(UriPartial.Authority));
 
             var response = new ResponseBase<TResult>();
-            response.Links["self"] = Link.FromUri(request.RequestUri);
-            response.Links["root"] = Link.FromUri(new Uri(serverRootUri, "api/v1"));
+            response.Links["self"] = DefaultLink.FromUri(request.RequestUri);
+            response.Links["root"] = DefaultLink.FromUri(new Uri(serverRootUri, "api/v1"));
             return response;
         }
 
@@ -55,14 +55,14 @@ namespace FullCtrl.API.v1.Models
     }
 
 
-    public class ResponseBase<TResult> : IResponseBase<TResult>
+    public class ResponseBase<TResult> : IResponseBase<TResult>, IResponseMetadata
     {
         public ResponseBase()
         {
             Links = new Dictionary<string, ILink>();
         }
 
-        public IDictionary<string, ILink> Links { get; private set; }
+        public IDictionary<string, ILink> Links { get; set; }
 
         public IError Error { get; set; }
 

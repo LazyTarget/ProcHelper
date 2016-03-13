@@ -74,6 +74,7 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
+    <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Models\DefaultError.cs" />
     <Compile Include="Models\DefaultLink.cs" />
     <Compile Include="Models\DefaultResponseBase.cs" />

@@ -17,5 +17,16 @@ namespace FullCtrl.Base
             var uri = new Uri(Href);
             return uri;
         }
+
+
+        public static DefaultLink FromUri(Uri uri)
+        {
+            var link = new DefaultLink
+            {
+                Href = uri.AbsoluteUri,
+                Relative = uri.AbsolutePath,
+            };
+            return link;
+        }
     }
 }

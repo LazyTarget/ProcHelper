@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace FullCtrl.Base
+﻿namespace FullCtrl.Base
 {
     public interface IResponseBase
     {
-        IDictionary<string, ILink> Links { get; }
-
-        IError Error { get; }
-
         object Result { get; }
+        IError Error { get; }
     }
 
     public interface IResponseBase<TResult> : IResponseBase
