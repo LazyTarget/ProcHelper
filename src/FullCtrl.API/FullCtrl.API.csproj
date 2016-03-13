@@ -49,8 +49,8 @@
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lux.1.0.0\lib\net46\Lux.dll</HintPath>
+    <Reference Include="Lux, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lux.1.0.2\lib\net45\Lux.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -105,8 +105,6 @@
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Data\IPluginStore.cs" />
     <Compile Include="Data\PluginLoader.cs" />
-    <Compile Include="Extensions\ControllerExtensions.cs" />
-    <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Models\ClientInfo.cs" />
