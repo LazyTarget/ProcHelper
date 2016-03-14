@@ -24,24 +24,10 @@ namespace FullCtrl
         public CustomJsonSerializer()
         {
             ContentType = "application/json";
-
-            //_container = new Container();
-            _container = new UnityAdaptorContainer();
-
-            _serializer = new Newtonsoft.Json.JsonSerializer
-            {
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                NullValueHandling = NullValueHandling.Include,
-                DefaultValueHandling = DefaultValueHandling.Include,
-            };
-            _serializer.Converters.Add(new API.v1.TypeInfoJsonConverter());
-            _serializer.Converters.Add(new API.v1.ParameterConverter());
-            _serializer.Converters.Add(new API.v1.ParameterCollectionConverter());
-            _serializer.Converters.Add(new API.v1.FunctionDescriptorConverter());
-            _serializer.Converters.Add(new API.v1.FunctionPluginConverter());
-            _serializer.Converters.Add(new StringEnumConverter());
-            _serializer.Converters.Add(new IoCJsonConverter(_container));
-            _serializer.Converters.Add(new BitmapConverter());
+            
+            var settings = new CustomJsonSerializerSettings();
+            _container = settings.Container;
+            _serializer = Newtonsoft.Json.JsonSerializer.Create(settings.Settings);
         }
 
         /// <summary>
@@ -126,5 +112,54 @@ namespace FullCtrl
                 return result;
             }
         }
+    }
+
+
+    public class CustomJsonSerializerSettings
+    {
+        public IContainer Container { get; private set; }
+
+        public JsonSerializerSettings Settings { get; private set; }
+
+
+        public CustomJsonSerializerSettings()
+        {
+            Container = new UnityAdaptorContainer();
+            Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
+            Container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
+            Container.Bind(typeof(IError), typeof(DefaultError));
+            Container.Bind(typeof(ILink), typeof(DefaultLink));
+            Container.Bind(typeof(IProcessDto), typeof(ProcessDto));
+            Container.Bind(typeof(IParameter), typeof(Base.Parameter));
+            Container.Bind(typeof(IParameterCollection), typeof(ParameterCollection));
+            Container.Bind(typeof(IFunctionResult), typeof(FunctionResult));
+            Container.Bind(typeof(IFunctionArguments), typeof(FunctionArguments));
+            Container.Bind(typeof(IFunctionDescriptor), typeof(API.v1.FunctionDescriptor));
+            Container.Bind(typeof(IPlugin), typeof(API.v1.FunctionPluginDescriptor));
+            Container.Bind(typeof(IFunctionPlugin), typeof(API.v1.FunctionPluginDescriptor));
+
+
+            Settings = new JsonSerializerSettings
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                NullValueHandling = NullValueHandling.Include,
+                DefaultValueHandling = DefaultValueHandling.Include,
+            };
+            Settings.Converters.Add(new API.v1.TypeInfoJsonConverter());
+            Settings.Converters.Add(new API.v1.ParameterConverter());
+            Settings.Converters.Add(new API.v1.ParameterCollectionConverter());
+            Settings.Converters.Add(new API.v1.FunctionDescriptorConverter());
+            Settings.Converters.Add(new API.v1.FunctionPluginConverter());
+            Settings.Converters.Add(new StringEnumConverter());
+            Settings.Converters.Add(new IoCJsonConverter(Container));
+            Settings.Converters.Add(new BitmapConverter());
+        }
+
+
+        public static implicit operator JsonSerializerSettings(CustomJsonSerializerSettings self)
+        {
+            return self?.Settings;
+        }
+
     }
 }

@@ -4,19 +4,28 @@ using System.Runtime.ExceptionServices;
 using FullCtrl.Base;
 using Lux.Extensions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace FullCtrl.API
 {
     class Program
     {
         private static ApiService _service;
+        internal static FullCtrlServer _server;
+        internal static FullCtrlClient _client;
 
 
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
+
+
+            _server = new FullCtrlServer();
+            _client = new FullCtrlClient();
+
+            _server.Start();
+            _client.Start();
+
 
             if (!Environment.UserInteractive)
             {
@@ -31,6 +40,8 @@ namespace FullCtrl.API
                 RunServiceWithConsole(args);
             }
 
+            _server.Dispose();
+            _client.Dispose();
         }
 
         private static void CurrentDomain_OnFirstChanceException(object sender, FirstChanceExceptionEventArgs eventArgs)
@@ -128,11 +139,13 @@ namespace FullCtrl.API
 
         private static string Serialize(object obj)
         {
-            var settings = new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented,
-            };
-            settings.Converters.Add(new StringEnumConverter());
+            JsonSerializerSettings settings;
+            //settings = new JsonSerializerSettings
+            //{
+            //    Formatting = Formatting.Indented,
+            //};
+            //settings.Converters.Add(new StringEnumConverter());
+            settings = new CustomJsonSerializerSettings();
 
             var json = JsonConvert.SerializeObject(obj, settings);
             return json;

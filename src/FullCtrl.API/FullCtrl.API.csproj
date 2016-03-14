@@ -106,6 +106,8 @@
     <Compile Include="Data\IPluginStore.cs" />
     <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
+    <Compile Include="FullCtrlClient.cs" />
+    <Compile Include="FullCtrlServer.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\Error.cs" />

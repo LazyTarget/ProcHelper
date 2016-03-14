@@ -19,18 +19,18 @@ namespace FullCtrl.API.v1
         protected virtual CustomJsonSerializer GetJsonSerializer()
         {
             var serializer = new CustomJsonSerializer();
-            serializer.Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
-            serializer.Container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
-            serializer.Container.Bind(typeof(IError), typeof(DefaultError));
-            serializer.Container.Bind(typeof(ILink), typeof(DefaultLink));
-            serializer.Container.Bind(typeof(IProcessDto), typeof(ProcessDto));
-            serializer.Container.Bind(typeof(IParameter), typeof(Base.Parameter));
-            serializer.Container.Bind(typeof(IParameterCollection), typeof(ParameterCollection));
-            serializer.Container.Bind(typeof(IFunctionResult), typeof(FunctionResult));
-            serializer.Container.Bind(typeof(IFunctionArguments), typeof(FunctionArguments));
-            serializer.Container.Bind(typeof(IFunctionDescriptor), typeof(FunctionDescriptor));
-            serializer.Container.Bind(typeof(IPlugin), typeof(FunctionPluginDescriptor));
-            serializer.Container.Bind(typeof(IFunctionPlugin), typeof(FunctionPluginDescriptor));
+            //serializer.Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
+            //serializer.Container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
+            //serializer.Container.Bind(typeof(IError), typeof(DefaultError));
+            //serializer.Container.Bind(typeof(ILink), typeof(DefaultLink));
+            //serializer.Container.Bind(typeof(IProcessDto), typeof(ProcessDto));
+            //serializer.Container.Bind(typeof(IParameter), typeof(Base.Parameter));
+            //serializer.Container.Bind(typeof(IParameterCollection), typeof(ParameterCollection));
+            //serializer.Container.Bind(typeof(IFunctionResult), typeof(FunctionResult));
+            //serializer.Container.Bind(typeof(IFunctionArguments), typeof(FunctionArguments));
+            //serializer.Container.Bind(typeof(IFunctionDescriptor), typeof(FunctionDescriptor));
+            //serializer.Container.Bind(typeof(IPlugin), typeof(FunctionPluginDescriptor));
+            //serializer.Container.Bind(typeof(IFunctionPlugin), typeof(FunctionPluginDescriptor));
             return serializer;
         }
 

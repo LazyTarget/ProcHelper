@@ -36,29 +36,32 @@ namespace FullCtrl.API
             }
 
 
-            var container = new UnityAdaptorContainer();
-            container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
-            container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
-            container.Bind(typeof(IError), typeof(DefaultError));
-            container.Bind(typeof(ILink), typeof(DefaultLink));
-            container.Bind(typeof(IProcessDto), typeof(ProcessDto));
-            container.Bind(typeof(IParameter), typeof(Base.Parameter));
-            container.Bind(typeof(IParameterCollection), typeof(ParameterCollection));
-            container.Bind(typeof(IFunctionResult), typeof(FunctionResult));
-            container.Bind(typeof(IFunctionArguments), typeof(FunctionArguments));
-            container.Bind(typeof(IFunctionDescriptor), typeof(API.v1.FunctionDescriptor));
-            container.Bind(typeof(IPlugin), typeof(API.v1.FunctionPluginDescriptor));
-            container.Bind(typeof(IFunctionPlugin), typeof(API.v1.FunctionPluginDescriptor));
+            //var container = new UnityAdaptorContainer();
+            //container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
+            //container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
+            //container.Bind(typeof(IError), typeof(DefaultError));
+            //container.Bind(typeof(ILink), typeof(DefaultLink));
+            //container.Bind(typeof(IProcessDto), typeof(ProcessDto));
+            //container.Bind(typeof(IParameter), typeof(Base.Parameter));
+            //container.Bind(typeof(IParameterCollection), typeof(ParameterCollection));
+            //container.Bind(typeof(IFunctionResult), typeof(FunctionResult));
+            //container.Bind(typeof(IFunctionArguments), typeof(FunctionArguments));
+            //container.Bind(typeof(IFunctionDescriptor), typeof(API.v1.FunctionDescriptor));
+            //container.Bind(typeof(IPlugin), typeof(API.v1.FunctionPluginDescriptor));
+            //container.Bind(typeof(IFunctionPlugin), typeof(API.v1.FunctionPluginDescriptor));
 
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.TypeInfoJsonConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.ParameterConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.ParameterCollectionConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.FunctionDescriptorConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.FunctionPluginConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProcessToNullConverter());
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new IoCJsonConverter(container));
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BitmapConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.TypeInfoJsonConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.ParameterConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.ParameterCollectionConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.FunctionDescriptorConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new API.v1.FunctionPluginConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProcessToNullConverter());
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new IoCJsonConverter(container));
+            //config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BitmapConverter());
+
+            var settings = new CustomJsonSerializerSettings();
+            config.Formatters.JsonFormatter.SerializerSettings = settings;
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Filters.Add(new DebugActionFilter());
