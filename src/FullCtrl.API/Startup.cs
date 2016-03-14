@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using FullCtrl.API.Models;
 using FullCtrl.Base;
 using Microsoft.Owin;
 using Newtonsoft.Json;
@@ -12,6 +13,9 @@ namespace FullCtrl.API
 {
     public class Startup
     {
+        public static IServerInfo SelfServer = new ServerInfo { InstanceID = Guid.NewGuid().ToString(), ApiVersion = 1, ApiAddress = new Uri($"http://localhost:9000/api") };
+        public static IClientInfo SelfClient = new ClientInfo { ClientID = "1", ApiVersion = 1, ApiAddress = new Uri($"http://localhost:9000/api"), ServerInfo = SelfServer };
+
         public void Configuration(IAppBuilder app)
         {
             ConfigureWebApi(app);
@@ -26,7 +30,7 @@ namespace FullCtrl.API
         public void ConfigureWebApi(IAppBuilder app)
         {
             var config = new HttpConfiguration();
-            config.Properties["InstanceID"] = Guid.NewGuid();
+            config.Properties["InstanceID"] = SelfServer.InstanceID;
             config.Properties["ApiRootAddress"] = new Uri($"http://{Environment.MachineName}:9000/api");
 
             // todo: read value from ApiService.GetStartOptions(..)

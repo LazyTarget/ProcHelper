@@ -9,6 +9,19 @@ namespace FullCtrl.Base
 
         }
 
+        public DefaultError(Exception exception)
+            : this()
+        {
+            Exception = exception;
+            ErrorMessage = exception?.Message;
+        }
+
+        public DefaultError(string errorMessage)
+            : this()
+        {
+            ErrorMessage = errorMessage;
+        }
+
         public string ErrorMessage { get; set; }
 
         public bool Handled { get; set; }
@@ -28,6 +41,14 @@ namespace FullCtrl.Base
             var error = new DefaultError();
             error.Exception = exception;
             error.ErrorMessage = exception.Message;
+            return error;
+        }
+
+        public static DefaultError FromException(Exception exception, string errorMessage)
+        {
+            var error = new DefaultError();
+            error.Exception = exception;
+            error.ErrorMessage = errorMessage ?? exception?.Message;
             return error;
         }
     }

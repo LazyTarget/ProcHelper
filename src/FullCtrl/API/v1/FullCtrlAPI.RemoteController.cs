@@ -17,6 +17,26 @@ namespace FullCtrl.API.v1
             var response = await GetResponse<IEnumerable<IPlugin>>(request);
             return response;
         }
+        
+        public async Task<IResponseBase<IEnumerable<IFunctionPlugin>>> GetRemoteFunctionPlugins(string clientID)
+        {
+            var uri = new Uri("remote/plugins/function", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+            request.AddQueryParameter("clientID", clientID);
+
+            var response = await GetResponse<IEnumerable<IFunctionPlugin>>(request);
+            return response;
+        }
+        
+        public async Task<IResponseBase<IEnumerable<IServicePlugin>>> GetRemoteServicePlugins(string clientID)
+        {
+            var uri = new Uri("remote/plugins/service", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+            request.AddQueryParameter("clientID", clientID);
+
+            var response = await GetResponse<IEnumerable<IServicePlugin>>(request);
+            return response;
+        }
 
 
         public async Task<IResponseBase<IFunctionResult>> ExecuteRemoteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)

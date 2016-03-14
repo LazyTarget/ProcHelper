@@ -20,9 +20,8 @@ namespace FullCtrl.API.v1.Controllers
             IEnumerable<IPlugin> result = null;
             try
             {
-                var database = new PluginLoader();
+                result = Program._client?.GetPlugins();
 
-                result = await database.GetPlugins();
                 var response = CreateResponse(result);
                 return response;
             }
@@ -32,6 +31,47 @@ namespace FullCtrl.API.v1.Controllers
                 return response;
             }
         }
+
+        
+        [HttpGet, HttpPost, HttpPut]
+        [Route("api/v1/local/plugins/function")]
+        public async Task<IResponseBase<IEnumerable<IFunctionPlugin>>> GetFunctionPlugins()
+        {
+            IEnumerable<IFunctionPlugin> result = null;
+            try
+            {
+                result = Program._client?.GetPlugins().OfType<IFunctionPlugin>();
+
+                var response = CreateResponse(result);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var response = CreateError<IEnumerable<IFunctionPlugin>>(DefaultError.FromException(ex));
+                return response;
+            }
+        }
+
+
+        [HttpGet, HttpPost, HttpPut]
+        [Route("api/v1/local/plugins/service")]
+        public async Task<IResponseBase<IEnumerable<IServicePlugin>>> GetServicePlugins()
+        {
+            IEnumerable<IServicePlugin> result = null;
+            try
+            {
+                result = Program._client?.GetPlugins().OfType<IServicePlugin>();
+
+                var response = CreateResponse(result);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var response = CreateError<IEnumerable<IServicePlugin>>(DefaultError.FromException(ex));
+                return response;
+            }
+        }
+
 
 
         [HttpPost, HttpPut]

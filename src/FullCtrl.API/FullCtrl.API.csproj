@@ -109,8 +109,8 @@
     <Compile Include="FullCtrlClient.cs" />
     <Compile Include="FullCtrlServer.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
+    <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
-    <Compile Include="Models\Error.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
     <Compile Include="v1\Controllers\Functions\AudioController.cs" />
     <Compile Include="v1\Controllers\BaseController.cs" />

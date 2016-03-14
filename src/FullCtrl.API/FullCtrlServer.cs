@@ -1,41 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using FullCtrl.API.Data;
 using FullCtrl.Base;
-using Lux.Extensions;
 
 namespace FullCtrl.API
 {
     public class FullCtrlServer : IDisposable
     {
-        private readonly IPluginStore _pluginStore;
-        private readonly IDictionary<string, IPlugin> _plugins;
+        private readonly IDictionary<string, IClientInfo> _clients;
         private bool _started;
         private bool _disposed;
 
         public FullCtrlServer()
         {
-            _plugins = new Dictionary<string, IPlugin>();
-            _pluginStore = new PluginLoader();
-        }
-
-
-        private void LoadPlugins()
-        {
-            lock (_plugins)
-            {
-                _plugins.Clear();
-                var plugs = _pluginStore.GetPlugins().WaitForResult();
-                if (plugs != null)
-                {
-                    foreach (var plugin in plugs)
-                    {
-                        _plugins[plugin.Name] = plugin;
-                    }
-                }
-            }
+            _clients = new Dictionary<string, IClientInfo>();
         }
 
 
@@ -44,20 +22,38 @@ namespace FullCtrl.API
             if (_started)
                 return;
             _started = true;
-            LoadPlugins();
         }
 
         public void Stop()
         {
             _started = false;
+            _clients.Clear();
         }
+
+
+        public IEnumerable<IClientInfo> GetClients()
+        {
+            return _clients.Values;
+        } 
+
+        public int RegisterClient(IClientInfo clientInfo)
+        {
+            if (clientInfo == null)
+                throw new ArgumentNullException(nameof(clientInfo));
+            if (string.IsNullOrWhiteSpace(clientInfo?.ClientID))
+                throw new ArgumentException(nameof(clientInfo));
+
+            _clients[clientInfo.ClientID] = clientInfo;
+            return 1;
+        }
+
 
         public void Dispose()
         {
             if (_disposed)
                 return;
             Stop();
-            _plugins.Clear();
+            _clients.Clear();
             _disposed = true;
         }
     }

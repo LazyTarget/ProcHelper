@@ -80,11 +80,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\ApiFactory.cs" />
     <Compile Include="API\v1\Converters\ParameterConverter.cs" />
     <Compile Include="API\v1\Converters\TypeInfoJsonConverter.cs" />
     <Compile Include="API\v1\Converters\ParameterCollectionConverter.cs" />
     <Compile Include="API\v1\Converters\FunctionDescriptorConverter.cs" />
     <Compile Include="API\v1\Converters\FunctionPluginConverter.cs" />
+    <Compile Include="API\v1\FullCtrlAPI.ServerController.cs" />
     <Compile Include="API\v1\FullCtrlAPI.RemoteController.cs" />
     <Compile Include="API\v1\Models\FunctionDescriptor.cs" />
     <Compile Include="API\v1\Models\FunctionPluginDescriptor.cs" />

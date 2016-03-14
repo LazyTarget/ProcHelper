@@ -16,6 +16,24 @@ namespace FullCtrl.API.v1
             var response = await GetResponse<IEnumerable<IPlugin>>(request);
             return response;
         }
+        
+        public async Task<IResponseBase<IEnumerable<IFunctionPlugin>>> GetLocalFunctionPlugins()
+        {
+            var uri = new Uri("local/plugins/function", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+
+            var response = await GetResponse<IEnumerable<IFunctionPlugin>>(request);
+            return response;
+        }
+        
+        public async Task<IResponseBase<IEnumerable<IServicePlugin>>> GetLocalServicePlugins()
+        {
+            var uri = new Uri("local/plugins/service", UriKind.Relative);
+            var request = BuildRequest(uri, Method.GET);
+
+            var response = await GetResponse<IEnumerable<IServicePlugin>>(request);
+            return response;
+        }
 
 
         public async Task<IResponseBase<IFunctionResult>> ExecuteLocalFunction(string pluginName, string functionName, IFunctionArguments arguments)

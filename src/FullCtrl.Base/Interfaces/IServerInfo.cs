@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
-    public interface IClientInfo
+    public interface IServerInfo
     {
-        string ClientID { get; }
+        string InstanceID { get; }
         int ApiVersion { get; }
         Uri ApiAddress { get; }
-        IServerInfo ServerInfo { get; }
 
-        Task<IEnumerable<IPlugin>> GetPlugins();
+        Task<IEnumerable<IClientInfo>> GetClients();
     }
 }

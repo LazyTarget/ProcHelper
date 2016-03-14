@@ -54,7 +54,7 @@ namespace FullCtrl.API.v1.Controllers
             {
                 var result = new FunctionResult();
                 result.Arguments = arguments;
-                result.Error = Error.FromException(ex);
+                result.Error = DefaultError.FromException(ex);
                 return result;
             }
         }

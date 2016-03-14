@@ -14,12 +14,16 @@ namespace FullCtrl.API.Models
         }
 
         public string ClientID { get; set; }
+        public int ApiVersion { get; set; }
         public Uri ApiAddress { get; set; }
+        public IServerInfo ServerInfo { get; set; }
 
 
+        [Obsolete]
         public async Task<IEnumerable<IPlugin>> GetPlugins()
         {
-            var api = API.v1.FullCtrlAPI.FromClientInfo(this);
+            var factory = new ApiFactory();
+            var api = factory.Create_V1(this);
             var response = await api.GetLocalPlugins();
             response.EnsureSuccess();
 
