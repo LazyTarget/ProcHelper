@@ -9,7 +9,7 @@ using Lux.Interfaces;
 
 namespace FullCtrl.Plugins.Sound
 {
-    public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction
+    public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction, IFunction<IList<AudioDevice>>
     {
         private CoreAudioController _audioController = new CoreAudioController();
         private ModelConverter _modelConverter = new ModelConverter();
@@ -46,8 +46,14 @@ namespace FullCtrl.Plugins.Sound
         {
             return this;
         }
-        
-        public async Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments)
+
+        async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
+        {
+            var result = await Execute(context, arguments);
+            return result;
+        }
+
+        public async Task<IFunctionResult<IList<AudioDevice>>> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
@@ -82,14 +88,14 @@ namespace FullCtrl.Plugins.Sound
                 }
                 var res = devices?.Select(_modelConverter.FromAudioDevice).Where(x => x != null).ToList();
 
-                var result = new FunctionResult();
+                var result = new FunctionResult<IList<AudioDevice>>();
                 result.Arguments = arguments;
                 result.Result = res;
                 return result;
             }
             catch (Exception ex)
             {
-                var result = new FunctionResult();
+                var result = new FunctionResult<IList<AudioDevice>>();
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;

@@ -7,7 +7,7 @@ using FullCtrl.Base;
 
 namespace FullCtrl.Plugins.Sound
 {
-    public class GetAudioSessionsFunction : IFunctionDescriptor, IFunction
+    public class GetAudioSessionsFunction : IFunctionDescriptor, IFunction, IFunction<IList<AudioSession>>
     {
         private CoreAudioController _audioController = new CoreAudioController();
         private ModelConverter _modelConverter = new ModelConverter();
@@ -37,7 +37,13 @@ namespace FullCtrl.Plugins.Sound
             return this;
         }
 
-        public async Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments)
+        async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
+        {
+            var result = await Execute(context, arguments);
+            return result;
+        }
+
+        public async Task<IFunctionResult<IList<AudioSession>>> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
@@ -63,7 +69,7 @@ namespace FullCtrl.Plugins.Sound
                 var sessions = device?.SessionController?.All();
                 var res = sessions?.Select(_modelConverter.FromAudioControllerState).Where(x => x != null).ToList();
 
-                var result = new FunctionResult
+                var result = new FunctionResult<IList<AudioSession>>
                 {
                     Arguments = arguments,
                     Result = res,
@@ -72,7 +78,7 @@ namespace FullCtrl.Plugins.Sound
             }
             catch (Exception ex)
             {
-                var result = new FunctionResult();
+                var result = new FunctionResult<IList<AudioSession>>();
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
