@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace FullCtrl.Base
 {
+    [Obsolete]
     public interface IServerInfo
     {
         string InstanceID { get; }

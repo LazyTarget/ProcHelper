@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FullCtrl.API.Config;
+using FullCtrl.API.Models;
 using FullCtrl.Base;
+using Lux.Config.Xml;
 
 namespace FullCtrl.API
 {
@@ -10,10 +13,18 @@ namespace FullCtrl.API
         private readonly IDictionary<string, IClientInfo> _clients;
         private bool _started;
         private bool _disposed;
+        private IServerInfo _serverInfo;
 
         public FullCtrlServer()
         {
             _clients = new Dictionary<string, IClientInfo>();
+        }
+
+        public ServerConfig Config { get; private set; }
+
+        public IServerInfo ServerInfo
+        {
+            get { return _serverInfo; }
         }
 
 
@@ -22,6 +33,18 @@ namespace FullCtrl.API
             if (_started)
                 return;
             _started = true;
+
+
+            var descriptorFactory = new AppConfigDescriptorFactory();
+            var descriptor = descriptorFactory.CreateDescriptor<ServerConfig>();
+            Config = Lux.Framework.ConfigManager.Load<ServerConfig>(descriptor);
+
+            _serverInfo = new ServerInfo
+            {
+                ApiAddress = Config.ServerApiAddress,
+                ApiVersion = 1,
+                InstanceID = Guid.NewGuid().ToString(),
+            };
         }
 
         public void Stop()

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FullCtrl.API.Config;
 using FullCtrl.API.Data;
+using FullCtrl.API.Models;
 using FullCtrl.Base;
+using Lux.Config.Xml;
 using Lux.Extensions;
 
 namespace FullCtrl.API
@@ -13,12 +16,17 @@ namespace FullCtrl.API
         private readonly IDictionary<string, IPlugin> _plugins;
         private bool _started;
         private bool _disposed;
+        private IClientInfo _clientInfo;
 
         public FullCtrlClient()
         {
             _plugins = new Dictionary<string, IPlugin>();
             _pluginStore = new PluginLoader();
         }
+
+        public ClientConfig Config { get; private set; }
+
+        public IClientInfo ClientInfo { get { return _clientInfo; } }
 
 
         private void LoadPlugins()
@@ -55,6 +63,25 @@ namespace FullCtrl.API
             if (_started)
                 return;
             _started = true;
+
+            // Config
+            var descriptorFactory = new AppConfigDescriptorFactory();
+            var descriptor = descriptorFactory.CreateDescriptor<ClientConfig>();
+            Config = Lux.Framework.ConfigManager.Load<ClientConfig>(descriptor);
+            
+            _clientInfo = new ClientInfo
+            {
+                ApiAddress = Config.ClientApiAddress,
+                ClientID = Guid.NewGuid().ToString(),
+                ApiVersion = 1,
+                ServerInfo = new ServerInfo
+                {
+                    ApiAddress = Config.ServerApiAddress,
+                    ApiVersion = 1,
+                },
+            };
+
+            // Plugins
             LoadPlugins();
 
             lock (_plugins)

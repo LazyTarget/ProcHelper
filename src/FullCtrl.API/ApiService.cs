@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
-using FullCtrl.Base;
 using Microsoft.Owin.Hosting;
 
 namespace FullCtrl.API
@@ -20,9 +17,6 @@ namespace FullCtrl.API
             var options = new StartOptions();
             options.Urls.Add("http://+:9000");
             options.Urls.Add("http://localhost:9000");
-            options.Urls.Add($"http://{Environment.MachineName}:9000");
-
-            options.Settings["ApiRootAddress"] = new Uri($"http://{Environment.MachineName}:9000/api").ToString();
             return options;
         }
 
@@ -64,13 +58,6 @@ namespace FullCtrl.API
         public void Dispose()
         {
             Stop();
-        }
-
-
-
-        private void Server_OnReceiveWebRequest(HttpListenerContext context)
-        {
-            this.Log().Debug("WebRequest: [{0}]: {1}", context.Request.HttpMethod, context.Request.Url);
         }
 
     }

@@ -72,6 +72,8 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Models\ApiEndpoint.cs" />
+    <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
@@ -88,7 +90,6 @@
     <Compile Include="Interfaces\API\IWinServiceAPI.cs" />
     <Compile Include="Interfaces\API\IProcessAPI.cs" />
     <Compile Include="Models\FunctionArguments.cs" />
-    <Compile Include="Interfaces\IAudioController.cs" />
     <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />
     <Compile Include="Interfaces\API\IKeyboardAPI.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Interfaces\IPowershellHelper.cs" />
     <Compile Include="Interfaces\IProcessFinder.cs" />
     <Compile Include="Interfaces\IProcessHelper.cs" />
-    <Compile Include="Interfaces\IRemoteConfiguration.cs" />
     <Compile Include="Interfaces\IResponseBase.cs" />
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
