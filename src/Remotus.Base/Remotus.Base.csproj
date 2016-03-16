@@ -7,8 +7,8 @@
     <ProjectGuid>{CD84ADA9-E373-49FE-B889-74EE1F1643A7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FullCtrl.Base</RootNamespace>
-    <AssemblyName>FullCtrl.Base</AssemblyName>
+    <RootNamespace>Remotus.Base</RootNamespace>
+    <AssemblyName>Remotus.Base</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -72,27 +72,21 @@
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Models\ApiEndpoint.cs" />
     <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Interfaces\IServerInfo.cs" />
     <Compile Include="Interfaces\IServicePlugin.cs" />
-    <Compile Include="Models\DefaultError.cs" />
-    <Compile Include="Models\DefaultLink.cs" />
-    <Compile Include="Models\DefaultResponseBase.cs" />
-    <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Interfaces\API\IDeviceControllerAPI.cs" />
     <Compile Include="Interfaces\API\IAudioControllerAPI.cs" />
     <Compile Include="Interfaces\API\IFullCtrlAPI.cs" />
     <Compile Include="Interfaces\API\IPowershellAPI.cs" />
     <Compile Include="Interfaces\API\IWinServiceAPI.cs" />
     <Compile Include="Interfaces\API\IProcessAPI.cs" />
-    <Compile Include="Models\FunctionArguments.cs" />
-    <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\API\IMouseAPI.cs" />
     <Compile Include="Interfaces\API\IKeyboardAPI.cs" />
+    <Compile Include="Interfaces\IError.cs" />
     <Compile Include="Interfaces\IFunction.cs" />
     <Compile Include="Interfaces\IFunctionArguments.cs" />
     <Compile Include="Interfaces\IFunctionDescriptor.cs" />
@@ -109,6 +103,14 @@
     <Compile Include="Interfaces\IResponseBase.cs" />
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\IWinServiceHelper.cs" />
+    <Compile Include="Models\ApiEndpoint.cs" />
+    <Compile Include="Models\DefaultError.cs" />
+    <Compile Include="Models\DefaultLink.cs" />
+    <Compile Include="Models\DefaultResponseBase.cs" />
+    <Compile Include="Models\FunctionResult.cs" />
+    <Compile Include="Models\FunctionArguments.cs" />
+    <Compile Include="Models\Parameter.cs" />
+    <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
     <Compile Include="Models\InputHelper\IsKeyUp.cs" />
     <Compile Include="Models\InputHelper\KeyDownRequest.cs" />
@@ -148,8 +150,6 @@
     <Compile Include="Models\WinServiceHelper\StopWinServiceResponse.cs" />
     <Compile Include="Models\WinServiceHelper\WinServiceDto.cs" />
     <Compile Include="Models\WinServiceHelper\WinServicesResponse.cs" />
-    <Compile Include="Models\Parameter.cs" />
-    <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

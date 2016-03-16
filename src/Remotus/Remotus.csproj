@@ -7,8 +7,8 @@
     <ProjectGuid>{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FullCtrl</RootNamespace>
-    <AssemblyName>FullCtrl</AssemblyName>
+    <RootNamespace>Remotus</RootNamespace>
+    <AssemblyName>Remotus</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -113,13 +113,13 @@
     <Compile Include="Workers\Worker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FullCtrl.Base\FullCtrl.Base.csproj">
+    <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
-      <Name>FullCtrl.Base</Name>
+      <Name>Remotus.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FullCtrl.Plugins\FullCtrl.Plugins.Sound\FullCtrl.Plugins.Sound.csproj">
+    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
       <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
-      <Name>FullCtrl.Plugins.Sound</Name>
+      <Name>Remotus.Plugins.Sound</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

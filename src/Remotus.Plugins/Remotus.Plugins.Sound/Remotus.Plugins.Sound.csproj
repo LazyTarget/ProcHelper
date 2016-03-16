@@ -7,8 +7,8 @@
     <ProjectGuid>{3B22B620-56C3-44E6-8635-4EA1D8B09437}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FullCtrl.Plugins.Sound</RootNamespace>
-    <AssemblyName>FullCtrl.Plugins.Sound</AssemblyName>
+    <RootNamespace>Remotus.Plugins.Sound</RootNamespace>
+    <AssemblyName>Remotus.Plugins.Sound</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -73,9 +73,9 @@
     <Compile Include="ToggleMuteAudioDeviceFunction.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FullCtrl.Base\FullCtrl.Base.csproj">
+    <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
-      <Name>FullCtrl.Base</Name>
+      <Name>Remotus.Base</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

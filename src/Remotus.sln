@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus", "Remotus\Remotus.csproj", "{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Base", "Remotus.Base\Remotus.Base.csproj", "{CD84ADA9-E373-49FE-B889-74EE1F1643A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.API", "Remotus.API\Remotus.API.csproj", "{C259B631-17CD-4123-B520-C8212239535A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Web", "Remotus.Web\Remotus.Web.csproj", "{09C735D2-DD37-4AF0-8AE1-BF701363D027}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Remotus.Plugins", "Remotus.Plugins", "{6F1B1276-0FF8-4870-A526-1F9934A177F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Sound", "Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj", "{3B22B620-56C3-44E6-8635-4EA1D8B09437}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD84ADA9-E373-49FE-B889-74EE1F1643A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD84ADA9-E373-49FE-B889-74EE1F1643A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD84ADA9-E373-49FE-B889-74EE1F1643A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD84ADA9-E373-49FE-B889-74EE1F1643A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C259B631-17CD-4123-B520-C8212239535A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C259B631-17CD-4123-B520-C8212239535A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C259B631-17CD-4123-B520-C8212239535A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C259B631-17CD-4123-B520-C8212239535A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09C735D2-DD37-4AF0-8AE1-BF701363D027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B22B620-56C3-44E6-8635-4EA1D8B09437} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
+	EndGlobalSection
+EndGlobal
