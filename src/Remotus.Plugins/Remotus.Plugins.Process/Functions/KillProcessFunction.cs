@@ -7,25 +7,25 @@ using FullCtrl.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class GetProcessesFunction : IFunctionDescriptor, IFunction<IList<ProcessDto>>
+    public class KillProcessFunction : IFunctionDescriptor, IFunction<ProcessDto>
     {
-        private IProcessFinder _processFinder;
+        private IProcessHelper _processHelper;
 
-        public GetProcessesFunction()
+        public KillProcessFunction()
         {
-            _processFinder = new ProcessFinder();
+            _processHelper = new ProcessHelper();
         }
 
-        public string Name => nameof(GetProcessesFunction);
+        public string Name => nameof(KillProcessFunction);
 
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res[ParameterKeys.ProcessName] = new Parameter
+            res[ParameterKeys.ProcessID] = new Parameter
             {
-                Name = ParameterKeys.ProcessName,
-                Required = false,
-                Type = typeof(string),
+                Name = ParameterKeys.ProcessID,
+                Required = true,
+                Type = typeof(int),
                 Value = null,
             };
             return res;
@@ -42,28 +42,23 @@ namespace Remotus.Plugins.Process
             return result;
         }
 
-        public async Task<IFunctionResult<IList<ProcessDto>>> Execute(IExecutionContext context, IFunctionArguments arguments)
+        public async Task<IFunctionResult<ProcessDto>> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
-                IEnumerable<ProcessDto> enumerable;
-                var processName = arguments?.Parameters.GetParamValue<string>(ParameterKeys.ProcessName);
-                if (!string.IsNullOrEmpty(processName))
-                    enumerable = _processFinder.GetProcessesByName(processName);
-                else
-                    enumerable = _processFinder.GetProcesses();
-
-                var list = enumerable.ToList();
-                var result = new FunctionResult<IList<ProcessDto>>
+                var processID = arguments.Parameters.GetParamValue<int>(ParameterKeys.ProcessID);
+                var proc = _processHelper.KillProcess(processID);
+                
+                var result = new FunctionResult<ProcessDto>
                 {
                     Arguments = arguments,
-                    Result = list,
+                    Result = proc,
                 };
                 return result;
             }
             catch (Exception ex)
             {
-                var result = new FunctionResult<IList<ProcessDto>>();
+                var result = new FunctionResult<ProcessDto>();
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
@@ -74,7 +69,6 @@ namespace Remotus.Plugins.Process
         public static class ParameterKeys
         {
             public const string ProcessID = "ProcessID";
-            public const string ProcessName = "ProcessName";
         }
 
         public void Dispose()

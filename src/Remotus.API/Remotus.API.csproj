@@ -151,6 +151,10 @@
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Process\Remotus.Plugins.Process.csproj">
+      <Project>{1a5291c5-bbb7-4924-bc67-8ee3d6fc5bf4}</Project>
+      <Name>Remotus.Plugins.Process</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
       <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
       <Name>Remotus.Plugins.Sound</Name>

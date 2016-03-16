@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FullCtrl.Base;
 using FullCtrl.Plugins.Sound;
 using Lux.IO;
+using Remotus.Plugins.Process;
 
 namespace FullCtrl.API.Data
 {
@@ -30,6 +31,7 @@ namespace FullCtrl.API.Data
             // todo: populate via assembly load
 
             plugins.Add(new SoundFunctionPlugin());
+            plugins.Add(new ProcessManagerPlugin());
             return plugins;
         }
     }
