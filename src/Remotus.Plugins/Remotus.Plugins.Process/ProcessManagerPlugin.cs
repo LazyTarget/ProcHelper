@@ -12,6 +12,8 @@ namespace Remotus.Plugins.Process
         {
             yield return new GetProcessFunction();
             yield return new GetProcessesFunction();
+            yield return new StartProcessFunction();
+            yield return new KillProcessFunction();
         }
     }
 }

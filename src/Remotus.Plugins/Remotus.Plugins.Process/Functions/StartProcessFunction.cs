@@ -8,35 +8,35 @@ using FullCtrl.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class GetProcessFunction : IFunctionDescriptor, IFunction<ProcessDto>
+    public class StartProcessFunction : IFunctionDescriptor, IFunction<ProcessDto>
     {
         private static System.Diagnostics.Process _proc;
-        private IProcessFinder _processFinder;
+        private IProcessHelper _processHelper;
 
-        public GetProcessFunction()
+        public StartProcessFunction()
         {
-            _processFinder = new ProcessFinder();
+            _processHelper = new ProcessHelper();
         }
 
-        public string Name => nameof(GetProcessFunction);
+        public string Name => nameof(StartProcessFunction);
 
         public IParameterCollection GetParameters()
         {
             var res = new ParameterCollection();
-            res[ParameterKeys.ProcessID] = new Parameter
+            res[ParameterKeys.FileName] = new Parameter
             {
-                Name = ParameterKeys.ProcessID,
+                Name = ParameterKeys.FileName,
                 Required = true,
-                Type = typeof(int),
+                Type = typeof(string),
                 Value = null,
             };
-            //res[ParameterKeys.ProcessName] = new Parameter
-            //{
-            //    Name = ParameterKeys.ProcessName,
-            //    Required = false,
-            //    Type = typeof(string),
-            //    Value = null,
-            //};
+            res[ParameterKeys.Arguments] = new Parameter
+            {
+                Name = ParameterKeys.Arguments,
+                Required = false,
+                Type = typeof(string),
+                Value = null,
+            };
             return res;
         }
 
@@ -55,11 +55,12 @@ namespace Remotus.Plugins.Process
         {
             try
             {
-                var processID = arguments.Parameters.GetParamValue<int>(ParameterKeys.ProcessID);
-                var res = _processFinder.GetProcess(processID);
+                var fileName = arguments.Parameters.GetParamValue<string>(ParameterKeys.FileName);
+                var procArgs = arguments.Parameters.GetParamValue<string>(ParameterKeys.Arguments);
+                var res = _processHelper.StartProcess(fileName, procArgs);
                 var proc = res.GetBase();
-                proc.EnableRaisingEvents = true;
                 _proc = proc;
+                proc.EnableRaisingEvents = true;
                 proc.OutputDataReceived += delegate(object sender, DataReceivedEventArgs args)
                 {
                     context?.Logger?.Info("ProcMsg: " + args.Data);
@@ -84,8 +85,8 @@ namespace Remotus.Plugins.Process
 
         public static class ParameterKeys
         {
-            public const string ProcessID = "ProcessID";
-            public const string ProcessName = "ProcessName";
+            public const string FileName = "FileName";
+            public const string Arguments = "Arguments";
         }
 
         public void Dispose()

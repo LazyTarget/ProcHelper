@@ -45,6 +45,7 @@ namespace FullCtrl.API.v1.Controllers
                 IExecutionContext context = new ExecutionContext
                 {
                     ClientInfo = LoadClientInfo(),
+                    Logger = new TraceLogger(),
                 };
 
                 var result = await function.Execute(context, arguments);

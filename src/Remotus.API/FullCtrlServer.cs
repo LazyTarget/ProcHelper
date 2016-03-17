@@ -37,11 +37,11 @@ namespace FullCtrl.API
 
             var descriptorFactory = new AppConfigDescriptorFactory();
             var descriptor = descriptorFactory.CreateDescriptor<ServerConfig>();
-            Config = Lux.Framework.ConfigManager.Load<ServerConfig>(descriptor);
+            //Config = Lux.Framework.ConfigManager.Load<ServerConfig>(descriptor);
 
             _serverInfo = new ServerInfo
             {
-                ApiAddress = Config.ServerApiAddress,
+                ApiAddress = Config?.ServerApiAddress,
                 ApiVersion = 1,
                 InstanceID = Guid.NewGuid().ToString(),
             };
