@@ -25,17 +25,23 @@ namespace Remotus.API
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Filters.Add(new DebugActionFilter());
 
-            config.MapHttpAttributeRoutes();
+
+            //config.MapHttpAttributeRoutes();
             
-            //config.Routes.MapHttpRoute(
-            //    name: "DefaultApi",
-            //    routeTemplate: "api/{version}/{controller}/{id}",
-            //    defaults: new
-            //    {
-            //        id = RouteParameter.Optional,
-            //        version = "v1",
-            //    }
-            //);
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{version}/{controller}/{id}",
+                defaults: new
+                {
+                    id = RouteParameter.Optional,
+                    version = "v1",
+                    namespaces = new string[]
+                    {
+                        "Remotus.API.v1.Server.Controllers",
+                        "Remotus.API.v2.Server.Controllers",
+                    },
+                }
+            );
 
             app.UseWebApi(config);
         }

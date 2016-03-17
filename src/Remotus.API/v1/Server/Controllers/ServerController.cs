@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Controllers
+namespace Remotus.API.v1.Server.Controllers
 {
-    public class ServerController : BaseController
+    public class ServerController : API.v1.Client.Controllers.BaseController
     {
         // todo: methods for registering and managing connected clients
 

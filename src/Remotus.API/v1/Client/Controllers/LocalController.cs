@@ -7,7 +7,7 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Controllers
+namespace Remotus.API.v1.Client.Controllers
 {
     public class LocalController : BaseController
     {

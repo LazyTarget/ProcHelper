@@ -6,7 +6,7 @@ using Lux.Interfaces;
 using Remotus.API.v1.Models;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Controllers
+namespace Remotus.API.v1.Client.Controllers
 {
     public abstract class BaseController : ApiController, IBaseController
     {

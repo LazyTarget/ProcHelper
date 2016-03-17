@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Controllers
+namespace Remotus.API.v1.Client.Controllers
 {
     public class RemoteController : BaseController
     {

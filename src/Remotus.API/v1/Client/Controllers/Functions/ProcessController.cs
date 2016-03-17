@@ -4,7 +4,7 @@ using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Controllers.Functions
+namespace Remotus.API.v1.Client.Controllers.Functions
 {
     public class ProcessController : BaseController
     {

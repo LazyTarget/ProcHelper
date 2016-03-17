@@ -115,23 +115,23 @@
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
     <Compile Include="StartupServer.cs" />
-    <Compile Include="v1\Controllers\Functions\AudioController.cs" />
-    <Compile Include="v1\Controllers\BaseController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\AudioController.cs" />
+    <Compile Include="v1\Client\Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
-    <Compile Include="v1\Controllers\Functions\DeviceController.cs" />
-    <Compile Include="v1\Controllers\Functions\KeyboardController.cs" />
-    <Compile Include="v1\Controllers\LocalController.cs" />
-    <Compile Include="v1\Controllers\Functions\MouseController.cs" />
-    <Compile Include="v1\Controllers\RemoteController.cs" />
-    <Compile Include="v1\Controllers\Functions\ResourceMonitorController.cs" />
-    <Compile Include="v1\Controllers\ServerController.cs" />
-    <Compile Include="v1\Controllers\Functions\WinServiceController.cs" />
-    <Compile Include="v1\Controllers\Functions\PowershellController.cs" />
-    <Compile Include="v1\Controllers\Functions\ProcessController.cs" />
-    <Compile Include="v1\Models\ResponseBase.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\DeviceController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\KeyboardController.cs" />
+    <Compile Include="v1\Client\Controllers\LocalController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\MouseController.cs" />
+    <Compile Include="v1\Client\Controllers\RemoteController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\ResourceMonitorController.cs" />
+    <Compile Include="v1\Server\Controllers\ServerController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\WinServiceController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\PowershellController.cs" />
+    <Compile Include="v1\Client\Controllers\Functions\ProcessController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartupClient.cs" />
+    <Compile Include="v1\Models\ResponseBase.cs" />
     <Compile Include="WinService\WinService.cs">
       <SubType>Component</SubType>
     </Compile>

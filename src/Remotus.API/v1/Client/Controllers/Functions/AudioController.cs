@@ -5,7 +5,7 @@ using System.Web.Http;
 using Remotus.Base;
 using Remotus.Plugins.Sound;
 
-namespace Remotus.API.v1.Controllers.Functions
+namespace Remotus.API.v1.Client.Controllers.Functions
 {
     public class AudioController : BaseController
     {
