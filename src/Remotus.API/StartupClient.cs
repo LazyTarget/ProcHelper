@@ -6,7 +6,7 @@ using Owin;
 
 namespace Remotus.API
 {
-    public class StartupServer
+    public class StartupClient
     {
         public void Configuration(IAppBuilder app)
         {
@@ -17,8 +17,8 @@ namespace Remotus.API
         public void ConfigureWebApi(IAppBuilder app)
         {
             var config = new HttpConfiguration();
-            config.Properties["InstanceID"] = Program.Service?.Server?.ServerInfo?.InstanceID;
-
+            config.Properties["InstanceID"] = Program.Service?.Client?.ClientInfo?.ClientID;
+            
             var settings = new CustomJsonSerializerSettings();
             config.Formatters.JsonFormatter.SerializerSettings = settings;
 

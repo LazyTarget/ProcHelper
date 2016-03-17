@@ -61,14 +61,14 @@ namespace Remotus.API
         protected virtual StartOptions GetStartOptions(ClientConfig config)
         {
             var options = new StartOptions();
-            options.Urls.Add("http://+:9000");
-            options.Urls.Add("http://localhost:9000");
+            options.Urls.Add("http://+:9001");
+            options.Urls.Add("http://localhost:9001");
             return options;
         }
 
         protected virtual IDisposable StartAsSelftHost(StartOptions options)
         {
-            var res = WebApp.Start<Startup>(options);
+            var res = WebApp.Start<StartupClient>(options);
             return res;
         }
 

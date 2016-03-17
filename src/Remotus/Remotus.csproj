@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="API\ApiFactory.cs" />
     <Compile Include="API\v1\Converters\ParameterConverter.cs" />
+    <Compile Include="API\v1\Converters\ProcessToNullConverter.cs" />
     <Compile Include="API\v1\Converters\TypeInfoJsonConverter.cs" />
     <Compile Include="API\v1\Converters\ParameterCollectionConverter.cs" />
     <Compile Include="API\v1\Converters\FunctionDescriptorConverter.cs" />

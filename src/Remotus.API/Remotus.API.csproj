@@ -131,7 +131,7 @@
     <Compile Include="v1\Models\ResponseBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
+    <Compile Include="StartupClient.cs" />
     <Compile Include="WinService\WinService.cs">
       <SubType>Component</SubType>
     </Compile>
