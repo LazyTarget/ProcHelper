@@ -1,6 +1,6 @@
-﻿using FullCtrl.Base;
+﻿using Remotus.Base;
 
-namespace FullCtrl.Web.Models
+namespace Remotus.Web.Models
 {
     public class PluginViewModel
     {

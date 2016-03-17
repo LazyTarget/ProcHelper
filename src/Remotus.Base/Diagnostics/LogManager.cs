@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     /// <summary>
     /// Logger type initialization

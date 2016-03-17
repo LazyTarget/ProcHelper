@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FullCtrl.API.Config;
-using FullCtrl.API.Data;
-using FullCtrl.API.Models;
-using FullCtrl.Base;
 using Lux.Extensions;
 using Microsoft.Owin.Hosting;
+using Remotus.API.Data;
+using Remotus.Base;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class FullCtrlClient : IDisposable
     {

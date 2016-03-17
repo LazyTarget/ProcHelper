@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public class FileVersionInfoDto
     {

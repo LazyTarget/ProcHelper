@@ -1,6 +1,6 @@
 using System;
 
-namespace FullCtrl.Web.Areas.HelpPage.ModelDescriptions
+namespace Remotus.Web.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
     /// Describes a type model.

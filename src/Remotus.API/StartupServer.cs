@@ -7,11 +7,11 @@ using Owin;
 using Remotus.API;
 using Remotus.Base;
 
-[assembly: OwinStartup(typeof(Startup), nameof(Startup.Configuration2))]
+[assembly: OwinStartup(typeof(StartupServer), nameof(StartupServer.Configuration2))]
 
 namespace Remotus.API
 {
-    public class Startup
+    public class StartupServer
     {
         public static IServerInfo SelfServer = new ServerInfo { InstanceID = Guid.NewGuid().ToString(), ApiVersion = 1, ApiAddress = new Uri($"http://localhost:9000/api") };
         public static IClientInfo SelfClient = new ClientInfo { ClientID = "1", ApiVersion = 1, ApiAddress = new Uri($"http://localhost:9000/api"), ServerInfo = SelfServer };

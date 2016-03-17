@@ -1,4 +1,4 @@
-﻿namespace FullCtrl.Base
+﻿namespace Remotus.Base
 {
     public class GetWinServicesRequest : IReturn<WinServicesResponse>
     {

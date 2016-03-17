@@ -1,8 +1,7 @@
 ﻿using System;
-using FullCtrl.API.Config;
 using Lux.Config.Xml;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     internal class ServiceInstance : IDisposable
     {

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Lux;
 using Lux.Interfaces;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public static class Extensions
     {

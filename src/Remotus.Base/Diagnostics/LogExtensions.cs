@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     /// <summary>
     /// Extensions to help make logging awesome - this should be installed into the root namespace of your application

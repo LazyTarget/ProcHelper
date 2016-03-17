@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     [Obsolete]
     public interface IWinServiceAPI

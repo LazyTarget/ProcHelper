@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using WindowsInput;
 using WindowsInput.Native;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class InputHelper : IInputHelper
     {

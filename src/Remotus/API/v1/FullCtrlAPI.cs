@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl.API.v1
+namespace Remotus.API.v1
 {
     public partial class FullCtrlAPI : RestClientBase
     {

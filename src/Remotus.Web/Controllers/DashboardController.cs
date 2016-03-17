@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using FullCtrl.Base;
+using Remotus.API;
 
-namespace FullCtrl.Web.Controllers
+namespace Remotus.Web.Controllers
 {
     public class DashboardController : Controller
     {

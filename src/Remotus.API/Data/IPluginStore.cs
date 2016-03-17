@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.Data
+namespace Remotus.API.Data
 {
     public interface IPluginStore
     {

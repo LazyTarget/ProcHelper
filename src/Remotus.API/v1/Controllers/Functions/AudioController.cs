@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FullCtrl.Base;
-using FullCtrl.Plugins.Sound;
+using Remotus.Base;
+using Remotus.Plugins.Sound;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers.Functions
 {
     public class AudioController : BaseController
     {

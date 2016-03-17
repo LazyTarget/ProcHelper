@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using FullCtrl.Base;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Remotus.Base;
 using RestSharp;
 
-namespace FullCtrl
+namespace Remotus.API
 {
     public class ProcessAPI : IProcessAPI
     {

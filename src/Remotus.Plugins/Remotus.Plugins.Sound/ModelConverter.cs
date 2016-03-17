@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using FullCtrl.Base;
 
-namespace FullCtrl.Plugins.Sound
+namespace Remotus.Plugins.Sound
 {
     public class ModelConverter
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace FullCtrl.Web.Areas.HelpPage.ModelDescriptions
+namespace Remotus.Web.Areas.HelpPage.ModelDescriptions
 {
     public interface IModelDocumentationProvider
     {

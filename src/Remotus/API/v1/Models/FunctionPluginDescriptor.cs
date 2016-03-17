@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using FullCtrl.Base;
 using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1
+namespace Remotus.API.v1
 {
     [JsonConverter(typeof(FunctionPluginConverter))]
     public class FunctionPluginDescriptor : IFunctionPlugin

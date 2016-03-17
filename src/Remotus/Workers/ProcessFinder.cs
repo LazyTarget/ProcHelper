@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class ProcessFinder : IProcessFinder
     {

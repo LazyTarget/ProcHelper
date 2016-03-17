@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AudioSwitcher.AudioApi.CoreAudio;
-using FullCtrl.Base;
 using Lux;
 using Lux.Interfaces;
+using Remotus.Base;
 
-namespace FullCtrl.Plugins.Sound
+namespace Remotus.Plugins.Sound
 {
     public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction, IFunction<IList<AudioDevice>>
     {

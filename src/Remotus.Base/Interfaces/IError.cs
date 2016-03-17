@@ -1,4 +1,4 @@
-﻿namespace FullCtrl.Base
+﻿namespace Remotus.Base
 {
     public interface IError
     {

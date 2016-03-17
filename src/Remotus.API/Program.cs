@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using FullCtrl.Base;
 using Lux.Extensions;
 using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     class Program
     {
@@ -44,7 +44,7 @@ namespace FullCtrl.API
 
         private static void RunService(string[] args)
         {
-            var winService = new WinService(Service);
+            var winService = new WinService.WinService(Service);
             var services = new System.ServiceProcess.ServiceBase[] { winService };
             System.ServiceProcess.ServiceBase.Run(services);
         }

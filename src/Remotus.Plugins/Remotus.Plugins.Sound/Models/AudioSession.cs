@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using FullCtrl.Base;
 using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.Plugins.Sound
+namespace Remotus.Plugins.Sound
 {
     public class AudioSession
     {

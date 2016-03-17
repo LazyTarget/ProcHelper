@@ -2,7 +2,7 @@
 using System.Configuration.Install;
 using System.ServiceProcess;
 
-namespace FullCtrl.API
+namespace Remotus.API.WinService
 {
     [RunInstaller(true)]
     public class WinServiceInstaller : Installer

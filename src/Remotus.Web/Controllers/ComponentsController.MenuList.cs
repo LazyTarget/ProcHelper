@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using FullCtrl.Web.Models;
+using Remotus.Web.Models;
 
-namespace FullCtrl.Web.Controllers
+namespace Remotus.Web.Controllers
 {
     public partial class ComponentsController
     {

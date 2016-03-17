@@ -1,7 +1,7 @@
-﻿using FullCtrl.Base;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1
+namespace Remotus.API.v1
 {
     [JsonConverter(typeof(FunctionDescriptorConverter))]
     public class FunctionDescriptor : IFunctionDescriptor

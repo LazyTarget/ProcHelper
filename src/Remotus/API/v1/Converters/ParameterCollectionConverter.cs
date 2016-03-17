@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FullCtrl.Base;
 using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1
+namespace Remotus.API.v1
 {
     public class ParameterCollectionConverter : JsonConverter
     {

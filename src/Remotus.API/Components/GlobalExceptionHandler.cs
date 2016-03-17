@@ -1,13 +1,12 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Results;
-using FullCtrl.API.v1.Models;
-using FullCtrl.Base;
+using Remotus.API.v1.Models;
+using Remotus.Base;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class GlobalExceptionHandler : ExceptionHandler
     {

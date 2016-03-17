@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace FullCtrl.Web.Models
+namespace Remotus.Web.Models
 {
     public class MenuListViewModel
     {

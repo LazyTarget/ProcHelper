@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using FullCtrl.API.Config;
-using FullCtrl.API.Models;
-using FullCtrl.Base;
 using Microsoft.Owin.Hosting;
+using Remotus.Base;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class FullCtrlServer : IDisposable
     {
@@ -37,7 +34,7 @@ namespace FullCtrl.API
 
         protected virtual IDisposable StartAsSelftHost(StartOptions options)
         {
-            var res = WebApp.Start<Startup>(options);
+            var res = WebApp.Start<StartupServer>(options);
             return res;
         }
 

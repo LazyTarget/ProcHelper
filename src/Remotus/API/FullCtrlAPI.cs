@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FullCtrl.Base;
-using FullCtrl.Plugins.Sound;
+using Remotus.Base;
+using Remotus.Plugins.Sound;
 
-namespace FullCtrl
+namespace Remotus.API
 {
     [Obsolete]
     public class FullCtrlAPI : IFullCtrlAPI

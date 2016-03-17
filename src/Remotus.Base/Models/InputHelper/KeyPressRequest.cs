@@ -1,6 +1,6 @@
 ﻿using WindowsInput.Native;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public class KeyPressRequest : IReturn<KeyResponse>
     {

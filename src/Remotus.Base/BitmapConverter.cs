@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public class BitmapConverter : JsonConverter
     {

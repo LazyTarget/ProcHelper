@@ -3,7 +3,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http.Description;
 
-namespace FullCtrl.Web.Areas.HelpPage
+namespace Remotus.Web.Areas.HelpPage
 {
     public static class ApiDescriptionExtensions
     {

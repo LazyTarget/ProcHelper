@@ -1,7 +1,7 @@
-﻿using FullCtrl.API.v1.Models;
-using FullCtrl.Base;
+﻿using Remotus.API.v1.Models;
+using Remotus.Base;
 
-namespace FullCtrl.API.Interfaces
+namespace Remotus.API
 {
     public interface IBaseController
     {

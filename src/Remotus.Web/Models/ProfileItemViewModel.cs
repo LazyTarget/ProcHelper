@@ -1,4 +1,4 @@
-namespace FullCtrl.Web.Models
+namespace Remotus.Web.Models
 {
     public class ProfileItemViewModel
     {

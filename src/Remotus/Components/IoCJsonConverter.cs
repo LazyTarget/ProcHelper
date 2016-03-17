@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class IoCJsonConverter : JsonConverter
     {

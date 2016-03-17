@@ -5,9 +5,9 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.Web
+namespace Remotus.Web
 {
     public class MvcApplication : HttpApplication
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FullCtrl.Base;
-using FullCtrl.Plugins.Sound;
+using Remotus.Base;
+using Remotus.Plugins.Sound;
 using RestSharp;
 
-namespace FullCtrl
+namespace Remotus.API
 {
     public class AudioControllerAPI : IAudioControllerAPI
     {

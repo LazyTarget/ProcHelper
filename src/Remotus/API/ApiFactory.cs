@@ -1,7 +1,6 @@
-﻿using System;
-using FullCtrl.Base;
+﻿using Remotus.Base;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class ApiFactory
     {

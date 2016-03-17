@@ -4,7 +4,7 @@ using System.Linq;
 using System.ServiceProcess;
 using Microsoft.Win32;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public class WinServiceDto
     {

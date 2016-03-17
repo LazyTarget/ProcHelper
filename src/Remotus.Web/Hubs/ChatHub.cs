@@ -1,10 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
-using Microsoft.AspNet.SignalR;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNet.SignalR;
 
-namespace FullCtrl.Web.Hubs
+namespace Remotus.Web.Hubs
 {
     public class ChatHub : Hub
     {

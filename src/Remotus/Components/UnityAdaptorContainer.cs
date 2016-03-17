@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.Unity;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class UnityAdaptorContainer : IContainer
     {

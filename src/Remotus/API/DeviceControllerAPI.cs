@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
-using FullCtrl.Base;
+using Remotus.Base;
 using RestSharp;
 
-namespace FullCtrl
+namespace Remotus.API
 {
     public class DeviceControllerAPI : IDeviceControllerAPI
     {

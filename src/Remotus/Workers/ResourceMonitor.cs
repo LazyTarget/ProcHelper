@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class ResourceMonitor
     {

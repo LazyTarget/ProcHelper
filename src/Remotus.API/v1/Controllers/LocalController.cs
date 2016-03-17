@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FullCtrl.API.Data;
-using FullCtrl.Base;
 using Newtonsoft.Json;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers
 {
     public class LocalController : BaseController
     {

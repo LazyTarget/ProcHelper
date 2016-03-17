@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class ProcessHelper : IProcessHelper, IProcessFinder
     {

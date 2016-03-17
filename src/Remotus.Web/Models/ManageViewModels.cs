@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
-namespace FullCtrl.Web.Models
+namespace Remotus.Web.Models
 {
     public class IndexViewModel
     {

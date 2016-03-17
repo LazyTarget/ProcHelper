@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public partial class Credentials
     {

@@ -11,10 +11,10 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
-using FullCtrl.Web.Areas.HelpPage.ModelDescriptions;
-using FullCtrl.Web.Areas.HelpPage.Models;
+using Remotus.Web.Areas.HelpPage.ModelDescriptions;
+using Remotus.Web.Areas.HelpPage.Models;
 
-namespace FullCtrl.Web.Areas.HelpPage
+namespace Remotus.Web.Areas.HelpPage
 {
     public static class HelpPageConfigurationExtensions
     {

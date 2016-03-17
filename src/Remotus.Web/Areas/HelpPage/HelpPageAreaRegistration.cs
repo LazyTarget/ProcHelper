@@ -1,7 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace FullCtrl.Web.Areas.HelpPage
+namespace Remotus.Web.Areas.HelpPage
 {
     public class HelpPageAreaRegistration : AreaRegistration
     {

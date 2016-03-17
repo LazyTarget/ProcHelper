@@ -4,7 +4,7 @@ using System.Web.Http.ModelBinding;
 using Lux;
 using Lux.Interfaces;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class CustomObjectModelBinder : IModelBinder
     {

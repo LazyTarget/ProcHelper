@@ -1,7 +1,7 @@
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace FullCtrl.API
+namespace Remotus.API
 {
     public class DebugActionFilter : ActionFilterAttribute
     {

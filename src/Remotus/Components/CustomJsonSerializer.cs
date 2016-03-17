@@ -1,13 +1,13 @@
 using System.IO;
 using System.Linq;
-using FullCtrl.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Remotus.Base;
 using RestSharp;
 using RestSharp.Deserializers;
 using RestSharp.Serializers;
 
-namespace FullCtrl
+namespace Remotus
 {
     /// <summary>
 	/// Default JSON serializer for request bodies

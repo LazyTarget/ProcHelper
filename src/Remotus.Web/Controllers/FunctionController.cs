@@ -4,14 +4,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http.Results;
 using System.Web.Mvc;
-using FullCtrl.Base;
-using FullCtrl.Web.Models;
 using Lux;
+using Remotus.API.v1;
+using Remotus.Base;
+using Remotus.Web.Models;
 
-namespace FullCtrl.Web.Controllers
+namespace Remotus.Web.Controllers
 {
     public class FunctionController : Controller
     {
@@ -130,7 +129,7 @@ namespace FullCtrl.Web.Controllers
 
         private async Task<IResponseBase<IEnumerable<IPlugin>>> GetPlugins(string clientID)
         {
-            var api = new FullCtrl.API.v1.FullCtrlAPI();
+            var api = new FullCtrlAPI();
 
             IResponseBase<IEnumerable<IPlugin>> response =
                 clientID != null
@@ -143,7 +142,7 @@ namespace FullCtrl.Web.Controllers
 
         private async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
         {
-            var api = new FullCtrl.API.v1.FullCtrlAPI();
+            var api = new FullCtrlAPI();
 
             IResponseBase<IFunctionResult> response =
                 clientID != null

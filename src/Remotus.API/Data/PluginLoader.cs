@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using System.Threading.Tasks;
-using FullCtrl.Base;
-using FullCtrl.Plugins.Sound;
 using Lux.IO;
+using Remotus.Base;
 using Remotus.Plugins.Process;
+using Remotus.Plugins.Sound;
 
-namespace FullCtrl.API.Data
+namespace Remotus.API.Data
 {
     public class PluginLoader : IPluginStore
     {

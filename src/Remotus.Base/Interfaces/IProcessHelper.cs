@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public interface IProcessHelper : IProcessFinder
     {

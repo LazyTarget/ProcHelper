@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     [Obsolete]
     public interface IDeviceControllerAPI

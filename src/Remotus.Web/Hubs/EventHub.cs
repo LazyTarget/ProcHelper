@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
-namespace FullCtrl.Web.Hubs
+namespace Remotus.Web.Hubs
 {
     public class EventHub : Hub
     {

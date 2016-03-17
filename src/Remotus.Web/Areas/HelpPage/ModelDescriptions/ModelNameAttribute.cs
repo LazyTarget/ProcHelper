@@ -1,6 +1,6 @@
 using System;
 
-namespace FullCtrl.Web.Areas.HelpPage.ModelDescriptions
+namespace Remotus.Web.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
     /// Use this attribute to change the name of the <see cref="ModelDescription"/> generated for a type.

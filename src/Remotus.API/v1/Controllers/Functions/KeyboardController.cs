@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using FullCtrl.API.Interfaces;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers.Functions
 {
     public class KeyboardController : BaseController
     {

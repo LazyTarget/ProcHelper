@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
+using Remotus.Web;
 
-[assembly: OwinStartup(typeof(FullCtrl.Web.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 
-namespace FullCtrl.Web
+namespace Remotus.Web
 {
     public partial class Startup
     {

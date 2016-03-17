@@ -1,17 +1,14 @@
 ﻿using System;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.DataProtection;
-using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
-using FullCtrl.Web.Models;
-using FullCtrl.Web.Providers;
+using Remotus.Web.Models;
+using Remotus.Web.Providers;
 
-namespace FullCtrl.Web
+namespace Remotus.Web
 {
     public partial class Startup
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public class ProcessDto : IProcessDto
     {

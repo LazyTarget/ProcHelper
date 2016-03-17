@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.Plugins.Sound
+namespace Remotus.Plugins.Sound
 {
     public class SoundFunctionPlugin : IFunctionPlugin
     {

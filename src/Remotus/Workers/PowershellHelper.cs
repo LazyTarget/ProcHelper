@@ -1,6 +1,6 @@
-﻿using FullCtrl.Base;
+﻿using Remotus.Base;
 
-namespace FullCtrl
+namespace Remotus
 {
     public class PowershellHelper : IPowershellHelper
     {

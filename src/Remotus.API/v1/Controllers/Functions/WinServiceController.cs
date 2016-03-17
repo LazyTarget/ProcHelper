@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
 using System.Web.Http;
-using FullCtrl.API.v1.Models;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers.Functions
 {
     public class WinServiceController : BaseController
     {

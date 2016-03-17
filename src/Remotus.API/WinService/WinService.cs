@@ -1,4 +1,4 @@
-﻿namespace FullCtrl.API
+﻿namespace Remotus.API.WinService
 {
     /// <summary>
     /// Class exposed for Windows Service

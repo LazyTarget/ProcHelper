@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl.Plugins.Sound
+namespace Remotus.Plugins.Sound
 {
     [Flags]
     public enum AudioDeviceType

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FullCtrl
+namespace Remotus
 {
     public interface IContainer
     {

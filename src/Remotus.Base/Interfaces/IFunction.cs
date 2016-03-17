@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     public interface IFunction : IDisposable
     {

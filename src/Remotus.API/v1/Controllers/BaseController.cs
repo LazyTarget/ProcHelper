@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Routing;
-using FullCtrl.API.Interfaces;
-using FullCtrl.API.Models;
-using FullCtrl.API.v1.Models;
-using FullCtrl.Base;
 using Lux;
 using Lux.Interfaces;
+using Remotus.API.v1.Models;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers
 {
     public abstract class BaseController : ApiController, IBaseController
     {

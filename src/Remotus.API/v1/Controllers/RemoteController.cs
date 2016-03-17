@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FullCtrl.API.Models;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers
 {
     public class RemoteController : BaseController
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Models
+namespace Remotus.API.v1.Models
 {
     public static class ResponseBase
     {

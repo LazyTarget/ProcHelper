@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace FullCtrl.Base
+namespace Remotus.Base
 {
     [Obsolete]
     public interface IProcessAPI

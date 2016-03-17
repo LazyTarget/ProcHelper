@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
-using FullCtrl.Base;
+using Remotus.Base;
 
-namespace FullCtrl.API.v1.Controllers
+namespace Remotus.API.v1.Controllers.Functions
 {
     public class ResourceMonitorController : BaseController
     {

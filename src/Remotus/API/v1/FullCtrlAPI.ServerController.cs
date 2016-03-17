@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FullCtrl.Base;
+using Remotus.Base;
 using RestSharp;
 
-namespace FullCtrl.API.v1
+namespace Remotus.API.v1
 {
     public partial class FullCtrlAPI
     {

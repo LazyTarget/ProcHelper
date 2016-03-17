@@ -1,10 +1,10 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using FullCtrl.Web.Areas.HelpPage.ModelDescriptions;
-using FullCtrl.Web.Areas.HelpPage.Models;
+using Remotus.Web.Areas.HelpPage.ModelDescriptions;
+using Remotus.Web.Areas.HelpPage.Models;
 
-namespace FullCtrl.Web.Areas.HelpPage.Controllers
+namespace Remotus.Web.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.

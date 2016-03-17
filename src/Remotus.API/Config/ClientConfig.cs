@@ -6,7 +6,7 @@ using Lux;
 using Lux.Interfaces;
 using Lux.Xml;
 
-namespace FullCtrl.API.Config
+namespace Remotus.API
 {
     public class ClientConfig : Lux.Config.Xml.XmlConfigBase
     {

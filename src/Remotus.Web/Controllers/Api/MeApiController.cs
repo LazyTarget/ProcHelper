@@ -1,10 +1,10 @@
 ﻿using System.Web;
 using System.Web.Http;
-using FullCtrl.Web.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Remotus.Web.Models;
 
-namespace FullCtrl.Web.Controllers.Api
+namespace Remotus.Web.Controllers.Api
 {
     [Authorize]
     public class MeApiController : ApiController
