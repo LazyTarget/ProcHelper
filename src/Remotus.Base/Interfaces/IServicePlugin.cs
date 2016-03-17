@@ -2,19 +2,8 @@
 
 namespace FullCtrl.Base
 {
-    public interface IServicePlugin : IPlugin, IDisposable
+    public interface IServicePlugin : IService, IPlugin
     {
-        ServiceStatus Status { get; }
-        void Start();
-        void Stop();
-    }
-
-    public enum ServiceStatus
-    {
-        None,
-        Starting,
-        Running,
-        Stopping,
-        Stopped,
+        
     }
 }

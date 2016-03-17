@@ -71,12 +71,14 @@
     <Compile Include="Diagnostics\Loggers\NullLogger.cs" />
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Interfaces\IServerInfo.cs" />
+    <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\IServicePlugin.cs" />
     <Compile Include="Interfaces\API\IDeviceControllerAPI.cs" />
     <Compile Include="Interfaces\API\IAudioControllerAPI.cs" />

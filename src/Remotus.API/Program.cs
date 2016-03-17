@@ -9,24 +9,14 @@ namespace FullCtrl.API
 {
     class Program
     {
-        private static ApiService _service;
-        internal static FullCtrlServer _server;
-        internal static FullCtrlClient _client;
+        internal static ServiceInstance Service;
 
 
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
-
-
-            _server = new FullCtrlServer();
-            _client = new FullCtrlClient();
-
-            _server.Start();
-            _client.Start();
-
-
+            
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager
@@ -39,9 +29,6 @@ namespace FullCtrl.API
                 LogManager.InitializeWith<ConsoleLogger>();
                 RunServiceWithConsole(args);
             }
-
-            _server.Dispose();
-            _client.Dispose();
         }
 
         private static void CurrentDomain_OnFirstChanceException(object sender, FirstChanceExceptionEventArgs eventArgs)
@@ -57,17 +44,16 @@ namespace FullCtrl.API
 
         private static void RunService(string[] args)
         {
-            _service = new ApiService();
-            var winService = new WinService(_service);
+            var winService = new WinService(Service);
             var services = new System.ServiceProcess.ServiceBase[] { winService };
             System.ServiceProcess.ServiceBase.Run(services);
         }
         
         private static void RunServiceWithConsole(string[] args)
         {
-            using (_service = new ApiService())
+            using (Service = new ServiceInstance())
             {
-                _service.Start(args);
+                Service.Start(args);
 
                 string input = null;
                 while (true)
@@ -79,13 +65,18 @@ namespace FullCtrl.API
                         Console.WriteLine("Are you sure you wish to stop the service? (y/n)");
 
                     input = Console.ReadLine();
+                    if (input == "cls")
+                    {
+                        Console.Clear();
+                        continue;
+                    }
                     if (input == "exit" || input == "stop")
                     {
                         continue;
                     }
                     if (input == "y" && (prevInput == "stop" || prevInput == "exit"))
                     {
-                        _service.Stop();
+                        Service.Stop();
                         break;
                     }
 

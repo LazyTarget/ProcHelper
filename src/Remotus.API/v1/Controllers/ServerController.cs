@@ -20,7 +20,7 @@ namespace FullCtrl.API.v1.Controllers
             IEnumerable<IClientInfo> result = null;
             try
             {
-                result = Program._server?.GetClients();
+                result = Program.Service?.Server?.GetClients();
 
                 var response = CreateResponse(result);
                 return response;
@@ -39,7 +39,7 @@ namespace FullCtrl.API.v1.Controllers
         {
             try
             {
-                object result = Program._server?.RegisterClient(clientInfo);
+                object result = Program.Service?.Server?.RegisterClient(clientInfo);
 
                 var response = CreateResponse(result);
                 return response;

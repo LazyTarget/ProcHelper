@@ -5,8 +5,8 @@ using FullCtrl.API.Config;
 using FullCtrl.API.Data;
 using FullCtrl.API.Models;
 using FullCtrl.Base;
-using Lux.Config.Xml;
 using Lux.Extensions;
+using Microsoft.Owin.Hosting;
 
 namespace FullCtrl.API
 {
@@ -17,6 +17,7 @@ namespace FullCtrl.API
         private bool _started;
         private bool _disposed;
         private IClientInfo _clientInfo;
+        private IDisposable _server;
 
         public FullCtrlClient()
         {
@@ -56,19 +57,32 @@ namespace FullCtrl.API
         public IEnumerable<IPlugin> GetPlugins()
         {
             return _plugins.Values;
-        } 
+        }
 
-        public void Start()
+
+        protected virtual StartOptions GetStartOptions(ClientConfig config)
+        {
+            var options = new StartOptions();
+            options.Urls.Add("http://+:9000");
+            options.Urls.Add("http://localhost:9000");
+            return options;
+        }
+
+        protected virtual IDisposable StartAsSelftHost(StartOptions options)
+        {
+            var res = WebApp.Start<Startup>(options);
+            return res;
+        }
+
+
+        public virtual void Start(ClientConfig config)
         {
             if (_started)
                 return;
             _started = true;
 
-            // Config
-            var descriptorFactory = new AppConfigDescriptorFactory();
-            var descriptor = descriptorFactory.CreateDescriptor<ClientConfig>();
-            //Config = Lux.Framework.ConfigManager.Load<ClientConfig>(descriptor);
-            
+
+            // Info
             _clientInfo = new ClientInfo
             {
                 ApiAddress = Config?.ClientApiAddress,
@@ -80,6 +94,16 @@ namespace FullCtrl.API
                     ApiVersion = 1,
                 },
             };
+
+
+            // Start WebAPI
+            Console.WriteLine("Server starting");
+
+            var options = GetStartOptions(config);
+            _server = StartAsSelftHost(options);
+
+            Console.WriteLine("Server started");
+
 
             // Plugins
             LoadPlugins();
@@ -102,8 +126,10 @@ namespace FullCtrl.API
             }
         }
 
+
         public void Stop()
         {
+            // Stop plugins
             lock (_plugins)
             {
                 _started = false;
@@ -122,15 +148,37 @@ namespace FullCtrl.API
                     }
                 }
             }
+
+
+            // Stop WebAPI
+            if (_server != null)
+            {
+                Console.WriteLine("Server stopping");
+                _server.Dispose();
+                _server = null;
+                Console.WriteLine("Server stopped");
+            }
         }
+
 
         public void Dispose()
         {
             if (_disposed)
                 return;
-            Stop();
-            _plugins.Clear();
             _disposed = true;
+            try
+            {
+                Stop();
+
+                _plugins.Clear();
+
+                _server?.Dispose();
+                _server = null;
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace FullCtrl.API.v1.Controllers
             IEnumerable<IPlugin> result = null;
             try
             {
-                result = Program._client?.GetPlugins();
+                result = Program.Service?.Client?.GetPlugins();
 
                 var response = CreateResponse(result);
                 return response;
@@ -40,7 +40,7 @@ namespace FullCtrl.API.v1.Controllers
             IEnumerable<IFunctionPlugin> result = null;
             try
             {
-                result = Program._client?.GetPlugins().OfType<IFunctionPlugin>();
+                result = Program.Service?.Client?.GetPlugins().OfType<IFunctionPlugin>();
 
                 var response = CreateResponse(result);
                 return response;
@@ -60,7 +60,7 @@ namespace FullCtrl.API.v1.Controllers
             IEnumerable<IServicePlugin> result = null;
             try
             {
-                result = Program._client?.GetPlugins().OfType<IServicePlugin>();
+                result = Program.Service?.Client?.GetPlugins().OfType<IServicePlugin>();
 
                 var response = CreateResponse(result);
                 return response;

@@ -4,7 +4,7 @@ using System.Linq;
 using FullCtrl.API.Config;
 using FullCtrl.API.Models;
 using FullCtrl.Base;
-using Lux.Config.Xml;
+using Microsoft.Owin.Hosting;
 
 namespace FullCtrl.API
 {
@@ -14,42 +14,75 @@ namespace FullCtrl.API
         private bool _started;
         private bool _disposed;
         private IServerInfo _serverInfo;
+        private IDisposable _server;
 
         public FullCtrlServer()
         {
             _clients = new Dictionary<string, IClientInfo>();
         }
-
-        public ServerConfig Config { get; private set; }
-
+        
         public IServerInfo ServerInfo
         {
             get { return _serverInfo; }
         }
 
+        
+        protected virtual StartOptions GetStartOptions(ServerConfig config)
+        {
+            var options = new StartOptions();
+            options.Urls.Add("http://+:9000");
+            options.Urls.Add("http://localhost:9000");
+            return options;
+        }
 
-        public void Start()
+        protected virtual IDisposable StartAsSelftHost(StartOptions options)
+        {
+            var res = WebApp.Start<Startup>(options);
+            return res;
+        }
+
+
+        public virtual void Start(ServerConfig config)
         {
             if (_started)
                 return;
             _started = true;
 
-
-            var descriptorFactory = new AppConfigDescriptorFactory();
-            var descriptor = descriptorFactory.CreateDescriptor<ServerConfig>();
-            //Config = Lux.Framework.ConfigManager.Load<ServerConfig>(descriptor);
-
+            
+            // Info
             _serverInfo = new ServerInfo
             {
-                ApiAddress = Config?.ServerApiAddress,
+                ApiAddress = config?.ServerApiAddress,
                 ApiVersion = 1,
                 InstanceID = Guid.NewGuid().ToString(),
             };
+
+
+
+            // Start WebAPI
+            Console.WriteLine("Server starting");
+
+            var options = GetStartOptions(config);
+            _server = StartAsSelftHost(options);
+
+            Console.WriteLine("Server started");
         }
 
         public void Stop()
         {
             _started = false;
+
+
+            // Stop WebAPI
+            if (_server != null)
+            {
+                Console.WriteLine("Server stopping");
+                _server.Dispose();
+                _server = null;
+                Console.WriteLine("Server stopped");
+            }
+
+            // Clients
             _clients.Clear();
         }
 
@@ -75,9 +108,9 @@ namespace FullCtrl.API
         {
             if (_disposed)
                 return;
+            _disposed = true;
             Stop();
             _clients.Clear();
-            _disposed = true;
         }
     }
 }

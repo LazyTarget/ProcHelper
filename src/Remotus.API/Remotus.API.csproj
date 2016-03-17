@@ -137,7 +137,7 @@
     <Compile Include="WinService\WinServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ApiService.cs" />
+    <Compile Include="ServiceInstance.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -5,47 +5,57 @@
     /// </summary>
     public class WinService : System.ServiceProcess.ServiceBase
     {
-        public const string ServiceName = "FullCtrl.API";
-        public const string DisplayName = "FullCtrl API";
+        public const string ServiceName = "Remotus";
+        public const string DisplayName = "Remotus";
         public const string Description = "Windows Service which can take requests for managing processes and services";
 
-        internal ApiService ApiService { get; private set; }
+        private ServiceInstance _serviceInstance;
 
 
         public WinService()
         {
-            ApiService = new ApiService();
+            _serviceInstance = new ServiceInstance();
         }
         
-        internal WinService(ApiService apiService)
+        internal WinService(ServiceInstance serviceInstance)
         {
-            ApiService = apiService;
+            _serviceInstance = serviceInstance;
         }
 
 
         protected override void OnStart(string[] args)
         {
-            ApiService.Start(args);
+            _serviceInstance?.Start(args);
+
             base.OnStart(args);
         }
 
         protected override void OnPause()
         {
-            //ApiService.Pause();
+            //ApiService?.Pause();
             base.OnPause();
         }
 
         protected override void OnContinue()
         {
-            //ApiService.Continue();
+            //ApiService?.Continue();
+
             base.OnContinue();
         }
 
         protected override void OnStop()
         {
-            ApiService.Stop();
+            _serviceInstance?.Stop();
+
             base.OnStop();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            _serviceInstance?.Dispose();
+            _serviceInstance = null;
+
+            base.Dispose(disposing);
+        }
     }
 }
