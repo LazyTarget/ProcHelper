@@ -122,7 +122,7 @@ namespace Remotus.Base
                 response.Error.Throw();
         }
 
-        public static void EnsureSuccess(this IResponseBase response)
+        public static void EnsureSuccess(this IResponseBase response, string errorMessage = null)
         {
             try
             {
@@ -132,6 +132,8 @@ namespace Remotus.Base
             }
             catch (Exception ex)
             {
+                if (!string.IsNullOrEmpty(errorMessage))
+                    throw new Exception(errorMessage, ex);
                 throw;
             }
         }

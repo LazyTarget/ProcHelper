@@ -24,7 +24,8 @@ namespace Remotus.Web.Controllers
         public async Task<PluginViewModel> GetPluginViewModel(string clientID, string pluginName)
         {
             var resp = await GetFunctionPlugins(clientID);
-            var plugin = resp?.FirstOrDefault(x => x.Name == pluginName);
+            resp.EnsureSuccess("Error getting function plugins");
+            var plugin = resp.Result?.FirstOrDefault(x => x.Name == pluginName);
             if (plugin == null)
                 throw new Exception($"Plugin '{pluginName}' not found");
 
@@ -56,7 +57,8 @@ namespace Remotus.Web.Controllers
             try
             {
                 var resp = await GetFunctionPlugins(clientID);
-                var plugin = resp?.FirstOrDefault(x => x.Name == pluginName);
+                resp.EnsureSuccess("Error getting function plugins");
+                var plugin = resp.Result?.FirstOrDefault(x => x.Name == pluginName);
                 if (plugin == null)
                     throw new Exception($"Plugin '{pluginName}' not found");
 
@@ -85,6 +87,7 @@ namespace Remotus.Web.Controllers
                 //var result = await function.Execute(arg);
 
                 var response = await ExecuteFunction(clientID, pluginName, functionName, arg);
+                response.EnsureSuccess();
                 //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
                 
                 var json = serializer.Serialize(response);
@@ -114,14 +117,7 @@ namespace Remotus.Web.Controllers
         }
 
 
-
-        private async Task<IEnumerable<IFunctionPlugin>> GetFunctionPlugins(string clientID)
-        {
-            var resp = await GetPlugins(clientID);
-            var result = resp?.Result?.OfType<IFunctionPlugin>().ToList();
-            return result;
-        }
-
+        
 
         private async Task<IResponseBase<IEnumerable<IPlugin>>> GetPlugins(string clientID)
         {
@@ -131,6 +127,28 @@ namespace Remotus.Web.Controllers
                 clientID != null
                     ? await api.GetRemotePlugins(clientID)
                     : await api.GetLocalPlugins();
+            return response;
+        }
+
+        private async Task<IResponseBase<IEnumerable<IFunctionPlugin>>> GetFunctionPlugins(string clientID)
+        {
+            var api = new FullCtrlAPI();
+
+            IResponseBase<IEnumerable<IFunctionPlugin>> response =
+                clientID != null
+                    ? await api.GetRemoteFunctionPlugins(clientID)
+                    : await api.GetLocalFunctionPlugins();
+            return response;
+        }
+
+        private async Task<IResponseBase<IEnumerable<IServicePlugin>>> GetServicePlugins(string clientID)
+        {
+            var api = new FullCtrlAPI();
+
+            IResponseBase<IEnumerable<IServicePlugin>> response =
+                clientID != null
+                    ? await api.GetRemoteServicePlugins(clientID)
+                    : await api.GetLocalServicePlugins();
             return response;
         }
 
