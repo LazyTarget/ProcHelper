@@ -25,9 +25,10 @@ namespace Remotus.API
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Services.Replace(typeof(IHttpControllerSelector), new NamespaceHttpControllerSelector(config));
             config.Filters.Add(new DebugActionFilter());
+            config.Filters.Add(new ControllerCategoryActionFilterAttribute("Client"));
 
             
-            //config.MapHttpAttributeRoutes();
+            config.MapHttpAttributeRoutes();
 
             var r = config.Routes.MapHttpRoute(
                 name: "DefaultApi",

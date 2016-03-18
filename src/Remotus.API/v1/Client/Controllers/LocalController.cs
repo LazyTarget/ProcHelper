@@ -12,6 +12,7 @@ using Remotus.Base;
 
 namespace Remotus.API.v1.Client.Controllers
 {
+    [ControllerCategory("Client")]
     public class LocalController : ApiController
     {
         protected ResponseFactory ResponseFactory => new ResponseFactory();

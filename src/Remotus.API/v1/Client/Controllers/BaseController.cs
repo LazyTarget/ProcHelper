@@ -9,6 +9,7 @@ using Remotus.Base;
 namespace Remotus.API.v1.Client.Controllers
 {
     [Obsolete]
+    [ControllerCategory("Client")]
     public abstract class BaseController : ApiController, IBaseController
     {
         protected IConverter Converter = new Converter();

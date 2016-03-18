@@ -103,6 +103,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
+    <Compile Include="Components\ControllerCategoryAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ServerConfig.cs" />
     <Compile Include="Config\ClientConfig.cs" />

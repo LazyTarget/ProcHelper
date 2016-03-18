@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Remotus.Base;
 
-namespace Remotus.API.v1.Client.Controllers
+namespace Remotus.API.v1.Server.Controllers
 {
-    public class RemoteController : BaseController
+    [ControllerCategory("Server")]
+    public class RemoteController : API.v1.Client.Controllers.BaseController
     {
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/remote/plugins")]
