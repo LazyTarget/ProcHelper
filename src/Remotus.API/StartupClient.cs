@@ -31,17 +31,18 @@ namespace Remotus.API
             config.Filters.Add(new DebugActionFilter());
 
 
-            //config.MapHttpAttributeRoutes();
+            config.MapHttpAttributeRoutes();
 
             //config.Services.Replace(typeof(IHttpControllerSelector), new UriVersionComponentControllerSelector(config));
             
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{version}/{controller}/{id}",
+                routeTemplate: "api/{version}/{controller}/{action}/{id}",
                 defaults: new
                 {
                     id = RouteParameter.Optional,
                     version = "v1",
+                    action = "Index",
                     namespaces = new string[]
                     {
                         "Remotus.API.v1.Client.Controllers",

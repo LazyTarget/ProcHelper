@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -9,6 +10,10 @@ using Remotus.Base;
 
 namespace Remotus.API.v1.Client.Controllers
 {
+    [KnownType(typeof(v1.Models.ResponseBase<>))]
+    [KnownType(typeof(v1.Models.ResponseBase<IEnumerable<IPlugin>>))]
+    [KnownType(typeof(DefaultResponseBase<>))]
+    [KnownType(typeof(DefaultResponseBase<IEnumerable<IPlugin>>))]
     public class LocalController : BaseController
     {
         [HttpGet, HttpPost, HttpPut]

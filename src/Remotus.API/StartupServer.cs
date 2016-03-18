@@ -30,11 +30,12 @@ namespace Remotus.API
             
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{version}/{controller}/{id}",
+                routeTemplate: "api/{version}/{controller}/{action}/{id}",
                 defaults: new
                 {
                     id = RouteParameter.Optional,
                     version = "v1",
+                    action = "Index",
                     namespaces = new string[]
                     {
                         "Remotus.API.v1.Server.Controllers",
