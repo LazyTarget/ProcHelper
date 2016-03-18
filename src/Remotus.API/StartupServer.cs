@@ -1,5 +1,7 @@
 ﻿using System.Web.Http;
+using System.Web.Http.Dispatcher;
 using System.Web.Http.ExceptionHandling;
+using System.Web.Http.Routing;
 using Owin;
 
 namespace Remotus.API
@@ -21,12 +23,13 @@ namespace Remotus.API
             config.Formatters.JsonFormatter.SerializerSettings = settings;
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+            config.Services.Replace(typeof(IHttpControllerSelector), new NamespaceHttpControllerSelector(config));
             config.Filters.Add(new DebugActionFilter());
 
-
+            
             //config.MapHttpAttributeRoutes();
             
-            config.Routes.MapHttpRoute(
+            var r = config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{version}/{controller}/{action}/{id}",
                 defaults: new
@@ -34,13 +37,13 @@ namespace Remotus.API
                     id = RouteParameter.Optional,
                     version = "v1",
                     action = "Index",
-                    namespaces = new string[]
-                    {
-                        "Remotus.API.v1.Server.Controllers",
-                        "Remotus.API.v2.Server.Controllers",
-                    },
                 }
             );
+            r.DataTokens["Namespaces"] = new string[]
+            {
+                "Remotus.API.v1.Server.Controllers",
+                "Remotus.API.v2.Server.Controllers"
+            };
 
             app.UseWebApi(config);
         }

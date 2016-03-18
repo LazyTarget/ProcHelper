@@ -15,7 +15,7 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         public async Task<IResponseBase<IEnumerable<AudioSession>>> GetSessions(string deviceID)
         {
             var function = new GetAudioSessionsFunction();
-            var parameters = function.GetParameters();
+            var parameters = function.GetDescriptor().GetParameters();
             parameters.SetParamValue(GetAudioSessionsFunction.ParameterKeys.DeviceID, deviceID);
 
             var arguments = new FunctionArguments();
@@ -49,7 +49,7 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         public async Task<IResponseBase<IEnumerable<AudioDevice>>> GetDevices(AudioDeviceType? deviceType, AudioDeviceState? deviceState)
         {
             var function = new GetAudioDevicesFunction();
-            var parameters = function.GetParameters();
+            var parameters = function.GetDescriptor().GetParameters();
             parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceType, deviceType);
             parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceState, deviceState);
 
@@ -99,7 +99,7 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         public async Task<IResponseBase<object>> ToggleDeviceMute(string deviceID)
         {
             var function = new ToggleMuteAudioDeviceFunction();
-            var parameters = function.GetParameters();
+            var parameters = function.GetDescriptor().GetParameters();
             parameters.SetParamValue(ToggleMuteAudioDeviceFunction.ParameterKeys.DeviceID, deviceID);
 
             var arguments = new FunctionArguments();

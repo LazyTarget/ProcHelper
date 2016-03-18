@@ -115,6 +115,7 @@
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
+    <Compile Include="Components\NamespaceHttpControllerSelector.cs" />
     <Compile Include="StartupServer.cs" />
     <Compile Include="v1\Client\Controllers\Functions\AudioController.cs" />
     <Compile Include="v1\Client\Controllers\BaseController.cs" />
