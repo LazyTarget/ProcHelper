@@ -123,9 +123,11 @@
     <Compile Include="v1\Client\Controllers\Functions\KeyboardController.cs" />
     <Compile Include="v1\Client\Controllers\LocalController.cs" />
     <Compile Include="v1\Client\Controllers\Functions\MouseController.cs" />
-    <Compile Include="v1\Client\Controllers\RemoteController.cs" />
+    <Compile Include="v1\Server\Controllers\RemoteController.cs" />
     <Compile Include="v1\Client\Controllers\Functions\ResourceMonitorController.cs" />
+    <Compile Include="v1\Models\IResponseBaseActionResult.cs" />
     <Compile Include="v1\Models\ResponseBaseActionResult.cs" />
+    <Compile Include="v1\ResponseFactory.cs" />
     <Compile Include="v1\Server\Controllers\ServerController.cs" />
     <Compile Include="v1\Client\Controllers\Functions\WinServiceController.cs" />
     <Compile Include="v1\Client\Controllers\Functions\PowershellController.cs" />

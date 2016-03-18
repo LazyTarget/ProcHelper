@@ -54,7 +54,12 @@ namespace Remotus.API
 
         public IEnumerable<IPlugin> GetPlugins()
         {
-            return _plugins.Values;
+            IList<IPlugin> result;
+            lock (_plugins)
+            {
+                result = _plugins.Values.ToList();
+            }
+            return result;
         }
 
 

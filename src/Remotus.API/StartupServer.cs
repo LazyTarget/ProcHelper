@@ -1,7 +1,5 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
-using Newtonsoft.Json;
 using Owin;
 
 namespace Remotus.API

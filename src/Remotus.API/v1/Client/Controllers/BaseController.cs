@@ -8,6 +8,7 @@ using Remotus.Base;
 
 namespace Remotus.API.v1.Client.Controllers
 {
+    [Obsolete]
     public abstract class BaseController : ApiController, IBaseController
     {
         protected IConverter Converter = new Converter();
@@ -34,6 +35,7 @@ namespace Remotus.API.v1.Client.Controllers
         }
 
 
+        [Obsolete]
         public async Task<IFunctionResult> ExecuteFunction(IFunction function, IFunctionArguments arguments)
         {
             try
@@ -56,7 +58,8 @@ namespace Remotus.API.v1.Client.Controllers
             }
         }
 
-        
+
+        [Obsolete]
         public ResponseBase<TResult> CreateFunctionResponse<TResult>(IFunctionResult functionResult)
         {
             ResponseBase<TResult> response = null;
@@ -77,6 +80,7 @@ namespace Remotus.API.v1.Client.Controllers
         }
 
 
+        [Obsolete]
         public ResponseBase<TResult> CreateResponse<TResult>(TResult result = default(TResult), IError error = null)
         {
             var response = ResponseBase.Create<TResult>(Request, result, error);
@@ -84,12 +88,14 @@ namespace Remotus.API.v1.Client.Controllers
         }
 
 
+        [Obsolete]
         public ResponseBase<object> CreateError(IError error)
         {
             var response = CreateError<object>(error);
             return response;
         }
 
+        [Obsolete]
         public ResponseBase<TResult> CreateError<TResult>(IError error)
         {
             var response = ResponseBase.Create<TResult>(Request);

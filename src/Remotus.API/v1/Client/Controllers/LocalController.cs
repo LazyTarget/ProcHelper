@@ -5,73 +5,80 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Lux.Extensions;
 using Newtonsoft.Json;
+using Remotus.API.v1.Models;
 using Remotus.Base;
 
 namespace Remotus.API.v1.Client.Controllers
 {
-    [KnownType(typeof(v1.Models.ResponseBase<>))]
-    [KnownType(typeof(v1.Models.ResponseBase<IEnumerable<IPlugin>>))]
-    [KnownType(typeof(DefaultResponseBase<>))]
-    [KnownType(typeof(DefaultResponseBase<IEnumerable<IPlugin>>))]
-    public class LocalController : BaseController
+    public class LocalController : ApiController
     {
+        protected ResponseFactory ResponseFactory => new ResponseFactory();
+
+
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins")]
-        public async Task<IResponseBase<IEnumerable<IPlugin>>> GetPlugins()
+        public async Task<IResponseBaseActionResult> GetPlugins()
         {
             IEnumerable<IPlugin> result = null;
             try
             {
                 result = Program.Service?.Client?.GetPlugins();
-
-                var response = CreateResponse(result);
-                return response;
+                
+                var response = ResponseFactory.CreateResponse<IEnumerable<IPlugin>>(this, result: result);
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
             catch (Exception ex)
             {
-                var response = CreateError<IEnumerable<IPlugin>>(DefaultError.FromException(ex));
-                return response;
+                var response = ResponseFactory.CreateResponse<IEnumerable<IPlugin>>(this, error: DefaultError.FromException(ex));
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
         }
 
         
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins/function")]
-        public async Task<IResponseBase<IEnumerable<IFunctionPlugin>>> GetFunctionPlugins()
+        public async Task<IResponseBaseActionResult> GetFunctionPlugins()
         {
             IEnumerable<IFunctionPlugin> result = null;
             try
             {
                 result = Program.Service?.Client?.GetPlugins().OfType<IFunctionPlugin>();
 
-                var response = CreateResponse(result);
-                return response;
+                var response = ResponseFactory.CreateResponse<IEnumerable<IFunctionPlugin>>(this, result: result);
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
             catch (Exception ex)
             {
-                var response = CreateError<IEnumerable<IFunctionPlugin>>(DefaultError.FromException(ex));
-                return response;
+                var response = ResponseFactory.CreateResponse<IEnumerable<IFunctionPlugin>>(this, error: DefaultError.FromException(ex));
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
         }
 
 
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins/service")]
-        public async Task<IResponseBase<IEnumerable<IServicePlugin>>> GetServicePlugins()
+        public async Task<IResponseBaseActionResult> GetServicePlugins()
         {
             IEnumerable<IServicePlugin> result = null;
             try
             {
                 result = Program.Service?.Client?.GetPlugins().OfType<IServicePlugin>();
 
-                var response = CreateResponse(result);
-                return response;
+                var response = ResponseFactory.CreateResponse<IEnumerable<IServicePlugin>>(this, result: result);
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
             catch (Exception ex)
             {
-                var response = CreateError<IEnumerable<IServicePlugin>>(DefaultError.FromException(ex));
-                return response;
+                var response = ResponseFactory.CreateResponse<IEnumerable<IServicePlugin>>(this, error: DefaultError.FromException(ex));
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
         }
 
@@ -79,18 +86,19 @@ namespace Remotus.API.v1.Client.Controllers
 
         [HttpPost, HttpPut]
         [Route("api/v1/local/execute/function")]
-        public async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string pluginName, string functionName)
+        public async Task<IResponseBaseActionResult> ExecuteFunction(string pluginName, string functionName)
         {
             try
             {
-                var pluginResponse = await GetPlugins();
-                if (pluginResponse?.Error != null && !pluginResponse.Error.Handled)
+                var pluginResponse = await GetFunctionPlugins();
+                if (pluginResponse?.Response?.Error != null && !pluginResponse.Response.Error.Handled)
                 {
-                    var response = CreateError<IFunctionResult>(pluginResponse.Error);
-                    return response;
+                    var response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: pluginResponse.Response.Error);
+                    var actionResult = ResponseFactory.CreateActionResult(this, response);
+                    return actionResult;
                 }
 
-                var plugin = pluginResponse?.Result?.FirstOrDefault(x => x.Name == pluginName);
+                var plugin = pluginResponse?.Response?.Result?.CastAs<IEnumerable<IFunctionPlugin>>().FirstOrDefault(x => x.Name == pluginName);
                 if (plugin == null)
                 {
                     throw new Exception($"Plugin '{pluginName}' not found");
@@ -125,13 +133,15 @@ namespace Remotus.API.v1.Client.Controllers
                     var json = await Request.Content.ReadAsStringAsync();
                     var sentArgs = serializer.Deserialize<IFunctionArguments>(new JsonTextReader(new StringReader(json)));
                     arg = sentArgs;
+                    // todo: decide whether base arguments on what the descriptor says
 
                     
                     var function = functionDescriptor.Instantiate();
                     var result = await ExecuteFunction(function, arg);
-
-                    var response = CreateResponse(result);
-                    return response;
+                    
+                    var response = ResponseFactory.CreateResponse<IFunctionResult>(this, result: result);
+                    var actionResult = ResponseFactory.CreateActionResult(this, response);
+                    return actionResult;
                 }
                 else
                 {
@@ -140,8 +150,32 @@ namespace Remotus.API.v1.Client.Controllers
             }
             catch (Exception ex)
             {
-                var response = CreateError<IFunctionResult>(DefaultError.FromException(ex));
-                return response;
+                var response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: DefaultError.FromException(ex));
+                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
+            }
+        }
+
+
+        private async Task<IFunctionResult> ExecuteFunction(IFunction function, IFunctionArguments arguments)
+        {
+            try
+            {
+                IExecutionContext context = new ExecutionContext
+                {
+                    ClientInfo = Program.Service?.Client?.ClientInfo,
+                    Logger = new TraceLogger(),
+                };
+
+                var result = await function.Execute(context, arguments);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var result = new FunctionResult();
+                result.Arguments = arguments;
+                result.Error = DefaultError.FromException(ex);
+                return result;
             }
         }
         
