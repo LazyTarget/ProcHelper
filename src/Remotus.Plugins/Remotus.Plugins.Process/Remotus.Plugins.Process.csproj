@@ -44,7 +44,7 @@
     <Compile Include="Functions\KillProcessFunction.cs" />
     <Compile Include="Functions\GetProcessFunction.cs" />
     <Compile Include="Functions\GetProcessesFunction.cs" />
-    <Compile Include="ProcessManagerPlugin.cs" />
+    <Compile Include="ProcessFunctionPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

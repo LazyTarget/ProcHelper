@@ -67,7 +67,7 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Processes",
-                Href = Url.Action("Plugin", "Function", new { pluginName = "ProcessManagerPlugin" }),
+                Href = Url.Action("Plugin", "Function", new { pluginName = "ProcessFunctionPlugin" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-tasks",
             });

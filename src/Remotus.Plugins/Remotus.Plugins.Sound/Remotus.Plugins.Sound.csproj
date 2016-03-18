@@ -62,15 +62,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetAudioSessionsFunction.cs" />
-    <Compile Include="GetAudioDevicesFunction.cs" />
+    <Compile Include="Functions\GetAudioSessionsFunction.cs" />
+    <Compile Include="Functions\GetAudioDevicesFunction.cs" />
     <Compile Include="ModelConverter.cs" />
     <Compile Include="Models\AudioDevice.cs" />
     <Compile Include="Models\AudioSession.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="SoundFunctionPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ToggleMuteAudioDeviceFunction.cs" />
+    <Compile Include="Functions\ToggleMuteAudioDeviceFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
