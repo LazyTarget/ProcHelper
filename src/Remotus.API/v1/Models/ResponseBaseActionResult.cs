@@ -27,36 +27,9 @@ namespace Remotus.API.v1.Models
 
         public async Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
-            // todo: check Accept header
-            // todo: support for serialization to Xml?
-
-            var toJson = true;
-            if (toJson)
-            {
-                string json;
-                var serializer = _controller.Configuration.Formatters.JsonFormatter.CreateJsonSerializer();
-                using (var stringWriter = new StringWriter())
-                using (var jsonTextWriter = new JsonTextWriter(stringWriter))
-                {
-                    jsonTextWriter.Formatting = Formatting.Indented;
-                    jsonTextWriter.QuoteChar = '"';
-
-                    serializer.Serialize(jsonTextWriter, Response);
-
-                    json = stringWriter.ToString();
-                }
-
-                var encoding = Encoding.UTF8;
-                var mediaType = "application/json";
-                var response = new HttpResponseMessage(HttpStatusCode.OK);
-                response.RequestMessage = _controller.Request;
-                response.Content = new StringContent(json, encoding, mediaType);
-                return response;
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            var actionResult = _controller.Request.CreateFormattedContentResult(Response, HttpStatusCode.OK);
+            var responseMessage = await actionResult.ExecuteAsync(CancellationToken.None);
+            return responseMessage;
         }
 
     }

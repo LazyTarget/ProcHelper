@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Remotus.Base;
 using RestSharp;
 using RestSharp.Deserializers;
@@ -144,7 +145,9 @@ namespace Remotus
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 NullValueHandling = NullValueHandling.Include,
                 DefaultValueHandling = DefaultValueHandling.Include,
+                Formatting = Formatting.Indented,
             };
+            //Settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             Settings.Converters.Add(new API.v1.TypeInfoJsonConverter());
             Settings.Converters.Add(new API.v1.ParameterConverter());
             Settings.Converters.Add(new API.v1.ParameterCollectionConverter());

@@ -15,13 +15,14 @@ namespace Remotus.API
             var error = DefaultError.FromException(context.Exception);
             var response = ResponseBase.CreateError(context.Request, error);
 
-            MediaTypeFormatter formatter = context.RequestContext.Configuration.Formatters.JsonFormatter;
-            var msg = new HttpResponseMessage();
-            msg.StatusCode = HttpStatusCode.InternalServerError;
-            msg.Content = new ObjectContent<IResponseBase<object>>(response, formatter);
+            //MediaTypeFormatter formatter = context.RequestContext.Configuration.Formatters.JsonFormatter;
+            //var msg = new HttpResponseMessage();
+            //msg.StatusCode = HttpStatusCode.InternalServerError;
+            //msg.Content = new ObjectContent<IResponseBase<object>>(response, formatter);
+            //context.Result = new ResponseMessageResult(msg);
 
-            context.Result = new ResponseMessageResult(msg);
-
+            var actionResult = context.Request.CreateFormattedContentResult<IResponseBase>(response, HttpStatusCode.InternalServerError);
+            context.Result = actionResult;
         }
     }
 }

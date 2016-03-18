@@ -103,7 +103,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\ActionCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
+    <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ServerConfig.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Data\IPluginStore.cs" />
     <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
+    <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="FullCtrlClient.cs" />
     <Compile Include="FullCtrlServer.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />

@@ -24,7 +24,7 @@ namespace Remotus.Web.Controllers
         public async Task<PluginViewModel> GetPluginViewModel(string clientID, string pluginName)
         {
             var resp = await GetFunctionPlugins(clientID);
-            var plugin = resp.FirstOrDefault(x => x.Name == pluginName);
+            var plugin = resp?.FirstOrDefault(x => x.Name == pluginName);
             if (plugin == null)
                 throw new Exception($"Plugin '{pluginName}' not found");
 
@@ -52,26 +52,22 @@ namespace Remotus.Web.Controllers
         public async Task<ActionResult> Execute(string clientID, string pluginName, string functionName)
         {
             var serializer = new CustomJsonSerializer();
-            var settings = serializer.GetSerializerSettings();
-            var request = new HttpRequestMessage
-            {
-                Method = new HttpMethod(Request.HttpMethod),
-                RequestUri = Request.Url,
-            };
 
             try
             {
                 var resp = await GetFunctionPlugins(clientID);
-                var plugin = resp.FirstOrDefault(x => x.Name == pluginName);
+                var plugin = resp?.FirstOrDefault(x => x.Name == pluginName);
                 if (plugin == null)
                     throw new Exception($"Plugin '{pluginName}' not found");
 
-                var functionDescriptor = plugin.GetFunctions().FirstOrDefault(x => x.Name == functionName);
+                var functionDescriptor = plugin.GetFunctions()?.FirstOrDefault(x => x.Name == functionName);
                 if (functionDescriptor == null)
                     throw new Exception($"Function '{functionName}' not found");
 
                 var converter = new Converter();
                 var parameters = functionDescriptor.GetParameters();
+                parameters = parameters ?? new ParameterCollection();
+
                 foreach (var param in parameters)
                 {
                     var str = Request.Form["Param_" + param.Key];

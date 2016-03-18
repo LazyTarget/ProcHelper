@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -10,14 +9,14 @@ using Lux.Extensions;
 
 namespace Remotus.API
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public class ControllerCategoryActionFilterAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    public class ActionCategoryActionFilterAttribute : ActionFilterAttribute
     {
-        public ControllerCategoryActionFilterAttribute()
+        public ActionCategoryActionFilterAttribute()
         {
         }
 
-        public ControllerCategoryActionFilterAttribute(string categoryName)
+        public ActionCategoryActionFilterAttribute(string categoryName)
             : this()
         {
             CategoryName = categoryName;
@@ -30,10 +29,10 @@ namespace Remotus.API
         {
             if (!string.IsNullOrEmpty(CategoryName))
             {
-                var descriptor = actionContext?.ControllerContext?.ControllerDescriptor;
-                if (descriptor != null && descriptor.ControllerType != null)
+                var descriptor = actionContext?.ActionDescriptor;
+                if (descriptor != null)
                 {
-                    var attributes = descriptor.ControllerType.GetCustomAttributes<ControllerCategoryAttribute>();
+                    var attributes = descriptor.GetCustomAttributes<ActionCategoryAttribute>();
                     var match = attributes.Any(attr =>
                     {
                         var m = false;
@@ -44,7 +43,7 @@ namespace Remotus.API
 
                     if (!match)
                     {
-                        var error = new HttpError($"Controller is missing category '{CategoryName}'");
+                        var error = new HttpError($"Action is missing category '{CategoryName}'");
                         var actionResult = actionContext.Request.CreateFormattedContentResult(error, HttpStatusCode.NotFound);
                         actionContext.Response = actionResult.ExecuteAsync(CancellationToken.None).WaitForResult();
                         return;
