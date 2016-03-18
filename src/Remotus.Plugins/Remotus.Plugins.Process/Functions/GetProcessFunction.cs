@@ -7,7 +7,7 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class GetProcessFunction : IFunctionDescriptor, IFunction<ProcessDto>
+    public class GetProcessFunction : IFunction<ProcessDto>
     {
         private static System.Diagnostics.Process _proc;
         private IProcessFinder _processFinder;
@@ -17,31 +17,9 @@ namespace Remotus.Plugins.Process
             _processFinder = new ProcessFinder();
         }
 
-        public string Name => nameof(GetProcessFunction);
-
-        public IParameterCollection GetParameters()
+        public IFunctionDescriptor GetDescriptor()
         {
-            var res = new ParameterCollection();
-            res[ParameterKeys.ProcessID] = new Parameter
-            {
-                Name = ParameterKeys.ProcessID,
-                Required = true,
-                Type = typeof(int),
-                Value = null,
-            };
-            //res[ParameterKeys.ProcessName] = new Parameter
-            //{
-            //    Name = ParameterKeys.ProcessName,
-            //    Required = false,
-            //    Type = typeof(string),
-            //    Value = null,
-            //};
-            return res;
-        }
-
-        public IFunction Instantiate()
-        {
-            return this;
+            return new Descriptor();
         }
 
         async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
@@ -80,6 +58,36 @@ namespace Remotus.Plugins.Process
             }
         }
 
+
+        public class Descriptor : IFunctionDescriptor
+        {
+            public string Name => nameof(GetProcessFunction);
+
+            public IParameterCollection GetParameters()
+            {
+                var res = new ParameterCollection();
+                res[ParameterKeys.ProcessID] = new Parameter
+                {
+                    Name = ParameterKeys.ProcessID,
+                    Required = true,
+                    Type = typeof(int),
+                    Value = null,
+                };
+                //res[ParameterKeys.ProcessName] = new Parameter
+                //{
+                //    Name = ParameterKeys.ProcessName,
+                //    Required = false,
+                //    Type = typeof(string),
+                //    Value = null,
+                //};
+                return res;
+            }
+
+            public IFunction Instantiate()
+            {
+                return new GetProcessFunction();
+            }
+        }
 
         public static class ParameterKeys
         {

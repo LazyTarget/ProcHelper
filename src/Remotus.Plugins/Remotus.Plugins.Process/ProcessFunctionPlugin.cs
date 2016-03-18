@@ -10,10 +10,10 @@ namespace Remotus.Plugins.Process
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()
         {
-            yield return new GetProcessFunction();
-            yield return new GetProcessesFunction();
-            yield return new StartProcessFunction();
-            yield return new KillProcessFunction();
+            yield return new GetProcessFunction.Descriptor();
+            yield return new GetProcessesFunction.Descriptor();
+            yield return new StartProcessFunction.Descriptor();
+            yield return new KillProcessFunction.Descriptor();
         }
     }
 }

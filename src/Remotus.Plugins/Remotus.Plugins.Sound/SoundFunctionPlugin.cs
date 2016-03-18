@@ -10,9 +10,9 @@ namespace Remotus.Plugins.Sound
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()
         {
-            yield return new GetAudioDevicesFunction();
-            yield return new GetAudioSessionsFunction();
-            yield return new ToggleMuteAudioDeviceFunction();
+            yield return new GetAudioDevicesFunction.Descriptor();
+            yield return new GetAudioSessionsFunction.Descriptor();
+            yield return new ToggleMuteAudioDeviceFunction.Descriptor();
         }
     }
 }

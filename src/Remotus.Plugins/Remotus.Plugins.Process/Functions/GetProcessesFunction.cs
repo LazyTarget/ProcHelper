@@ -6,7 +6,7 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class GetProcessesFunction : IFunctionDescriptor, IFunction<IList<ProcessDto>>
+    public class GetProcessesFunction : IFunction<IList<ProcessDto>>
     {
         private IProcessFinder _processFinder;
 
@@ -15,24 +15,9 @@ namespace Remotus.Plugins.Process
             _processFinder = new ProcessFinder();
         }
 
-        public string Name => nameof(GetProcessesFunction);
-
-        public IParameterCollection GetParameters()
+        public IFunctionDescriptor GetDescriptor()
         {
-            var res = new ParameterCollection();
-            res[ParameterKeys.ProcessName] = new Parameter
-            {
-                Name = ParameterKeys.ProcessName,
-                Required = false,
-                Type = typeof(string),
-                Value = null,
-            };
-            return res;
-        }
-
-        public IFunction Instantiate()
-        {
-            return this;
+            return new Descriptor();
         }
 
         async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
@@ -69,6 +54,29 @@ namespace Remotus.Plugins.Process
             }
         }
 
+
+        public class Descriptor : IFunctionDescriptor
+        {
+            public string Name => nameof(GetProcessesFunction);
+
+            public IParameterCollection GetParameters()
+            {
+                var res = new ParameterCollection();
+                res[ParameterKeys.ProcessName] = new Parameter
+                {
+                    Name = ParameterKeys.ProcessName,
+                    Required = false,
+                    Type = typeof(string),
+                    Value = null,
+                };
+                return res;
+            }
+
+            public IFunction Instantiate()
+            {
+                return new GetProcessesFunction();
+            }
+        }
 
         public static class ParameterKeys
         {

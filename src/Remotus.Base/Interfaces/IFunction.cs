@@ -5,6 +5,7 @@ namespace Remotus.Base
 {
     public interface IFunction : IDisposable
     {
+        IFunctionDescriptor GetDescriptor();
         Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments);
     }
 

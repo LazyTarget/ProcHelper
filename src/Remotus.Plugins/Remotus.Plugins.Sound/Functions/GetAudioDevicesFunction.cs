@@ -9,7 +9,7 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
-    public class GetAudioDevicesFunction : IFunctionDescriptor, IFunction, IFunction<IList<AudioDevice>>
+    public class GetAudioDevicesFunction : IFunction, IFunction<IList<AudioDevice>>
     {
         private CoreAudioController _audioController = new CoreAudioController();
         private ModelConverter _modelConverter = new ModelConverter();
@@ -20,31 +20,9 @@ namespace Remotus.Plugins.Sound
             
         }
 
-        public string Name => nameof(GetAudioDevicesFunction);
-
-        public IParameterCollection GetParameters()
+        public IFunctionDescriptor GetDescriptor()
         {
-            var res = new ParameterCollection();
-            res[ParameterKeys.DeviceType] = new Parameter
-            {
-                Name = ParameterKeys.DeviceType,
-                Required = false,
-                Type = typeof(AudioDeviceType?),
-                Value = null,
-            };
-            res[ParameterKeys.DeviceState] = new Parameter
-            {
-                Name = ParameterKeys.DeviceState,
-                Required = false,
-                Type = typeof(AudioDeviceState?),
-                Value = null,
-            };
-            return res;
-        }
-
-        IFunction IFunctionDescriptor.Instantiate()
-        {
-            return this;
+            return new Descriptor();
         }
 
         async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
@@ -72,19 +50,19 @@ namespace Remotus.Plugins.Sound
                 IEnumerable<CoreAudioDevice> devices;
                 if (deviceType.HasValue && deviceState.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceType.Value, deviceState.Value);
+                    devices = _audioController?.GetDevices(deviceType.Value, deviceState.Value);
                 }
                 else if (deviceType.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceType.Value);
+                    devices = _audioController?.GetDevices(deviceType.Value);
                 }
                 else if (deviceState.HasValue)
                 {
-                    devices = _audioController.GetDevices(deviceState.Value);
+                    devices = _audioController?.GetDevices(deviceState.Value);
                 }
                 else
                 {
-                    devices = _audioController.GetDevices();
+                    devices = _audioController?.GetDevices();
                 }
                 var res = devices?.Select(_modelConverter.FromAudioDevice).Where(x => x != null).ToList();
 
@@ -103,6 +81,36 @@ namespace Remotus.Plugins.Sound
         }
 
 
+        public class Descriptor : IFunctionDescriptor
+        {
+            public string Name => nameof(GetAudioDevicesFunction);
+
+            public IParameterCollection GetParameters()
+            {
+                var res = new ParameterCollection();
+                res[ParameterKeys.DeviceType] = new Parameter
+                {
+                    Name = ParameterKeys.DeviceType,
+                    Required = false,
+                    Type = typeof(AudioDeviceType?),
+                    Value = null,
+                };
+                res[ParameterKeys.DeviceState] = new Parameter
+                {
+                    Name = ParameterKeys.DeviceState,
+                    Required = false,
+                    Type = typeof(AudioDeviceState?),
+                    Value = null,
+                };
+                return res;
+            }
+
+            IFunction IFunctionDescriptor.Instantiate()
+            {
+                return new GetAudioDevicesFunction();
+            }
+        }
+
         public static class ParameterKeys
         {
             public const string DeviceType = "DeviceType";
@@ -111,7 +119,8 @@ namespace Remotus.Plugins.Sound
 
         public void Dispose()
         {
-            _audioController.Dispose();
+            _audioController?.Dispose();
+            _audioController = null;
         }
     }
 }

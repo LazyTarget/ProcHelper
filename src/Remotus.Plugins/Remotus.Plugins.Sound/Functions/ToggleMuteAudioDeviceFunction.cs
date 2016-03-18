@@ -5,7 +5,7 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
-    public class ToggleMuteAudioDeviceFunction : IFunctionDescriptor, IFunction
+    public class ToggleMuteAudioDeviceFunction : IFunction
     {
         private CoreAudioController _audioController = new CoreAudioController();
 
@@ -14,27 +14,11 @@ namespace Remotus.Plugins.Sound
             
         }
 
-        public string Name => nameof(ToggleMuteAudioDeviceFunction);
-        public bool CanExecuteRemotely => true;
-
-        public IParameterCollection GetParameters()
+        public IFunctionDescriptor GetDescriptor()
         {
-            var res = new ParameterCollection();
-            res[ParameterKeys.DeviceID] = new Parameter
-            {
-                Name = ParameterKeys.DeviceID,
-                Required = false,
-                Type = typeof(string),
-                Value = null,
-            };
-            return res;
+            return new Descriptor();
         }
 
-        IFunction IFunctionDescriptor.Instantiate()
-        {
-            return this;
-        }
-        
         public async Task<IFunctionResult> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
@@ -69,6 +53,30 @@ namespace Remotus.Plugins.Sound
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
+            }
+        }
+
+
+        public class Descriptor : IFunctionDescriptor
+        {
+            public string Name => nameof(ToggleMuteAudioDeviceFunction);
+
+            public IParameterCollection GetParameters()
+            {
+                var res = new ParameterCollection();
+                res[ParameterKeys.DeviceID] = new Parameter
+                {
+                    Name = ParameterKeys.DeviceID,
+                    Required = false,
+                    Type = typeof(string),
+                    Value = null,
+                };
+                return res;
+            }
+
+            public IFunction Instantiate()
+            {
+                return new ToggleMuteAudioDeviceFunction();
             }
         }
 

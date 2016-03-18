@@ -7,7 +7,7 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class StartProcessFunction : IFunctionDescriptor, IFunction<ProcessDto>
+    public class StartProcessFunction : IFunction<ProcessDto>
     {
         private static System.Diagnostics.Process _proc;
         private IProcessHelper _processHelper;
@@ -17,31 +17,9 @@ namespace Remotus.Plugins.Process
             _processHelper = new ProcessHelper();
         }
 
-        public string Name => nameof(StartProcessFunction);
-
-        public IParameterCollection GetParameters()
+        public IFunctionDescriptor GetDescriptor()
         {
-            var res = new ParameterCollection();
-            res[ParameterKeys.FileName] = new Parameter
-            {
-                Name = ParameterKeys.FileName,
-                Required = true,
-                Type = typeof(string),
-                Value = null,
-            };
-            res[ParameterKeys.Arguments] = new Parameter
-            {
-                Name = ParameterKeys.Arguments,
-                Required = false,
-                Type = typeof(string),
-                Value = null,
-            };
-            return res;
-        }
-
-        public IFunction Instantiate()
-        {
-            return this;
+            return new Descriptor();
         }
 
         async Task<IFunctionResult> IFunction.Execute(IExecutionContext context, IFunctionArguments arguments)
@@ -78,6 +56,37 @@ namespace Remotus.Plugins.Process
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
+            }
+        }
+
+
+        public class Descriptor : IFunctionDescriptor
+        {
+            public string Name => nameof(StartProcessFunction);
+
+            public IParameterCollection GetParameters()
+            {
+                var res = new ParameterCollection();
+                res[ParameterKeys.FileName] = new Parameter
+                {
+                    Name = ParameterKeys.FileName,
+                    Required = true,
+                    Type = typeof(string),
+                    Value = null,
+                };
+                res[ParameterKeys.Arguments] = new Parameter
+                {
+                    Name = ParameterKeys.Arguments,
+                    Required = false,
+                    Type = typeof(string),
+                    Value = null,
+                };
+                return res;
+            }
+
+            public IFunction Instantiate()
+            {
+                return new StartProcessFunction();
             }
         }
 
