@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using Lux;
 using Remotus.API.v1;
@@ -50,7 +54,7 @@ namespace Remotus.Web.Controllers
         }
 
 
-        public async Task<ActionResult> Execute(string clientID, string pluginName, string functionName)
+        public async Task<FormattedContentResult<IResponseBase<IFunctionResult>>> Execute(string clientID, string pluginName, string functionName)
         {
             var serializer = new CustomJsonSerializer();
 
@@ -90,13 +94,22 @@ namespace Remotus.Web.Controllers
                 response.EnsureSuccess();
                 //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
                 
-                var json = serializer.Serialize(response);
-                var actionResult = new ContentResult
+                //var json = serializer.Serialize(response);
+                //var actionResult = new ContentResult
+                //{
+                //    Content = json,
+                //    ContentType = "application/json",
+                //    ContentEncoding = Encoding.UTF8,
+                //};
+                //return actionResult;
+
+                MediaTypeFormatter formatter = new JsonMediaTypeFormatter
                 {
-                    Content = json,
-                    ContentType = "application/json",
-                    ContentEncoding = Encoding.UTF8,
+                    SerializerSettings = serializer.GetSerializerSettings(),
                 };
+                MediaTypeHeaderValue mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(Request.HttpMethod), Request.Url);
+                var actionResult = new FormattedContentResult<IResponseBase<IFunctionResult>>(HttpStatusCode.OK, response, formatter, mediaType, request);
                 return actionResult;
             }
             catch (Exception ex)
@@ -105,17 +118,33 @@ namespace Remotus.Web.Controllers
                 //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
                 //return actionResult;
 
-                var json = serializer.Serialize(response);
-                var actionResult = new ContentResult
+                //var json = serializer.Serialize(response);
+                //var actionResult = new ContentResult
+                //{
+                //    Content = json,
+                //    ContentType = "application/json",
+                //    ContentEncoding = Encoding.UTF8,
+                //};
+                //return actionResult;
+
+                MediaTypeFormatter formatter = new JsonMediaTypeFormatter
                 {
-                    Content = json,
-                    ContentType = "application/json",
-                    ContentEncoding = Encoding.UTF8,
+                    SerializerSettings = serializer.GetSerializerSettings(),
                 };
+                MediaTypeHeaderValue mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(Request.HttpMethod), Request.Url);
+                var actionResult = new FormattedContentResult<IResponseBase<IFunctionResult>>(HttpStatusCode.OK, response, formatter, mediaType, request);
                 return actionResult;
             }
         }
 
+
+        public async Task<ActionResult> ExecutePartial(string clientID, string pluginName, string functionName)
+        {
+            var result = await Execute(clientID, pluginName, functionName);
+            var model = result?.Content;
+            return PartialView("_FunctionResult", model);
+        }
 
         
 

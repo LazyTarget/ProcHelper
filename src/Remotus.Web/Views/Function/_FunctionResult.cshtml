@@ -1,0 +1,13 @@
+﻿@model Remotus.Base.IResponseBase<Remotus.Base.IFunctionResult>
+
+<div class="FunctionResult">
+    This is the function result<br/>
+
+    Error: @(Model?.Error?.ErrorMessage)<br/>
+
+    Result Type: @(Model?.Result?.GetType())<br/>
+
+    Result.Result Type: @(Model?.Result?.Result?.GetType())
+
+    Result.Result ToString(): @(Model?.Result?.Result?.ToString())
+</div>
