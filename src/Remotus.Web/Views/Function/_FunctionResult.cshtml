@@ -90,6 +90,8 @@
             }
         }
     }
+
+
 }
 
 <div class="FunctionResult">
@@ -108,15 +110,174 @@
                 <img src="data:image/png;base64,@(imageBase64)" alt="img #@(string.Join("", imageBase64.Skip(imageBase64.Length - 30)))" />
             </div>
         }
-        <br/>
+        <br />
     }
+
+    <hr />
 
 
     Error: @(Model?.Error?.ErrorMessage)<br />
 
     Result Type: @(Model?.Result?.GetType())<br />
 
-    Result.Result Type: @(Model?.Result?.Result?.GetType())
+    Result.Result Type: @(Model?.Result?.Result?.GetType())<br />
 
-    Result.Result ToString(): @(Model?.Result?.Result?.ToString())
+    Result.Result ToString(): @(Model?.Result?.Result?.ToString())<br />
+
+    <hr />
+
+    <div class="FormattedFunctionResult">
+        @RenderObject(Model?.Result)
+    </div>
+
+
 </div>
+
+
+@helper RenderObject(object value)
+{
+    if (value == null)
+    {
+        <span class="NullValue">
+            [NULL]
+        </span>   
+    }
+    else if (value is JToken)
+    {
+        if (value is JObject)
+        {
+            var jObj = (JObject) value;
+
+            <div class="Object JObject">
+                @foreach (var property in jObj.Properties())
+                {
+                    <div class="Property JObjectProperty">
+                        <span class="PropertyName">@property.Name</span><br />
+                        <div class="PropertyValue JObjectPropertyValue">
+                            @RenderObject(property.Value)
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (value is JArray)
+        {
+            var jArray = (JArray) value;
+
+            <div class="Enumerable JArray">
+                @foreach (var x in jArray)
+                {
+                    <div class="EnumerableItem JToken">
+                        @RenderObject(x)
+                    </div>
+                }
+            </div>
+        }
+    }
+    else if (value is string)
+    {
+        <span class="String">
+            @value
+        </span>
+    }
+    else if (value.GetType().IsPrimitive || 
+             value is TimeSpan || 
+             value is Enum ||
+             value is DateTime)
+    {
+        var str = value.ToString();
+
+        var type = value.GetType();
+        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
+
+        <span class="String" data-type="@(typeString)">
+            @str
+        </span>
+    }
+    else if (value is Type)
+    {
+        var type = (Type) value;
+        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
+
+        <span class="String TypeString">
+            @typeString
+        </span>
+    }
+    else if (value is Bitmap)
+    {
+        var bitmap = (Bitmap) value;
+        var format = System.Drawing.Imaging.ImageFormat.Png;
+        using (var stream = new MemoryStream())
+        {
+            bitmap.Save(stream, format);
+            var imgData = stream.ToArray();
+            var base64 = Convert.ToBase64String(imgData);
+
+            <span class="Image Bitmap">
+                <img src="data:image/png;base64,@(base64)" alt="img #@(string.Join("", base64.Skip(base64.Length - 30)))" />
+            </span>
+        }
+    }
+    else if (value is IDictionary)
+    {
+        var dictionary = (IDictionary) value;
+
+        <div class="Enumerable Dictionary">
+            @foreach (var x in dictionary)
+            {
+                <div class="EnumerableItem KeyValuePair">
+                    <div class="KeyValuePairKey">
+                        @RenderObject(x)
+                    </div>
+                    <div class="KeyValuePairValue">
+                        @RenderObject(x)
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (value is IList)
+    {
+        var list = (IList) value;
+
+        <div class="Enumerable List">
+            @foreach (var x in list)
+            {
+                <div class="EnumerableItem ListItem">
+                    @RenderObject(x)
+                </div>
+            }
+        </div>
+    }
+    else if (value is IEnumerable)
+    {
+        var enumerable = (IEnumerable) value;
+
+        <div class="Enumerable">
+            @foreach (var x in enumerable)
+            {
+                <div class="EnumerableItem">
+                    @RenderObject(x)
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        var formatter = new Remotus.Base.FunctionResultFormatter();
+        var objectMirror = formatter.Format(value);
+
+        <div class="Object ObjectMirror">
+            @foreach(var property in objectMirror.GetProperties())
+            {
+            <div class="Property ObjectMirrorProperty">
+                <span class="PropertyName">@property.Name</span><br />
+                <div class="PropertyValue ObjectMirrorPropertyValue">
+                    @RenderObject(property.Value)
+                </div>
+            </div>
+            }
+        </div>
+    }
+}
+

@@ -109,6 +109,7 @@
     <Compile Include="Models\DefaultError.cs" />
     <Compile Include="Models\DefaultLink.cs" />
     <Compile Include="Models\DefaultResponseBase.cs" />
+    <Compile Include="Models\FunctionResultFormatter.cs" />
     <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Models\FunctionArguments.cs" />
     <Compile Include="Models\Parameter.cs" />
