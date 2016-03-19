@@ -1,101 +1,9 @@
-﻿@using System.Collections
-@using System.Drawing
-@using Lux.Extensions
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Linq
-@using Remotus
-@using Remotus.Web.Helpers
+﻿@using Remotus.Web.Helpers
 @model Remotus.Base.IResponseBase<Remotus.Base.IFunctionResult>
 
 @{
-    IObjectRenderer objectRender = new DefaultObjectRenderer();
-
-    var images = new List<string>();
-
-    var enumerable = Model?.Result?.Result as IEnumerable;
-    if (enumerable != null)
-    {
-        var custom = new CustomJsonSerializer();
-        var serializer = JsonSerializer.Create(custom.GetSerializerSettings());
-
-        foreach (var obj in enumerable)
-        {
-            Bitmap bitmap = null;
-
-            var jObj = obj as JObject;
-
-            Remotus.Plugins.Sound.AudioDevice asSoundDevice = null;
-            try
-            {
-                asSoundDevice = obj as Remotus.Plugins.Sound.AudioDevice ??
-                                jObj?.ToObject<Remotus.Plugins.Sound.AudioDevice>(serializer);
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                if (asSoundDevice != null)
-                {
-                    bitmap = asSoundDevice?.IconRaw;
-                }
-            }
-
-
-            Remotus.Plugins.Sound.AudioSession asSoundSession = null;
-            try
-            {
-                asSoundSession = obj as Remotus.Plugins.Sound.AudioSession ??
-                                 jObj?.ToObject<Remotus.Plugins.Sound.AudioSession>(serializer);
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                if (asSoundSession != null)
-                {
-                    bitmap = asSoundSession?.IconRaw;
-                }
-            }
-
-
-            Remotus.Base.IProcessDto asProcessDto = null;
-            try
-            {
-                asProcessDto = obj as Remotus.Base.IProcessDto ??
-                        jObj?.ToObject<Remotus.Base.ProcessDto>(serializer);
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                if (asProcessDto != null)
-                {
-                    bitmap = asProcessDto?.MainModule?.IconRaw;
-                }
-            }
-
-
-            if (bitmap != null)
-            {
-                var format = System.Drawing.Imaging.ImageFormat.Png;
-                using (var stream = new MemoryStream())
-                {
-                    bitmap.Save(stream, format);
-                    var imgData = stream.ToArray();
-                    var base64 = Convert.ToBase64String(imgData);
-                    images.Add(base64);
-                }
-            }
-        }
-    }
-
-
+    //IObjectRenderer objectRender = new DefaultObjectRenderer();
+    IObjectRenderer objectRender = new BootstrapTableObjectRenderer();
 }
 
 <div class="FunctionResult">
@@ -104,37 +12,14 @@
 
     @if (Model?.Error != null)
     {
-        <h5>Error: @(Model?.Error?.ErrorMessage)</h5>
+        @Html.Partial("_Error", Model.Error)
     }
-
-    @*@{
-        foreach (var imageBase64 in images)
-        {
-            if (string.IsNullOrWhiteSpace(imageBase64))
-            {
-                continue;
-            }
-
-            <div class="ImageContainer">
-                <img src="data:image/png;base64,@(imageBase64)" alt="img #@(string.Join("", imageBase64.Skip(imageBase64.Length - 30)))" />
-            </div>
-        }
+    else if (Model?.Result?.Error != null)
+    {
+        @Html.Partial("_Error", Model.Result.Error)
     }
-
-    <hr />*@
     
-
-    @*Result Type: @(Model?.Result?.GetType())<br />
-
-    Result.Result Type: @(Model?.Result?.Result?.GetType())<br />
-
-    Result.Result ToString(): @(Model?.Result?.Result?.ToString())<br />*@
-
-    <hr />
-
     <div class="FormattedFunctionResult">
-        @Html.RenderObject(objectRender, Model?.Result)
+        @Html.RenderObject(objectRender, Model?.Result?.Result)
     </div>
-
-
 </div>

@@ -27,6 +27,19 @@ namespace Remotus.Web
         }
 
 
+
+        public static IDisposable BeginFullTag(this HtmlTextWriter writer, string tagName)
+        {
+            writer.RenderBeginTag(tagName);
+
+            var disposable = new NotifyableDispose(() =>
+            {
+                writer.RenderEndTag();
+            });
+            return disposable;
+        }
+
+
         private class NotifyableDispose : IDisposable
         {
             private readonly Action _callback;

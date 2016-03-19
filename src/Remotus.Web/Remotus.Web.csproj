@@ -248,8 +248,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BootstrapTableObjectRenderer.cs" />
     <Compile Include="Helpers\IObjectRenderer.cs" />
     <Compile Include="Helpers\DefaultObjectRenderer.cs" />
+    <Compile Include="Helpers\JsonObjectModel.cs" />
     <Compile Include="Helpers\ObjectRendererHtmlHelperExtensions.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
@@ -365,6 +367,8 @@
     <Content Include="Views\Shared\_MenuList.cshtml" />
     <Content Include="Views\Function\Plugin.cshtml" />
     <Content Include="Views\Function\_FunctionResult.cshtml" />
+    <Content Include="Views\Shared\_Error.cshtml" />
+    <Content Include="Views\Function\_PluginFunctions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

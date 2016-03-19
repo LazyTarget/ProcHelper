@@ -88,9 +88,18 @@ namespace Remotus.Web.Helpers
                 var enumerable = (IEnumerable)value;
                 WriteEnumerable(writer, enumerable);
             }
+            else if (value is Lux.Model.IObjectModel)
+            {
+                var objectModel = (Lux.Model.IObjectModel) value;
+                WriteObjectModel(writer, objectModel);
+            }
             else
             {
-                WriteObject(writer, value);
+                //var str = value?.ToString();
+                //WriteString(writer, str);
+                
+                var objectModel = new Lux.Model.MirrorObjectModel(value);
+                WriteObjectModel(writer, objectModel);
             }
         }
 
@@ -220,7 +229,22 @@ namespace Remotus.Web.Helpers
                     writer.WriteAttribute("class", "Image Base64");
                 }
 
-                var isImage = true;
+                bool isImage;
+                try
+                {
+                    // todo: better way of detecting...
+                    var imgData = Convert.FromBase64String(base64);
+                    using (var stream = new MemoryStream(imgData))
+                    {
+                        var image = Image.FromStream(stream);
+                        isImage = image?.Width > 0 || image?.Height > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isImage = false;
+                }
+
                 if (isImage)
                 {
                     using (writer.BeginTag("img"))
@@ -236,7 +260,7 @@ namespace Remotus.Web.Helpers
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    WriteString(writer, base64);
                 }
             }
         }
@@ -254,7 +278,7 @@ namespace Remotus.Web.Helpers
             }
         }
 
-        protected virtual void WriteObject(HtmlTextWriter writer, object value)
+        protected virtual void WriteObjectModel(HtmlTextWriter writer, Lux.Model.IObjectModel value)
         {
             if (value == null)
             {
@@ -266,17 +290,16 @@ namespace Remotus.Web.Helpers
                 {
                     using (writer.BeginTagAttributes())
                     {
-                        writer.WriteAttribute("class", "Object ObjectMirror");
+                        writer.WriteAttribute("class", "Object ObjectModel");
                     }
 
                     var count = 0;
-                    var objectMirror = new Lux.Model.MirrorObjectModel(value);
-                    var properties = objectMirror.GetProperties();
+                    var properties = value.GetProperties();
                     foreach (var property in properties)
                     {
-                        //<div class="Property ObjectMirrorProperty">
+                        //<div class="Property ObjectModelProperty">
                         //    <span class="PropertyName">@property.Name</span><br />
-                        //    <div class="PropertyValue ObjectMirrorPropertyValue">
+                        //    <div class="PropertyValue ObjectModelPropertyValue">
                         //        @RenderObject(property.Value)
                         //    </div>
                         //</div>
@@ -288,7 +311,7 @@ namespace Remotus.Web.Helpers
                         {
                             using (writer.BeginTagAttributes())
                             {
-                                writer.WriteAttribute("class", "Property ObjectMirrorProperty");
+                                writer.WriteAttribute("class", "Property ObjectModelProperty");
                             }
 
                             using (writer.BeginTag("span"))
@@ -304,7 +327,7 @@ namespace Remotus.Web.Helpers
                             {
                                 using (writer.BeginTagAttributes())
                                 {
-                                    writer.WriteAttribute("class", "PropertyValue ObjectMirrorPropertyValue");
+                                    writer.WriteAttribute("class", "PropertyValue ObjectModelPropertyValue");
                                 }
                                 RenderObject(writer, property.Value);
                             }
@@ -503,8 +526,11 @@ namespace Remotus.Web.Helpers
 
         protected virtual void WriteJObject(HtmlTextWriter writer, JObject jObject)
         {
-            var count = 0;
+            var objectModel = new JsonObjectModel(jObject);
+            WriteObjectModel(writer, objectModel);
+            return;
 
+            var count = 0;
             using (writer.BeginTag("div"))
             {
                 using (writer.BeginTagAttributes())

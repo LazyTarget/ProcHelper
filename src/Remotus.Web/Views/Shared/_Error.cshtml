@@ -1,0 +1,8 @@
+﻿@model Remotus.Base.IError
+
+@if (!string.IsNullOrWhiteSpace(Model?.ErrorMessage))
+{
+    <div class="Error">
+        <span>@Model.ErrorMessage</span>
+    </div>
+}

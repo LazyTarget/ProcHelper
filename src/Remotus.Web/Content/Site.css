@@ -61,7 +61,9 @@ textarea {
 
 
 .FunctionList {
-    max-width: 300px;
+    /*max-width: 300px;*/
+    overflow: hidden;
+    margin-bottom: 15px;
 }
 
 .ParameterCollection tr.Required {
