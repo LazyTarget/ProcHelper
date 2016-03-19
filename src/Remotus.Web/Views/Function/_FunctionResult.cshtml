@@ -1,7 +1,7 @@
 ﻿@using Remotus.Web.Helpers
 @model Remotus.Base.IResponseBase<Remotus.Base.IFunctionResult>
 @{
-    IObjectRenderer objectRender = HtmlObjectRenderer.Default;
+    
 }
 
 <div class="FunctionResult">
@@ -18,6 +18,6 @@
     }
     
     <div class="FormattedFunctionResult">
-        @Html.RenderObject(objectRender, Model?.Result?.Result)
+        @Html.RenderObject(Model?.Result?.Result)
     </div>
 </div>

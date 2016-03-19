@@ -12,7 +12,7 @@ namespace Remotus.Web.Rendering
 {
     public class HtmlObjectRenderer : IObjectRenderer
     {
-        public readonly static HtmlObjectRenderer Default;
+        public static readonly HtmlObjectRenderer Default;
 
         static HtmlObjectRenderer()
         {
