@@ -58,6 +58,25 @@
             }
 
 
+            Remotus.Base.IProcessDto asProcessDto = null;
+            try
+            {
+                asProcessDto = obj as Remotus.Base.IProcessDto ??
+                        jObj?.ToObject<Remotus.Base.ProcessDto>(serializer);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                if (asProcessDto != null)
+                {
+                    bitmap = asProcessDto?.MainModule?.IconRaw;
+                }
+            }
+
+
             if (bitmap != null)
             {
                 var format = System.Drawing.Imaging.ImageFormat.Png;
