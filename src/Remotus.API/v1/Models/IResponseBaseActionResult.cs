@@ -7,4 +7,9 @@ namespace Remotus.API.v1.Models
     {
         IResponseBase Response { get; }
     }
+
+    public interface IResponseBaseActionResult<TResult> : IResponseBaseActionResult
+    {
+        new IResponseBase<TResult> Response { get; }
+    }
 }

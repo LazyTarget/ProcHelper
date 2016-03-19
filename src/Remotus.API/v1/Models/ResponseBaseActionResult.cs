@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json;
 using Remotus.Base;
 
 namespace Remotus.API.v1.Models
@@ -31,6 +26,20 @@ namespace Remotus.API.v1.Models
             var responseMessage = await actionResult.ExecuteAsync(CancellationToken.None);
             return responseMessage;
         }
+    }
 
+
+    public class ResponseBaseActionResult<TResult> : ResponseBaseActionResult, IResponseBaseActionResult<TResult>
+    {
+        public ResponseBaseActionResult(ApiController controller, IResponseBase<TResult> response)
+            : base(controller, response)
+        {
+        }
+
+        public new IResponseBase<TResult> Response
+        {
+            get { return (IResponseBase<TResult>) base.Response; }
+            set { base.Response = value; }
+        }
     }
 }

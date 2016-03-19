@@ -20,7 +20,7 @@ namespace Remotus.API.v1.Client.Controllers
 
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins")]
-        public async Task<IResponseBaseActionResult> GetPlugins()
+        public async Task<IResponseBaseActionResult<IEnumerable<IPlugin>>> GetPlugins()
         {
             IEnumerable<IPlugin> result = null;
             try
@@ -42,7 +42,7 @@ namespace Remotus.API.v1.Client.Controllers
         
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins/function")]
-        public async Task<IResponseBaseActionResult> GetFunctionPlugins()
+        public async Task<IResponseBaseActionResult<IEnumerable<IFunctionPlugin>>> GetFunctionPlugins()
         {
             IEnumerable<IFunctionPlugin> result = null;
             try
@@ -64,7 +64,7 @@ namespace Remotus.API.v1.Client.Controllers
 
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/local/plugins/service")]
-        public async Task<IResponseBaseActionResult> GetServicePlugins()
+        public async Task<IResponseBaseActionResult<IEnumerable<IServicePlugin>>> GetServicePlugins()
         {
             IEnumerable<IServicePlugin> result = null;
             try
@@ -87,72 +87,66 @@ namespace Remotus.API.v1.Client.Controllers
 
         [HttpPost, HttpPut]
         [Route("api/v1/local/execute/function")]
-        public async Task<IResponseBaseActionResult> ExecuteFunction(string pluginName, string functionName)
+        public async Task<IResponseBaseActionResult<IFunctionResult>> ExecuteFunction(string pluginName, string functionName)
         {
+            IResponseBase<IFunctionResult> response;
+            IResponseBaseActionResult<IFunctionResult> actionResult;
             try
             {
                 var pluginResponse = await GetFunctionPlugins();
                 if (pluginResponse?.Response?.Error != null && !pluginResponse.Response.Error.Handled)
                 {
-                    var response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: pluginResponse.Response.Error);
-                    var actionResult = ResponseFactory.CreateActionResult(this, response);
+                    response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: pluginResponse.Response.Error);
+                    actionResult = ResponseFactory.CreateActionResult(this, response);
                     return actionResult;
                 }
 
-                var plugin = pluginResponse?.Response?.Result?.CastAs<IEnumerable<IFunctionPlugin>>().FirstOrDefault(x => x.Name == pluginName);
-                if (plugin == null)
+                var functionPlugin = pluginResponse?.Response?.Result?.CastAs<IEnumerable<IFunctionPlugin>>().FirstOrDefault(x => x.Name == pluginName);
+                if (functionPlugin == null)
                 {
                     throw new Exception($"Plugin '{pluginName}' not found");
                 }
                 
-                if (plugin is IFunctionPlugin)
+                var functions = functionPlugin.GetFunctions();
+                var functionDescriptor = functions.FirstOrDefault(x => x.Name == functionName);
+                if (functionDescriptor == null)
                 {
-                    var functionPlugin = (IFunctionPlugin)plugin;
-                    var functions = functionPlugin.GetFunctions();
-                    var functionDescriptor = functions.FirstOrDefault(x => x.Name == functionName);
-                    if (functionDescriptor == null)
-                    {
-                        throw new Exception($"Function '{functionName}' not found");
-                    }
-                    
-                    var parameters = functionDescriptor.GetParameters();
-                    foreach (var param in parameters)
-                    {
-                        //var str = Request.Form["Param_" + param.Key];
-                        //if (str != null)
-                        //{
-                        //    var val = Converter.Convert(str, param.Value.Type);
-                        //    param.Value.Value = val;
-                        //}
-                    }
-
-                    IFunctionArguments arg = new FunctionArguments();
-                    arg.Parameters = parameters;
-
-
-                    var serializer = Configuration.Formatters.JsonFormatter.CreateJsonSerializer();
-                    var json = await Request.Content.ReadAsStringAsync();
-                    var sentArgs = serializer.Deserialize<IFunctionArguments>(new JsonTextReader(new StringReader(json)));
-                    arg = sentArgs;
-                    // todo: decide whether base arguments on what the descriptor says
-
-                    
-                    var function = functionDescriptor.Instantiate();
-                    var result = await ExecuteFunction(function, arg);
-                    
-                    var response = ResponseFactory.CreateResponse<IFunctionResult>(this, result: result);
-                    var actionResult = ResponseFactory.CreateActionResult(this, response);
-                    return actionResult;
+                    throw new Exception($"Function '{functionName}' not found");
                 }
-                else
+                    
+                var parameters = functionDescriptor.GetParameters();
+                foreach (var param in parameters)
                 {
-                    throw new Exception($"Plugin '{functionName}' is not a function plugin");
+                    //var str = Request.Form["Param_" + param.Key];
+                    //if (str != null)
+                    //{
+                    //    var val = Converter.Convert(str, param.Value.Type);
+                    //    param.Value.Value = val;
+                    //}
                 }
+
+                IFunctionArguments arg = new FunctionArguments();
+                arg.Parameters = parameters;
+
+
+                var serializer = Configuration.Formatters.JsonFormatter.CreateJsonSerializer();
+                var json = await Request.Content.ReadAsStringAsync();
+                var sentArgs = serializer.Deserialize<IFunctionArguments>(new JsonTextReader(new StringReader(json)));
+                arg = sentArgs;
+                // todo: decide whether base arguments on what the descriptor says
+
+                    
+                var function = functionDescriptor.Instantiate();
+                var result = await ExecuteFunction(function, arg);
+                
+                response = ResponseFactory.CreateResponse<IFunctionResult>(this, result: result);
+                actionResult = ResponseFactory.CreateActionResult(this, response);
+                return actionResult;
             }
             catch (Exception ex)
             {
-                var response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: DefaultError.FromException(ex));
-                var actionResult = ResponseFactory.CreateActionResult(this, response);
+                response = ResponseFactory.CreateResponse<IFunctionResult>(this, error: DefaultError.FromException(ex));
+                actionResult = ResponseFactory.CreateActionResult(this, response);
                 return actionResult;
             }
         }

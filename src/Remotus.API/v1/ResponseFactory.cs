@@ -50,6 +50,12 @@ namespace Remotus.API.v1
             var actionResult = new ResponseBaseActionResult(controller, responseBase);
             return actionResult;
         }
+        
+        public virtual IResponseBaseActionResult<TResult> CreateActionResult<TResult>(ApiController controller, IResponseBase<TResult> responseBase)
+        {
+            var actionResult = new ResponseBaseActionResult<TResult>(controller, responseBase);
+            return actionResult;
+        }
 
     }
 }
