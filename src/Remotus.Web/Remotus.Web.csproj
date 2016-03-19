@@ -248,9 +248,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\BootstrapTableObjectRenderer.cs" />
+    <Compile Include="Helpers\BootstrapTableHtmlObjectRenderer.cs" />
     <Compile Include="Helpers\IObjectRenderer.cs" />
-    <Compile Include="Helpers\DefaultObjectRenderer.cs" />
+    <Compile Include="Helpers\HtmlObjectRenderer.cs" />
     <Compile Include="Helpers\JsonObjectModel.cs" />
     <Compile Include="Helpers\ObjectRendererHtmlHelperExtensions.cs" />
     <Compile Include="Hubs\ChatHub.cs" />

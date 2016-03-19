@@ -1,105 +1,134 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Web.Mvc;
 using System.Web.UI;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
 
 namespace Remotus.Web.Helpers
 {
-    public class DefaultObjectRenderer : IObjectRenderer
+    public class HtmlObjectRenderer : IObjectRenderer
     {
-        public MvcHtmlString Render(object value)
+        public readonly static HtmlObjectRenderer Default;
+
+        static HtmlObjectRenderer()
         {
-            var sb = new StringBuilder();
+            Default = new HtmlObjectRenderer();
+            Default.Children.Add(new BootstrapTableHtmlObjectRenderer());
+        }
+
+
+
+        public HtmlObjectRenderer()
+        {
+            Children = new List<IObjectRenderer>();
+        }
+
+        public IList<IObjectRenderer> Children { get; private set; }
+
+
+        public virtual bool CanRender(object value)
+        {
+            return true;
+        }
+
+        public virtual void Render(TextWriter textWriter, object value)
+        {
+            using (var writer = new HtmlTextWriter(textWriter))
+            {
+                RenderObject(writer, value);
+            }
+        }
+
+
+        protected virtual void RenderObject(HtmlTextWriter writer, object value)
+        {
             try
             {
-                using (var textWriter = new StringWriter(sb))
-                using (var writer = new HtmlTextWriter(textWriter))
+                foreach (var objectRenderer in Children)
                 {
-                    RenderObject(writer, value);
+                    if (objectRenderer == null)
+                        continue;
+                    var canRender = objectRenderer.CanRender(value);
+                    if (!canRender)
+                        continue;
+
+                    objectRenderer.Render(writer, value);
+                    return;
+                }
+
+                var type = value?.GetType();
+                var handled = CustomWriteObject(writer, value, type);
+                if (handled)
+                {
+                    return;
+                }
+
+
+                if (value == null)
+                {
+                    WriteNull(writer);
+                }
+                else if (value is string)
+                {
+                    var str = (string)value;
+
+                    if (!string.IsNullOrWhiteSpace(str) && Remotus.Base.Extensions.IsBase64String(str))
+                    {
+                        var base64 = str.Trim();
+                        WriteBase64(writer, base64);
+                    }
+                    else
+                    {
+                        WriteString(writer, str);
+                    }
+                }
+                else if (value is JToken)
+                {
+                    var jToken = (JToken)value;
+                    WriteJToken(writer, jToken);
+                }
+                else if (value is Bitmap)
+                {
+                    var bitmap = (Bitmap)value;
+                    WriteImage(writer, bitmap);
+                }
+                else if (value is IDictionary)
+                {
+                    var dictionary = (IDictionary)value;
+                    WriteDictionary(writer, dictionary);
+                }
+                else if (value is IList)
+                {
+                    var list = (IList)value;
+                    WriteList(writer, list);
+                }
+                else if (value is IEnumerable)
+                {
+                    var enumerable = (IEnumerable)value;
+                    WriteEnumerable(writer, enumerable);
+                }
+                else if (value is Lux.Model.IObjectModel)
+                {
+                    var objectModel = (Lux.Model.IObjectModel)value;
+                    WriteObjectModel(writer, objectModel);
+                }
+                else
+                {
+                    //var str = value?.ToString();
+                    //WriteString(writer, str);
+
+                    Lux.Model.IObjectModel objectModel = new Lux.Model.MirrorObjectModel(value);
+                    //WriteObjectModel(writer, objectModel);
+                    RenderObject(writer, objectModel);
                 }
             }
             catch (Exception ex)
             {
                 throw;
-            }
-
-            var html = sb.ToString();
-            var mvcString = MvcHtmlString.Create(html);
-            return mvcString;
-        }
-
-
-        protected void RenderObject(HtmlTextWriter writer, object value)
-        {
-            var type = value?.GetType();
-            var handled = CustomWriteObject(writer, value, type);
-            if (handled)
-            {
-                return;
-            }
-
-
-            if (value == null)
-            {
-                WriteNull(writer);
-            }
-            else if (value is string)
-            {
-                var str = (string)value;
-
-                if (!string.IsNullOrWhiteSpace(str) && Remotus.Base.Extensions.IsBase64String(str))
-                {
-                    var base64 = str.Trim();
-                    WriteBase64(writer, base64);
-                }
-                else
-                {
-                    WriteString(writer, str);
-                }
-            }
-            else if (value is JToken)
-            {
-                var jToken = (JToken)value;
-                WriteJToken(writer, jToken);
-            }
-            else if (value is Bitmap)
-            {
-                var bitmap = (Bitmap)value;
-                WriteImage(writer, bitmap);
-            }
-            else if (value is IDictionary)
-            {
-                var dictionary = (IDictionary)value;
-                WriteDictionary(writer, dictionary);
-            }
-            else if (value is IList)
-            {
-                var list = (IList)value;
-                WriteList(writer, list);
-            }
-            else if (value is IEnumerable)
-            {
-                var enumerable = (IEnumerable)value;
-                WriteEnumerable(writer, enumerable);
-            }
-            else if (value is Lux.Model.IObjectModel)
-            {
-                var objectModel = (Lux.Model.IObjectModel) value;
-                WriteObjectModel(writer, objectModel);
-            }
-            else
-            {
-                //var str = value?.ToString();
-                //WriteString(writer, str);
-                
-                var objectModel = new Lux.Model.MirrorObjectModel(value);
-                WriteObjectModel(writer, objectModel);
             }
         }
 
@@ -195,7 +224,7 @@ namespace Remotus.Web.Helpers
                 writer.Write(value);
             }
         }
-        
+
         protected virtual void WriteString(HtmlTextWriter writer, string value)
         {
             if (value == null)
@@ -527,7 +556,8 @@ namespace Remotus.Web.Helpers
         protected virtual void WriteJObject(HtmlTextWriter writer, JObject jObject)
         {
             var objectModel = new JsonObjectModel(jObject);
-            WriteObjectModel(writer, objectModel);
+            //WriteObjectModel(writer, objectModel);
+            RenderObject(writer, objectModel);
             return;
 
             var count = 0;

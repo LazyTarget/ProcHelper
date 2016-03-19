@@ -1,9 +1,10 @@
-﻿using System.Web.Mvc;
+﻿using System.IO;
 
 namespace Remotus.Web.Helpers
 {
     public interface IObjectRenderer
     {
-        MvcHtmlString Render(object value);
+        bool CanRender(object value);
+        void Render(TextWriter textWriter, object value);
     }
 }

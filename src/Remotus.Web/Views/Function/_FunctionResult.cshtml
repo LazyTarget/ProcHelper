@@ -1,9 +1,7 @@
 ﻿@using Remotus.Web.Helpers
 @model Remotus.Base.IResponseBase<Remotus.Base.IFunctionResult>
-
 @{
-    //IObjectRenderer objectRender = new DefaultObjectRenderer();
-    IObjectRenderer objectRender = new BootstrapTableObjectRenderer();
+    IObjectRenderer objectRender = HtmlObjectRenderer.Default;
 }
 
 <div class="FunctionResult">

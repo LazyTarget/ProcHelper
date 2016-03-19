@@ -3,8 +3,14 @@ using System.Web.UI;
 
 namespace Remotus.Web.Helpers
 {
-    public class BootstrapTableObjectRenderer : DefaultObjectRenderer
+    public class BootstrapTableHtmlObjectRenderer : HtmlObjectRenderer
     {
+        public override bool CanRender(object value)
+        {
+            var res = value is Lux.Model.IObjectModel;
+            return res;
+        }
+
         protected override void WriteObjectModel(HtmlTextWriter writer, Lux.Model.IObjectModel value)
         {
             if (value == null)
