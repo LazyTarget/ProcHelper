@@ -1,5 +1,6 @@
 ﻿@using System.Collections
 @using System.Drawing
+@using Lux.Extensions
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using Remotus
@@ -134,6 +135,28 @@
 </div>
 
 
+@helper RenderString(string value)
+{
+    if (!string.IsNullOrWhiteSpace(value))
+    {
+        <span class="String">
+            @value
+        </span>
+    }
+    else if (value == null)
+    {
+        <span class="String Empty NullValue">
+            [NULL]
+        </span>
+    }
+    else
+    {
+        <span class="String Empty">
+            @MvcHtmlString.Create("&nbsp;")
+        </span>
+    }
+}
+
 @helper RenderObject(object value)
 {
     if (value == null)
@@ -144,18 +167,29 @@
     }
     else if (value is JToken)
     {
+        var jToken = (JToken) value;
         if (value is JObject)
         {
             var jObj = (JObject) value;
+            var count = 0;
 
             <div class="Object JObject">
                 @foreach (var property in jObj.Properties())
                 {
+                    count++;
+
                     <div class="Property JObjectProperty">
                         <span class="PropertyName">@property.Name</span><br />
                         <div class="PropertyValue JObjectPropertyValue">
                             @RenderObject(property.Value)
                         </div>
+                    </div>
+                }
+
+                @if (count <= 0)
+                {
+                    <div class="Empty">
+                        @MvcHtmlString.Create("&nbsp;")
                     </div>
                 }
             </div>
@@ -165,43 +199,53 @@
             var jArray = (JArray) value;
 
             <div class="Enumerable JArray">
-                @foreach (var x in jArray)
+                @if (jArray.Count > 0)
                 {
-                    <div class="EnumerableItem JToken">
-                        @RenderObject(x)
+                    foreach (var x in jArray)
+                    {
+                        <div class="EnumerableItem JToken">
+                            @RenderObject(x)
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="Empty">
+                        @MvcHtmlString.Create("&nbsp;")
                     </div>
                 }
             </div>
         }
+        else if (value is JValue)
+        {
+            var jValue = (JValue) value;
+
+            <div class="JValue">
+                @RenderObject(jValue.Value)
+            </div>
+        }
+        else
+        {
+            var str = jToken.ToString();
+            @RenderString(str);
+        }
     }
     else if (value is string)
     {
-        <span class="String">
-            @value
-        </span>
-    }
-    else if (value.GetType().IsPrimitive || 
-             value is TimeSpan || 
-             value is Enum ||
-             value is DateTime)
-    {
-        var str = value.ToString();
+        var str = (string) value;
+        
+        if (!string.IsNullOrWhiteSpace(str) && Remotus.Base.Extensions.IsBase64String(str))
+        {
+            var base64 = str.Trim();
 
-        var type = value.GetType();
-        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
-
-        <span class="String" data-type="@(typeString)">
-            @str
-        </span>
-    }
-    else if (value is Type)
-    {
-        var type = (Type) value;
-        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
-
-        <span class="String TypeString">
-            @typeString
-        </span>
+            <span class="Image Bitmap">
+                <img src="data:image/png;base64,@(base64)" alt="img #@(string.Join("", base64.Skip(base64.Length - 30)))" />
+            </span>
+        }
+        else
+        {
+            @RenderString(str);
+        }
     }
     else if (value is Bitmap)
     {
@@ -218,20 +262,67 @@
             </span>
         }
     }
+    else if (value is Type)
+    {
+        var type = (Type) value;
+        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
+
+        <span class="String TypeString">
+            @typeString
+        </span>
+    }
+    else if (value.GetType().IsPrimitive || 
+             value is TimeSpan || 
+             value is Enum ||
+             value is DateTime)
+    {
+        var str = value.ToString();
+
+        var type = value.GetType();
+        var typeString = type.FullName + ", " + type.Assembly.GetName().Name;
+
+        if (!string.IsNullOrWhiteSpace(str))
+        {
+            <span class="String" data-type="@(typeString)">
+                @str
+            </span>
+        }
+        else if (str == null)
+        {
+            <span class="String Empty NullValue" data-type="@(typeString)">
+                [NULL]
+            </span>
+        }
+        else
+        {
+            <span class="String Empty" data-type="@(typeString)">
+                @MvcHtmlString.Create("&nbsp;")
+            </span>
+        }
+    }
     else if (value is IDictionary)
     {
         var dictionary = (IDictionary) value;
 
         <div class="Enumerable Dictionary">
-            @foreach (var x in dictionary)
+            @if (dictionary.Count > 0)
             {
-                <div class="EnumerableItem KeyValuePair">
-                    <div class="KeyValuePairKey">
-                        @RenderObject(x)
+                foreach (var x in dictionary)
+                {
+                    <div class="EnumerableItem KeyValuePair">
+                        <div class="KeyValuePairKey">
+                            @RenderObject(x)
+                        </div>
+                        <div class="KeyValuePairValue">
+                            @RenderObject(x)
+                        </div>
                     </div>
-                    <div class="KeyValuePairValue">
-                        @RenderObject(x)
-                    </div>
+                }
+            }
+            else
+            {
+                <div class="Empty">
+                    @MvcHtmlString.Create("&nbsp;")
                 </div>
             }
         </div>
@@ -241,10 +332,19 @@
         var list = (IList) value;
 
         <div class="Enumerable List">
-            @foreach (var x in list)
+            @if (list.Count > 0)
             {
-                <div class="EnumerableItem ListItem">
-                    @RenderObject(x)
+                foreach (var x in list)
+                {
+                    <div class="EnumerableItem ListItem">
+                        @RenderObject(x)
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="Empty">
+                    @MvcHtmlString.Create("&nbsp;")
                 </div>
             }
         </div>
@@ -252,12 +352,22 @@
     else if (value is IEnumerable)
     {
         var enumerable = (IEnumerable) value;
+        var count = 0;
 
         <div class="Enumerable">
             @foreach (var x in enumerable)
             {
+                count++;
+
                 <div class="EnumerableItem">
                     @RenderObject(x)
+                </div>
+            }
+            
+            @if (count <= 0)
+            {
+                <div class="Empty">
+                    @MvcHtmlString.Create("&nbsp;")
                 </div>
             }
         </div>
@@ -266,16 +376,26 @@
     {
         var formatter = new Remotus.Base.FunctionResultFormatter();
         var objectMirror = formatter.Format(value);
+        var count = 0;
 
         <div class="Object ObjectMirror">
-            @foreach(var property in objectMirror.GetProperties())
+            @foreach (var property in objectMirror.GetProperties())
             {
-            <div class="Property ObjectMirrorProperty">
-                <span class="PropertyName">@property.Name</span><br />
-                <div class="PropertyValue ObjectMirrorPropertyValue">
-                    @RenderObject(property.Value)
+                count++;
+
+                <div class="Property ObjectMirrorProperty">
+                    <span class="PropertyName">@property.Name</span><br />
+                    <div class="PropertyValue ObjectMirrorPropertyValue">
+                        @RenderObject(property.Value)
+                    </div>
                 </div>
-            </div>
+            }
+
+            @if (count <= 0)
+            {
+                <div class="Empty">
+                    @MvcHtmlString.Create("&nbsp;")
+                </div>
             }
         </div>
     }

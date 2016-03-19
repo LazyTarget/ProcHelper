@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using Lux;
 using Lux.Interfaces;
 
@@ -42,17 +43,17 @@ namespace Remotus.Base
                     }
                     else
                     {
-                        
+
                     }
                 }
                 else
                 {
-                
+
                 }
             }
             catch (Exception ex)
             {
-                
+
             }
             return result;
         }
@@ -102,6 +103,13 @@ namespace Remotus.Base
             return result;
         }
 
+
+        public static bool IsBase64String(this string s)
+        {
+            s = s.Trim();
+            var res = (s.Length % 4 == 0) && Regex.IsMatch(s, @"^[a-zA-Z0-9\+/]*={0,3}$", RegexOptions.None);
+            return res;
+        }
 
 
         public static void ThrowIfNullResponse(this IResponseBase response)
