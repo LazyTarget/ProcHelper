@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web.UI;
 
-namespace Remotus.Web.Helpers
+namespace Remotus.Web.Rendering
 {
     public class BootstrapTableHtmlObjectRenderer : HtmlObjectRenderer
     {

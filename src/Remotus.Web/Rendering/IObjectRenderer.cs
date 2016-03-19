@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Remotus.Web.Helpers
+namespace Remotus.Web.Rendering
 {
     public interface IObjectRenderer
     {

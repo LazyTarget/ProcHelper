@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.UI;
+using Remotus.Web.Rendering;
 
 namespace Remotus.Web.Helpers
 {

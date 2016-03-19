@@ -2,7 +2,7 @@
 using Lux.Model;
 using Newtonsoft.Json.Linq;
 
-namespace Remotus.Web.Helpers
+namespace Remotus.Web
 {
     public class JsonObjectModel : Lux.Model.ObjectModel
     {

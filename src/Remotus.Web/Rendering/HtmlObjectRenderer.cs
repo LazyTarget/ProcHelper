@@ -8,7 +8,7 @@ using System.Web.UI;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
 
-namespace Remotus.Web.Helpers
+namespace Remotus.Web.Rendering
 {
     public class HtmlObjectRenderer : IObjectRenderer
     {
