@@ -3,9 +3,9 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
-    public class SoundFunctionPlugin : IFunctionPlugin
+    public class SoundPlugin : IFunctionPlugin, ICommandPlugin
     {
-        public string Name      => nameof(SoundFunctionPlugin);
+        public string Name      => nameof(SoundPlugin);
         public string Version   => "1.0.0.0";
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()
@@ -13,6 +13,11 @@ namespace Remotus.Plugins.Sound
             yield return new GetAudioDevicesFunction.Descriptor();
             yield return new GetAudioSessionsFunction.Descriptor();
             yield return new ToggleMuteAudioDeviceFunction.Descriptor();
+        }
+
+        public IEnumerable<ICommandDescriptor> GetCommands()
+        {
+            yield return new ToggleMuteActivePlaybackDeviceCommand.Descriptor();
         }
     }
 }

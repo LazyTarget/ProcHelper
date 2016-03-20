@@ -22,6 +22,15 @@ namespace Remotus.Base
         }
 
 
+        public static IParameter<TValue> GetOrDefault<TValue>(this IParameterCollection collection, string parameterName)
+        {
+            IParameter parameter = null;
+            if (collection?.ContainsKey(parameterName) ?? false)
+                parameter = collection[parameterName];
+            var result = Parameter<TValue>.Create(parameter);
+            return result;
+        }
+
 
         public static TValue GetParamValue<TValue>(this IParameterCollection collection, string parameterName)
         {

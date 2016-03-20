@@ -42,9 +42,9 @@ namespace Remotus.Plugins.Sound
                     var l = plugs?.ToList();
                 }
 #endif
-
-                var deviceType = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType);
-                var deviceState = arguments?.Parameters.GetParamValue<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceState);
+                
+                var deviceType = arguments?.Parameters.GetOrDefault<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType)?.Value;
+                var deviceState = arguments?.Parameters.GetOrDefault<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceState)?.Value;
 
 
                 IEnumerable<CoreAudioDevice> devices;
@@ -84,30 +84,60 @@ namespace Remotus.Plugins.Sound
         public class Descriptor : IFunctionDescriptor
         {
             public string Name => nameof(GetAudioDevicesFunction);
+            public string Version => "1.0.0.0";
 
-            public IParameterCollection GetParameters()
+            IParameterCollection IFunctionDescriptor.GetParameters()
             {
-                var res = new ParameterCollection();
-                res[ParameterKeys.DeviceType] = new Parameter
+                return GetParameters();
+            }
+
+            public Parameters GetParameters()
+            {
+                var res = new Parameters();
+                return res;
+            }
+
+            IFunction IComponentInstantiator<IFunction>.Instantiate()
+            {
+                return Instantiate();
+            }
+
+            public IFunction<IList<AudioDevice>> Instantiate()
+            {
+                return new GetAudioDevicesFunction();
+            }
+        }
+
+        public class Parameters : ParameterCollection
+        {
+            public Parameters()
+            {
+                DeviceType = new Parameter<AudioDeviceType?>
                 {
                     Name = ParameterKeys.DeviceType,
                     Required = false,
                     Type = typeof(AudioDeviceType?),
                     Value = null,
                 };
-                res[ParameterKeys.DeviceState] = new Parameter
+                DeviceState = new Parameter<AudioDeviceState?>
                 {
                     Name = ParameterKeys.DeviceState,
                     Required = false,
                     Type = typeof(AudioDeviceState?),
                     Value = null,
                 };
-                return res;
             }
 
-            IFunction IFunctionDescriptor.Instantiate()
+            public IParameter<AudioDeviceType?> DeviceType
             {
-                return new GetAudioDevicesFunction();
+                get { return this.GetOrDefault<AudioDeviceType?>(ParameterKeys.DeviceType); }
+                private set { this[ParameterKeys.DeviceType] = value; }
+            }
+
+            public IParameter<AudioDeviceState?> DeviceState
+            {
+                get { return this.GetOrDefault<AudioDeviceState?>(ParameterKeys.DeviceState); }
+                private set { this[ParameterKeys.DeviceState] = value; }
             }
         }
 

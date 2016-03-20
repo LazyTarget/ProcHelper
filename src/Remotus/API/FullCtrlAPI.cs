@@ -50,7 +50,7 @@ namespace Remotus.API
             // todo get clients for that client
 
             var plugins = new List<IPlugin>();
-            plugins.Add(new SoundFunctionPlugin());
+            plugins.Add(new SoundPlugin());
             return plugins;
         }
 

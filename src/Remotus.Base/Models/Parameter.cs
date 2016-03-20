@@ -9,4 +9,28 @@ namespace Remotus.Base
         public Type Type { get; set; }
         public object Value { get; set; }
     }
+
+    public class Parameter<TValue> : Parameter, IParameter<TValue>
+    {
+        public new TValue Value
+        {
+            get { return (TValue) base.Value; }
+            set { base.Value = value; }
+        }
+
+
+        public static Parameter<TValue> Create(IParameter parameter)
+        {
+            if (parameter == null)
+                return null;
+            var result = new Parameter<TValue>
+            {
+                Name = parameter.Name,
+                Required = parameter.Required,
+                Type = parameter.Type,
+            };
+            result.Value = (TValue) parameter.Value;
+            return result;
+        }
+    }
 }

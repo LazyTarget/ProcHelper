@@ -28,8 +28,8 @@ namespace Remotus.API.Data
 
             // todo: populate via assembly load
 
-            plugins.Add(new SoundFunctionPlugin());
-            plugins.Add(new ProcessFunctionPlugin());
+            plugins.Add(new SoundPlugin());
+            plugins.Add(new ProcessPlugin());
             return plugins;
         }
     }

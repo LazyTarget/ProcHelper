@@ -62,6 +62,7 @@ namespace Remotus.Plugins.Process
         public class Descriptor : IFunctionDescriptor
         {
             public string Name => nameof(GetProcessFunction);
+            public string Version => "1.0.0.0";
 
             public IParameterCollection GetParameters()
             {

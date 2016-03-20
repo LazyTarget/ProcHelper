@@ -4,9 +4,14 @@ namespace Remotus.Base
 {
     public interface IParameter
     {
-        string Name { get; set; }
-        bool Required { get; set; }
-        Type Type { get; set; }
+        string Name { get; }
+        bool Required { get; }
+        Type Type { get; }
         object Value { get; set; }
+    }
+
+    public interface IParameter<TValue> : IParameter
+    {
+        new TValue Value { get; set; }
     }
 }

@@ -7,6 +7,8 @@ namespace Remotus.Base
     {
         private readonly IDictionary<string, IParameter> _data = new Dictionary<string, IParameter>();
 
+        
+        // todo: support multiple parameters with same key?, for multiple types...
 
         #region IDictionary
 

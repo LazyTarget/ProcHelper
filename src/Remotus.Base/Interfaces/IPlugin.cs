@@ -1,8 +1,8 @@
 ﻿namespace Remotus.Base
 {
-    public interface IPlugin
+    public interface IPlugin : IComponentDescriptor
     {
-        string Name { get; }
-        string Version { get; }
+        //string Name { get; }
+        //string Version { get; }
     }
 }

@@ -32,7 +32,7 @@ namespace Remotus.Plugins.Sound
         {
             try
             {
-                var deviceID = arguments?.Parameters.GetParamValue<string>(ParameterKeys.DeviceID);
+                var deviceID = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.DeviceID)?.Value;
 
                 Guid guid;
                 CoreAudioDevice device = null;
@@ -74,26 +74,49 @@ namespace Remotus.Plugins.Sound
         public class Descriptor : IFunctionDescriptor
         {
             public string Name => nameof(GetAudioSessionsFunction);
+            public string Version => "1.0.0.0";
 
-            public IParameterCollection GetParameters()
+            IParameterCollection IFunctionDescriptor.GetParameters()
             {
-                var res = new ParameterCollection();
-                res[ParameterKeys.DeviceID] = new Parameter
+                return GetParameters();
+            }
+
+            public Parameters GetParameters()
+            {
+                var res = new Parameters();
+                return res;
+            }
+
+            IFunction IComponentInstantiator<IFunction>.Instantiate()
+            {
+                return Instantiate();
+            }
+
+            public IFunction<IList<AudioSession>> Instantiate()
+            {
+                return new GetAudioSessionsFunction();
+            }
+        }
+
+        public class Parameters : ParameterCollection
+        {
+            public Parameters()
+            {
+                DeviceID = new Parameter<string>
                 {
                     Name = ParameterKeys.DeviceID,
                     Required = false,
                     Type = typeof(string),
                     Value = null,
                 };
-                return res;
             }
 
-            public IFunction Instantiate()
+            public IParameter<string> DeviceID
             {
-                return new GetAudioSessionsFunction();
+                get { return this.GetOrDefault<string>(ParameterKeys.DeviceID); }
+                private set { this[ParameterKeys.DeviceID] = value; }
             }
         }
-
 
         public static class ParameterKeys
         {

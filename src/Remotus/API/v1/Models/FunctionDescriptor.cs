@@ -12,6 +12,7 @@ namespace Remotus.API.v1
         }
 
         public string Name { get; set; }
+        public string Version { get; set; }
         public IParameterCollection Parameters { get; set; }
 
         public IParameterCollection GetParameters()

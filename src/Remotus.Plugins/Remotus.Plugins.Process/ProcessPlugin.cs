@@ -3,9 +3,9 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class ProcessFunctionPlugin : IFunctionPlugin
+    public class ProcessPlugin : IFunctionPlugin
     {
-        public string Name => nameof(ProcessFunctionPlugin);
+        public string Name => nameof(ProcessPlugin);
         public string Version => "1.0.0.0";
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()
