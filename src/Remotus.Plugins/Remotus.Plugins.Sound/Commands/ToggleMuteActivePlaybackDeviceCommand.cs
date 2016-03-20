@@ -66,6 +66,7 @@ namespace Remotus.Plugins.Sound
 
         public class Descriptor : ICommandDescriptor
         {
+            public string ID => "2F5A42F0-4FDC-4620-946C-465A4B6D2624";
             public string Name => nameof(ToggleMuteActivePlaybackDeviceCommand);
             public string Version => "1.0.0.0";
 

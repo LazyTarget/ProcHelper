@@ -12,6 +12,7 @@ namespace Remotus.API.v1
 
         }
 
+        public string ID { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
         public IFunctionDescriptor[] Functions { get; set; }

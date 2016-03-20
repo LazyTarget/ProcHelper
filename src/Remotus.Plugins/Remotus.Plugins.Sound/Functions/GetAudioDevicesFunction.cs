@@ -83,6 +83,7 @@ namespace Remotus.Plugins.Sound
 
         public class Descriptor : IFunctionDescriptor
         {
+            public string ID => "5A6600EA-AD3C-4D97-A62E-0A02F4F8294E";
             public string Name => nameof(GetAudioDevicesFunction);
             public string Version => "1.0.0.0";
 

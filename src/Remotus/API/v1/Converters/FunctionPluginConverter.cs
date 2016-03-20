@@ -8,8 +8,7 @@ namespace Remotus.API.v1
     {
         public override bool CanConvert(Type objectType)
         {
-            var r = typeof (IFunctionPlugin).IsAssignableFrom(objectType) ||
-                    typeof (IPlugin).IsAssignableFrom(objectType);
+            var r = typeof (IFunctionPlugin).IsAssignableFrom(objectType);
             return r;
         }
 
@@ -19,6 +18,10 @@ namespace Remotus.API.v1
 
 
             writer.WriteStartObject();
+
+            writer.WritePropertyName(nameof(p.ID));
+            serializer.Serialize(writer, p.ID);
+
             writer.WritePropertyName(nameof(p.Name));
             serializer.Serialize(writer, p.Name);
 

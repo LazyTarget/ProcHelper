@@ -12,6 +12,12 @@ namespace Remotus.Base
 
     public class Parameter<TValue> : Parameter, IParameter<TValue>
     {
+        public Parameter()
+        {
+            Type = typeof (TValue);
+            Value = default(TValue);
+        } 
+
         public new TValue Value
         {
             get { return (TValue) base.Value; }

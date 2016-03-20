@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Remotus.Base;
 
@@ -9,7 +6,6 @@ namespace Remotus.Plugins.Process
 {
     public class GetProcessFunction : IFunction<ProcessDto>
     {
-        private static System.Diagnostics.Process _proc;
         private IProcessFinder _processFinder;
 
         public GetProcessFunction()
@@ -32,16 +28,14 @@ namespace Remotus.Plugins.Process
         {
             try
             {
-                var processID = arguments.Parameters.GetParamValue<int>(ParameterKeys.ProcessID);
-                var res = _processFinder.GetProcess(processID);
-                var proc = res.GetBase();
-                proc.EnableRaisingEvents = true;
-                _proc = proc;
-                proc.OutputDataReceived += delegate(object sender, DataReceivedEventArgs args)
+                //var processID = arguments.Parameters.GetParamValue<int>(ParameterKeys.ProcessID);
+                var processID = arguments?.Parameters.GetOrDefault<int>(ParameterKeys.ProcessID)?.Value ?? -1;
+                if (processID < 0)
                 {
-                    context?.Logger?.Info("ProcMsg: " + args.Data);
-                };
-                
+                    throw new ArgumentException($"Invalid ProcessID '{processID}'", nameof(arguments));
+                }
+
+                var res = _processFinder.GetProcess(processID);
                 var result = new FunctionResult<ProcessDto>
                 {
                     Arguments = arguments,
@@ -61,39 +55,55 @@ namespace Remotus.Plugins.Process
 
         public class Descriptor : IFunctionDescriptor
         {
+            public string ID => "7EA18317-D894-4145-A704-7E8197EC65F6";
             public string Name => nameof(GetProcessFunction);
             public string Version => "1.0.0.0";
 
-            public IParameterCollection GetParameters()
+            IParameterCollection IFunctionDescriptor.GetParameters()
             {
-                var res = new ParameterCollection();
-                res[ParameterKeys.ProcessID] = new Parameter
+                return GetParameters();
+            }
+
+            public Parameters GetParameters()
+            {
+                var res = new Parameters();
+                return res;
+            }
+
+            IFunction IComponentInstantiator<IFunction>.Instantiate()
+            {
+                return Instantiate();
+            }
+
+            public IFunction<ProcessDto> Instantiate()
+            {
+                return new GetProcessFunction();
+            }
+        }
+
+        public class Parameters : ParameterCollection
+        {
+            public Parameters()
+            {
+                ProcessID = new Parameter<int>
                 {
                     Name = ParameterKeys.ProcessID,
                     Required = true,
                     Type = typeof(int),
-                    Value = null,
+                    Value = default(int)
                 };
-                //res[ParameterKeys.ProcessName] = new Parameter
-                //{
-                //    Name = ParameterKeys.ProcessName,
-                //    Required = false,
-                //    Type = typeof(string),
-                //    Value = null,
-                //};
-                return res;
             }
 
-            public IFunction Instantiate()
+            public IParameter<int> ProcessID
             {
-                return new GetProcessFunction();
+                get { return this.GetOrDefault<int>(ParameterKeys.ProcessID); }
+                private set { this[ParameterKeys.ProcessID] = value; }
             }
         }
 
         public static class ParameterKeys
         {
             public const string ProcessID = "ProcessID";
-            public const string ProcessName = "ProcessName";
         }
 
         public void Dispose()

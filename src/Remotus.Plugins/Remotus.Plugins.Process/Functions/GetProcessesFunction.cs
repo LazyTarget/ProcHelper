@@ -31,7 +31,7 @@ namespace Remotus.Plugins.Process
             try
             {
                 IEnumerable<ProcessDto> enumerable;
-                var processName = arguments?.Parameters.GetParamValue<string>(ParameterKeys.ProcessName);
+                var processName = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.ProcessName)?.Value;
                 if (!string.IsNullOrEmpty(processName))
                     enumerable = _processFinder.GetProcessesByName(processName);
                 else
@@ -57,31 +57,54 @@ namespace Remotus.Plugins.Process
 
         public class Descriptor : IFunctionDescriptor
         {
+            public string ID => "10924BB2-09BF-4C5C-A120-2D7649C36D70";
             public string Name => nameof(GetProcessesFunction);
             public string Version => "1.0.0.0";
 
-            public IParameterCollection GetParameters()
+            IParameterCollection IFunctionDescriptor.GetParameters()
             {
-                var res = new ParameterCollection();
-                res[ParameterKeys.ProcessName] = new Parameter
+                return GetParameters();
+            }
+
+            public Parameters GetParameters()
+            {
+                var res = new Parameters();
+                return res;
+            }
+
+            IFunction IComponentInstantiator<IFunction>.Instantiate()
+            {
+                return Instantiate();
+            }
+
+            public IFunction<IList<ProcessDto>> Instantiate()
+            {
+                return new GetProcessesFunction();
+            }
+        }
+
+        public class Parameters : ParameterCollection
+        {
+            public Parameters()
+            {
+                ProcessName = new Parameter<string>
                 {
                     Name = ParameterKeys.ProcessName,
                     Required = false,
                     Type = typeof(string),
                     Value = null,
                 };
-                return res;
             }
 
-            public IFunction Instantiate()
+            public IParameter<string> ProcessName
             {
-                return new GetProcessesFunction();
+                get { return this.GetOrDefault<string>(ParameterKeys.ProcessName); }
+                private set { this[ParameterKeys.ProcessName] = value; }
             }
         }
 
         public static class ParameterKeys
         {
-            public const string ProcessID = "ProcessID";
             public const string ProcessName = "ProcessName";
         }
 

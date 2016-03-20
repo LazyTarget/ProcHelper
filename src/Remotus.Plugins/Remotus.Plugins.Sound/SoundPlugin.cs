@@ -5,6 +5,7 @@ namespace Remotus.Plugins.Sound
 {
     public class SoundPlugin : IFunctionPlugin, ICommandPlugin
     {
+        public string ID        => "ABA6417A-65A2-4761-9B01-AA9DFFC074C0";
         public string Name      => nameof(SoundPlugin);
         public string Version   => "1.0.0.0";
 

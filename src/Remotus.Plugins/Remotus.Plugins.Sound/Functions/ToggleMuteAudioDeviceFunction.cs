@@ -71,6 +71,7 @@ namespace Remotus.Plugins.Sound
 
         public class Descriptor : IFunctionDescriptor
         {
+            public string ID => "78324B37-0F93-40C2-AC56-5B1D714CFC41";
             public string Name => nameof(ToggleMuteAudioDeviceFunction);
             public string Version => "1.0.0.0";
 

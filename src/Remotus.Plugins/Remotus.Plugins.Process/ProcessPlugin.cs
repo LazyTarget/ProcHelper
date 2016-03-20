@@ -5,6 +5,7 @@ namespace Remotus.Plugins.Process
 {
     public class ProcessPlugin : IFunctionPlugin
     {
+        public string ID => "8315E347-633E-4990-AF12-C0FFC4527485";
         public string Name => nameof(ProcessPlugin);
         public string Version => "1.0.0.0";
 
