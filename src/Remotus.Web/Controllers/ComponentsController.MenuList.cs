@@ -67,7 +67,7 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Processes",
-                Href = Url.Action("Plugin", "Function", new { pluginName = "ProcessFunctionPlugin" }),
+                Href = Url.Action("Plugin", "Function", new { pluginID = "8315E347-633E-4990-AF12-C0FFC4527485" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-tasks",
             });
@@ -102,7 +102,7 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Sound",
-                Href = Url.Action("Plugin", "Function", new { pluginName = "SoundFunctionPlugin" }),
+                Href = Url.Action("Plugin", "Function", new { pluginID = "ABA6417A-65A2-4761-9B01-AA9DFFC074C0" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-volume-up",
             });

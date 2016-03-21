@@ -67,12 +67,12 @@ namespace Remotus.API.v1.Server.Controllers
 
         [HttpPost, HttpPut]
         [Route("api/v1/remote/execute/function")]
-        public async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
+        public async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string clientID, string pluginID, string functionID, IFunctionArguments arguments)
         {
             try
             {
                 var localApi = GetLocalApi(clientID);
-                var response = await localApi.ExecuteLocalFunction(pluginName, functionName, arguments);
+                var response = await localApi.ExecuteLocalFunction(pluginID, functionID, arguments);
                 return response;
             }
             catch (Exception ex)

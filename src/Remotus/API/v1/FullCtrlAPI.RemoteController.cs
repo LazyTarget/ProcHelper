@@ -39,13 +39,13 @@ namespace Remotus.API.v1
         }
 
 
-        public async Task<IResponseBase<IFunctionResult>> ExecuteRemoteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
+        public async Task<IResponseBase<IFunctionResult>> ExecuteRemoteFunction(string clientID, string pluginID, string functionID, IFunctionArguments arguments)
         {
             var uri = new Uri("remote/execute/function", UriKind.Relative);
             var request = BuildRequest(uri, Method.POST);
             request.AddQueryParameter("clientID", clientID);
-            request.AddQueryParameter("pluginName", pluginName);
-            request.AddQueryParameter("functionName", functionName);
+            request.AddQueryParameter("pluginID", pluginID);
+            request.AddQueryParameter("functionID", functionID);
             request.AddJsonBody(arguments);
 
             var response = await GetResponse<IFunctionResult>(request);

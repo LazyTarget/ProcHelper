@@ -18,23 +18,26 @@ namespace Remotus.Web.Controllers
 {
     public class FunctionController : Controller
     {
-        public async Task<ActionResult> Plugin(string clientID, string pluginName)
+        public async Task<ActionResult> Plugin(string clientID, string pluginID)
         {
-            var model = await GetPluginViewModel(clientID, pluginName);
+            var model = await GetPluginViewModel(clientID, pluginID);
             return View("Plugin", model);
         }
 
 
-        public async Task<PluginViewModel> GetPluginViewModel(string clientID, string pluginName)
+        public async Task<PluginViewModel> GetPluginViewModel(string clientID, string pluginID)
         {
             var resp = await GetFunctionPlugins(clientID);
             resp.EnsureSuccess("Error getting function plugins");
-            var plugin = resp.Result?.FirstOrDefault(x => x.Name == pluginName);
+
+            var plugin = resp.Result?.FirstOrDefault(
+                    x => string.Equals(x.ID, pluginID, StringComparison.InvariantCultureIgnoreCase));
             if (plugin == null)
-                throw new Exception($"Plugin '{pluginName}' not found");
+                throw new Exception($"Plugin '{pluginID}' not found");
 
             var model = new PluginViewModel();
-            model.PluginName = pluginName;
+            model.PluginID = plugin.ID;
+            model.PluginName = plugin.Name;
             model.Functions = new FunctionViewModel[0];
             
             var functions = plugin.GetFunctions().ToList();
@@ -48,13 +51,14 @@ namespace Remotus.Web.Controllers
         public FunctionViewModel GetFunctionViewModel(IFunctionDescriptor functionDescriptor)
         {
             var model = new FunctionViewModel();
+            model.FunctionID = functionDescriptor.ID;
             model.FunctionName = functionDescriptor.Name;
             model.ParameterCollection = functionDescriptor.GetParameters();
             return model;
         }
 
 
-        public async Task<FormattedContentResult<IResponseBase<IFunctionResult>>> Execute(string clientID, string pluginName, string functionName)
+        public async Task<FormattedContentResult<IResponseBase<IFunctionResult>>> Execute(string clientID, string pluginID, string functionID)
         {
             var serializer = new CustomJsonSerializer();
 
@@ -62,13 +66,16 @@ namespace Remotus.Web.Controllers
             {
                 var resp = await GetFunctionPlugins(clientID);
                 resp.EnsureSuccess("Error getting function plugins");
-                var plugin = resp.Result?.FirstOrDefault(x => x.Name == pluginName);
-                if (plugin == null)
-                    throw new Exception($"Plugin '{pluginName}' not found");
 
-                var functionDescriptor = plugin.GetFunctions()?.FirstOrDefault(x => x.Name == functionName);
+                var plugin = resp.Result?.FirstOrDefault(
+                            x => string.Equals(x.ID, pluginID, StringComparison.InvariantCultureIgnoreCase));
+                if (plugin == null)
+                    throw new Exception($"Plugin '{pluginID}' not found");
+
+                var functionDescriptor = plugin.GetFunctions()?.FirstOrDefault(
+                            x => string.Equals(x.ID, functionID, StringComparison.InvariantCultureIgnoreCase));
                 if (functionDescriptor == null)
-                    throw new Exception($"Function '{functionName}' not found");
+                    throw new Exception($"Function '{functionID}' not found");
 
                 var converter = new Converter();
                 var parameters = functionDescriptor.GetParameters();
@@ -90,7 +97,7 @@ namespace Remotus.Web.Controllers
                 //var function = functionDescriptor.Instantiate();
                 //var result = await function.Execute(arg);
 
-                var response = await ExecuteFunction(clientID, pluginName, functionName, arg);
+                var response = await ExecuteFunction(clientID, pluginID, functionID, arg);
                 response.EnsureSuccess();
                 //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
                 
@@ -139,9 +146,9 @@ namespace Remotus.Web.Controllers
         }
 
 
-        public async Task<ActionResult> ExecutePartial(string clientID, string pluginName, string functionName)
+        public async Task<ActionResult> ExecutePartial(string clientID, string pluginID, string functionID)
         {
-            var result = await Execute(clientID, pluginName, functionName);
+            var result = await Execute(clientID, pluginID, functionID);
             var model = result?.Content;
             return PartialView("_FunctionResult", model);
         }
@@ -183,14 +190,14 @@ namespace Remotus.Web.Controllers
 
 
 
-        private async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string clientID, string pluginName, string functionName, IFunctionArguments arguments)
+        private async Task<IResponseBase<IFunctionResult>> ExecuteFunction(string clientID, string pluginID, string functionID, IFunctionArguments arguments)
         {
             var api = new FullCtrlAPI();
 
             IResponseBase<IFunctionResult> response =
                 clientID != null
-                    ? await api.ExecuteRemoteFunction(clientID, pluginName, functionName, arguments)
-                    : await api.ExecuteLocalFunction(pluginName, functionName, arguments);
+                    ? await api.ExecuteRemoteFunction(clientID, pluginID, functionID, arguments)
+                    : await api.ExecuteLocalFunction(pluginID, functionID, arguments);
             return response;
         }
 

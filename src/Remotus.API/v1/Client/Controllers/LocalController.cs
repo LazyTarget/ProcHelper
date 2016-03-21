@@ -87,7 +87,7 @@ namespace Remotus.API.v1.Client.Controllers
 
         [HttpPost, HttpPut]
         [Route("api/v1/local/execute/function")]
-        public async Task<IResponseBaseActionResult<IFunctionResult>> ExecuteFunction(string pluginName, string functionName)
+        public async Task<IResponseBaseActionResult<IFunctionResult>> ExecuteFunction(string pluginID, string functionID)
         {
             IResponseBase<IFunctionResult> response;
             IResponseBaseActionResult<IFunctionResult> actionResult;
@@ -101,17 +101,21 @@ namespace Remotus.API.v1.Client.Controllers
                     return actionResult;
                 }
 
-                var functionPlugin = pluginResponse?.Response?.Result?.CastAs<IEnumerable<IFunctionPlugin>>().FirstOrDefault(x => x.Name == pluginName);
+                var functionPlugin =
+                    pluginResponse?.Response?.Result?.CastAs<IEnumerable<IFunctionPlugin>>()
+                        .FirstOrDefault(x => string.Equals(x.ID, pluginID, StringComparison.InvariantCultureIgnoreCase));
                 if (functionPlugin == null)
                 {
-                    throw new Exception($"Plugin '{pluginName}' not found");
+                    throw new Exception($"Plugin '{pluginID}' not found");
                 }
                 
                 var functions = functionPlugin.GetFunctions();
-                var functionDescriptor = functions.FirstOrDefault(x => x.Name == functionName);
+                var functionDescriptor =
+                    functions.FirstOrDefault(
+                        x => string.Equals(x.ID, functionID, StringComparison.InvariantCultureIgnoreCase));
                 if (functionDescriptor == null)
                 {
-                    throw new Exception($"Function '{functionName}' not found");
+                    throw new Exception($"Function '{functionID}' not found");
                 }
                     
                 var parameters = functionDescriptor.GetParameters();

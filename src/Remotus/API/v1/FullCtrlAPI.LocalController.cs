@@ -36,12 +36,12 @@ namespace Remotus.API.v1
         }
 
 
-        public async Task<IResponseBase<IFunctionResult>> ExecuteLocalFunction(string pluginName, string functionName, IFunctionArguments arguments)
+        public async Task<IResponseBase<IFunctionResult>> ExecuteLocalFunction(string pluginID, string functionID, IFunctionArguments arguments)
         {
             var uri = new Uri("local/execute/function", UriKind.Relative);
             var request = BuildRequest(uri, Method.POST);
-            request.AddQueryParameter("pluginName", pluginName);
-            request.AddQueryParameter("functionName", functionName);
+            request.AddQueryParameter("pluginID", pluginID);
+            request.AddQueryParameter("functionID", functionID);
             request.AddJsonBody(arguments);
 
             var response = await GetResponse<IFunctionResult>(request);
