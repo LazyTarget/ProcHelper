@@ -5,6 +5,7 @@ using Lux.IO;
 using Remotus.Base;
 using Remotus.Plugins.Process;
 using Remotus.Plugins.Sound;
+using Remotus.Plugins.Spotify;
 
 namespace Remotus.API.Data
 {
@@ -30,6 +31,7 @@ namespace Remotus.API.Data
 
             plugins.Add(new SoundPlugin());
             plugins.Add(new ProcessPlugin());
+            plugins.Add(new SpotifyPlugin());
             return plugins;
         }
     }

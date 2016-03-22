@@ -158,6 +158,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Plugins\Remotus.Plugins.Spotify\Remotus.Plugins.Spotify.csproj">
+      <Project>{42be24e3-f30d-468d-a304-b3214e46779f}</Project>
+      <Name>Remotus.Plugins.Spotify</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
