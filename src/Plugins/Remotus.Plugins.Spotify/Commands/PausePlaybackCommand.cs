@@ -21,16 +21,13 @@ namespace Remotus.Plugins.Spotify
         {
             try
             {
-                var api = new SpotifyAPI.Local.SpotifyLocalAPI();
-                api.ListenForEvents = false;        // todo: Implement as IServicePlugin, and expose event hooks
-                var connected = api.Connect();
+                var connected = Worker.ConnectIfNotConnected();
                 if (!connected)
                 {
                     throw new Exception("Unable to connect to Spotify");
                 }
-                api.Pause();
-                var status = api.GetStatus();
-
+                Worker.Api.Pause();
+                var status = Worker.Api.GetStatus();
 
                 var result = new CommandResult();
                 result.Result = status;
