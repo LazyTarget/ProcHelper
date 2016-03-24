@@ -7,6 +7,7 @@
             Parameters = new ParameterCollection();
         }
 
+        public IFunctionDescriptor Descriptor { get; set; }
         public IParameterCollection Parameters { get; set; }
     }
 }

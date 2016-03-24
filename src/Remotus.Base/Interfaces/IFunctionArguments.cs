@@ -2,6 +2,7 @@
 {
     public interface IFunctionArguments
     {
+        IFunctionDescriptor Descriptor { get; set; }
         IParameterCollection Parameters { get; set; }
     }
 }
