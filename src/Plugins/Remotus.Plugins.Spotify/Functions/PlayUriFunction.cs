@@ -30,7 +30,7 @@ namespace Remotus.Plugins.Spotify
         {
             try
             {
-                var connected = Worker.ConnectIfNotConnected();
+                var connected = Worker.ConnectLocalIfNotConnected();
                 if (!connected)
                 {
                     throw new Exception("Unable to connect to Spotify");
@@ -40,8 +40,8 @@ namespace Remotus.Plugins.Spotify
                     throw new ArgumentException("Invalid Spotify uri");
                 var playContext = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.Context)?.Value;
 
-                Worker.Api.PlayURL(uri, playContext);
-                var status = Worker.Api.GetStatus();
+                Worker.LocalApi.PlayURL(uri, playContext);
+                var status = Worker.LocalApi.GetStatus();
                 var res = _modelConverter.FromStatusResponse(status);
 
                 var result = new FunctionResult<StatusResponse>();

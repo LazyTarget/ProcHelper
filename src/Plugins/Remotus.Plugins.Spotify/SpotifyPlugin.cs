@@ -17,6 +17,7 @@ namespace Remotus.Plugins.Spotify
             yield return new PreviousTrackFunction.Descriptor();
             yield return new NextTrackFunction.Descriptor();
             yield return new GetStatusFunction.Descriptor();
+            yield return new GetProfileFunction.Descriptor();
         }
     }
 }

@@ -30,12 +30,12 @@ namespace Remotus.Plugins.Spotify
         {
             try
             {
-                var connected = Worker.ConnectIfNotConnected();
+                var connected = Worker.ConnectLocalIfNotConnected();
                 if (!connected)
                 {
                     throw new Exception("Unable to connect to Spotify");
                 }
-                var status = Worker.Api.GetStatus();
+                var status = Worker.LocalApi.GetStatus();
                 var res = _modelConverter.FromStatusResponse(status);
 
                 var result = new FunctionResult<StatusResponse>();

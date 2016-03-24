@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Functions\GetStatusFunction.cs" />
     <Compile Include="Functions\PlayUriFunction.cs" />
+    <Compile Include="Functions\GetProfileFunction.cs" />
     <Compile Include="Functions\PreviousTrackFunction.cs" />
     <Compile Include="Functions\NextTrackFunction.cs" />
     <Compile Include="Functions\PlayFunction.cs" />

@@ -3,20 +3,25 @@
     public static class Worker
     {
         private static bool _connected;
-        public static readonly SpotifyAPI.Local.SpotifyLocalAPI Api;
+        public static readonly SpotifyAPI.Local.SpotifyLocalAPI LocalApi;
+        public static readonly SpotifyAPI.Web.SpotifyWebAPI WebApi;
 
         static Worker()
         {
-            Api = new SpotifyAPI.Local.SpotifyLocalAPI();
-            Api.ListenForEvents = false;        // todo: Implement as IServicePlugin, and expose event hooks
+            LocalApi = new SpotifyAPI.Local.SpotifyLocalAPI();
+            LocalApi.ListenForEvents = false;        // todo: Implement as IServicePlugin, and expose event hooks
+            //LocalApi.OnTrackChange += 
+
+            WebApi = new SpotifyAPI.Web.SpotifyWebAPI();
+            WebApi.UseAuth = false;
         }
 
 
-        public static bool ConnectIfNotConnected()
+        public static bool ConnectLocalIfNotConnected()
         {
             if (!_connected)
             {
-                _connected = Api.Connect();
+                _connected = LocalApi.Connect();
             }
             return _connected;
         }
