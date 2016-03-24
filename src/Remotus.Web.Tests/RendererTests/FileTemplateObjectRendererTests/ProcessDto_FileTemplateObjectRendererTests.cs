@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
@@ -7,7 +8,7 @@ using Remotus.Web.Rendering;
 
 namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
 {
-    [TestFixture, Ignore("Not implemented")]
+    [TestFixture]
     public class ProcessDto_FileTemplateObjectRendererTests : FileTemplateObjectRendererTestBase
     {
         public override FileTemplateObjectRenderer.IFileTemplate GetFileTemplate()
@@ -50,37 +51,7 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
             var actual = sut.CanRender(obj);
             Assert.AreEqual(false, actual);
         }
-
         
-        [TestCase]
-        public void ExpressionEvaluator_PropertyResolver()
-        {
-            var value = new ProcessDto
-            {
-                Id = 21323,
-                ProcessName = "ProcName",
-            };
-            
-            var sb = new StringBuilder();
-            sb.AppendLine("<div>");
-            sb.AppendLine("\t<p class=\"Property\"><span class=\"PropertyName\">ProcessID: </span><span class=\"PropertyValue\">{{Value.Id}}</span></p>");
-            sb.AppendLine("\t<p class=\"Property\"><span class=\"PropertyName\">ProcessName: </span><span class=\"PropertyValue\">{{Value.ProcessName}}</span></p>");
-            sb.AppendLine("</div>");
-            var expression = sb.ToString();
-
-
-            var expected = expression
-                .Replace("{{Value.Id}}", value.Id.ToString())
-                .Replace("{{Value.ProcessName}}", value.ProcessName);
-
-            var evaluator = new FileTemplateObjectRenderer.ExpressionEvaluator();
-            var result = evaluator.Evaluate(expected, new {Value = value});
-            Assert.IsNotNull(result);
-
-            var actual = (string) result;
-            Assert.AreEqual(expected, actual);
-        }
-
 
 
         [TestCase]
@@ -98,7 +69,7 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
             sb.AppendLine("\t<p class=\"Property\"><span class=\"PropertyName\">ProcessName: </span><span class=\"PropertyValue\">{{Value.ProcessName}}</span></p>");
             sb.AppendLine("</div>");
 
-            var evaluator = new FileTemplateObjectRenderer.ExpressionEvaluator();
+            var evaluator = new ExpressionEvaluator();
             var expected = sb.ToString();
             var val = evaluator.Evaluate(expected, new {Value = value});
             expected = (string) val;

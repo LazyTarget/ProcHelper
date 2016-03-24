@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 
@@ -30,7 +31,7 @@ namespace Remotus.Web.Rendering
         {
             if (Template.Conditions == null)
                 return true;
-            
+
             foreach (var objectRendererCondition in Template.Conditions)
             {
                 if (objectRendererCondition == null)
@@ -66,23 +67,19 @@ namespace Remotus.Web.Rendering
 
             public bool Validate(object value, ExpressionEvaluator evaluator)
             {
-                throw new NotImplementedException();
+                var result = evaluator.Evaluate(Expression, value);
+                var cond = (bool) result;
+                return cond;
             }
         }
 
-        public class ExpressionEvaluator
-        {
-            public object Evaluate(string expression, object reference)
-            {
-                return null;
-            }
-        }
+        
 
         public class FileTemplate : IFileTemplate
         {
             private FileTemplate()
             {
-                
+
             }
 
             public string RawTemplate { get; private set; }
@@ -101,16 +98,16 @@ namespace Remotus.Web.Rendering
                     line = line.Trim();
                     if (line.StartsWith("[Cond]", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var expression = line.Substring(0, "[Cond]".Length).Trim();
+                        var expression = line.Substring("[Cond]".Length).Trim();
                         var cond = new ObjectRendererCondition(expression);
                         conditions.Add(cond);
                     }
                     else
                     {
-                        
+
                     }
 
-                    line = lines.ElementAt(lineIndex++);
+                    line = lines.ElementAt(++lineIndex);
                 }
 
                 var rawTemplate = string.Join(Environment.NewLine, lines.Skip(lineIndex + 1));
