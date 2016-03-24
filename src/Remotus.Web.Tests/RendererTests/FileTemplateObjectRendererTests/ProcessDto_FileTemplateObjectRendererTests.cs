@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
@@ -15,8 +14,7 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
         {
             var baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RendererTests/FileTemplateObjectRendererTests/Templates");
             var filePath = Path.Combine(baseDir, "ProcessDto.render");
-            var fileContents = File.ReadAllText(filePath);
-            var template = FileTemplateObjectRenderer.FileTemplate.Parse(fileContents);
+            var template = FileTemplateObjectRenderer.FileTemplate.Load(filePath);
             return template;
         }
 
@@ -63,24 +61,24 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
                 ProcessName = "ProcName",
             };
             
-            var sb = new StringBuilder();
-            sb.AppendLine("<div>");
-            sb.AppendLine("\t<p class=\"Property\"><span class=\"PropertyName\">ProcessID: </span><span class=\"PropertyValue\">{{Value.Id}}</span></p>");
-            sb.AppendLine("\t<p class=\"Property\"><span class=\"PropertyName\">ProcessName: </span><span class=\"PropertyValue\">{{Value.ProcessName}}</span></p>");
-            sb.AppendLine("</div>");
+            var template = GetFileTemplate();
+            var rawTemplate = template.RawTemplate.Trim();
 
             var evaluator = new ExpressionEvaluator();
-            var expected = sb.ToString();
-            var val = evaluator.Evaluate(expected, new {Value = value});
-            expected = (string) val;
+            var val = evaluator.Resolve(rawTemplate, value);
+            var expected = val.Trim();
 
-            sb.Clear();
+            var sb = new StringBuilder();
             TextWriter textWriter = new StringWriter(sb);
-
             IObjectRenderer sut = GetSUT();
+
+            // Act
+            var canRender = sut.CanRender(value);
+            Assert.AreEqual(true, canRender);
+            
             sut.Render(textWriter, value);
 
-            var actual = sb.ToString();
+            var actual = sb.ToString().Trim();
             Assert.IsNotEmpty(actual);
             Assert.AreEqual(expected, actual);
         }
@@ -90,15 +88,27 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
         public void Render_WhenInvalid()
         {
             object value = new Parameter();
-            
+
+            var template = GetFileTemplate();
+            var rawTemplate = template.RawTemplate.Trim();
+
+            var evaluator = new ExpressionEvaluator();
+            var val = evaluator.Resolve(rawTemplate, value);
+            var expected = val.Trim();
+
             var sb = new StringBuilder();
             TextWriter textWriter = new StringWriter(sb);
-
             IObjectRenderer sut = GetSUT();
+
+            // Act
+            var canRender = sut.CanRender(value);
+            Assert.AreEqual(false, canRender);
+
             sut.Render(textWriter, value);
 
-            var actual = sb.ToString();
-            Assert.IsEmpty(actual);
+            var actual = sb.ToString().Trim();
+            Assert.IsNotEmpty(actual);
+            Assert.AreEqual(expected, actual);
         }
 
     }

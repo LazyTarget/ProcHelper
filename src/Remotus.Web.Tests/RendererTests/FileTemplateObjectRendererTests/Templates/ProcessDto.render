@@ -1,6 +1,6 @@
-﻿[Cond] {{Value}} is ProcessDto
+﻿[Cond] $ is "Remotus.Base.ProcessDto, Remotus.Base"
 
 <div>
-	<p class="Property"><span class="PropertyName">ProcessId: </span><span class="PropertyValue">{{Value.Id}}</span></p>
-	<p class="Property"><span class="PropertyName">ProcessName: </span><span class="PropertyValue">{{Value.ProcessName}}</span></p>
+	<p class="Property"><span class="PropertyName">Id: </span><span class="PropertyValue">{{$.Id}}</span></p>
+	<p class="Property"><span class="PropertyName">ProcessName: </span><span class="PropertyValue">{{$.ProcessName}}</span></p>
 </div>

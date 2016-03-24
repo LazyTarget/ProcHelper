@@ -18,6 +18,7 @@ namespace Remotus.Web.Rendering
         {
             Default = new HtmlObjectRenderer();
             Default.Children.Add(new BootstrapTableHtmlObjectRenderer());
+            Default.Children.Add(new FileTemplateObjectRenderer(FileTemplateObjectRenderer.FileTemplate.Load("App_Data/RenderTemplates/ProcessDto.render")));
         }
 
 

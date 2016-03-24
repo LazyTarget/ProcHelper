@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Web;
 
 namespace Remotus.Web.Rendering
 {
-    public class FileTemplateObjectRenderer : HtmlObjectRenderer
+    public class FileTemplateObjectRenderer : IObjectRenderer
     {
         protected readonly IFileTemplate Template;
         protected readonly ExpressionEvaluator Evaluator = new ExpressionEvaluator();
@@ -18,12 +17,16 @@ namespace Remotus.Web.Rendering
             Template = fileTemplate;
         }
 
-        public override bool CanRender(object value)
+        public bool CanRender(object value)
         {
             var result = ValidateTemplateConditions(value);
             return result;
+        }
 
-            //return result = base.CanRender(value);
+        public void Render(TextWriter textWriter, object value)
+        {
+            var resolved = Evaluator.Resolve(Template.RawTemplate, value);
+            textWriter.Write(resolved);
         }
 
 
@@ -86,13 +89,22 @@ namespace Remotus.Web.Rendering
             public IObjectRendererCondition[] Conditions { get; private set; }
 
 
-            public static FileTemplate Parse(string fileContents)
+            public static FileTemplate Load(string filePath)
+            {
+                filePath = Path.IsPathRooted(filePath)
+                    ? filePath
+                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+                var fileLines = File.ReadAllLines(filePath);
+                var template = Parse(fileLines);
+                return template;
+            }
+
+            public static FileTemplate Parse(string[] fileLines)
             {
                 var conditions = new List<IObjectRendererCondition>();
 
                 var lineIndex = 0;
-                var lines = fileContents.Split(Environment.NewLine.ToCharArray());
-                string line = lines.ElementAtOrDefault(lineIndex);
+                string line = fileLines.ElementAtOrDefault(lineIndex);
                 while (!string.IsNullOrWhiteSpace(line))
                 {
                     line = line.Trim();
@@ -107,10 +119,10 @@ namespace Remotus.Web.Rendering
 
                     }
 
-                    line = lines.ElementAt(++lineIndex);
+                    line = fileLines.ElementAt(++lineIndex);
                 }
 
-                var rawTemplate = string.Join(Environment.NewLine, lines.Skip(lineIndex + 1));
+                var rawTemplate = string.Join(Environment.NewLine, fileLines.Skip(lineIndex + 1));
 
                 var template = new FileTemplate();
                 template.Conditions = conditions.ToArray();

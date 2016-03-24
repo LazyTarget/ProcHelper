@@ -69,24 +69,73 @@ namespace Remotus.Web.Tests.EvaluatorTests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCase]
+        public void ExpressionEvaluator_EvaluateTypeIs()
+        {
+            var value = new ProcessDto();
+            var expected = value is ProcessDto;
+            var expression = $"$Value is \"{typeof(ProcessDto).AssemblyQualifiedName}\"";
+            var reference = new {Value = value};
+
+            var evaluator = new ExpressionEvaluator();
+            var result = evaluator.Evaluate(expression, reference);
+            Assert.IsNotNull(result);
+
+            var actual = (bool)result;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase, Ignore("Not implemented")]
+        public void ExpressionEvaluator_EvaluateTypeIsNot()
+        {
+            var value = new ProcessDto();
+            var expected = false;
+            var expression = $"$Value is \"{typeof(ProcessDto).AssemblyQualifiedName}\" = false";
+            var reference = new { Value = value };
+
+            var evaluator = new ExpressionEvaluator();
+            var result = evaluator.Evaluate(expression, reference);
+            Assert.IsNotNull(result);
+
+            var actual = (bool)result;
+            Assert.AreEqual(expected, actual);
+        }
 
         [TestCase]
-        public void ExpressionEvaluator_ConditionResolver()
+        public void ExpressionEvaluator_EvaluateProperties()
         {
             var value = new ProcessDto
             {
-                Id = 21323,
-                ProcessName = "ProcName",
+                MainModule = new ProcessModuleDto
+                {
+                    FileName = "Qwerty.exe",
+                },
             };
-
-            var expression = "{{Value is ProcessDto}}";
+            var expected = value.MainModule.FileName;
+            var expression = "$Value.MainModule.FileName";
+            var reference = new {Value = value};
 
             var evaluator = new ExpressionEvaluator();
-            var result = evaluator.Evaluate(expression, new {Value = value});
+            var result = evaluator.Evaluate(expression, reference);
             Assert.IsNotNull(result);
 
-            var actual = (bool) result;
-            Assert.AreEqual(true, actual);
+            var actual = (string)result;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [TestCase]
+        public void ExpressionEvaluator_ConditionEvaluator()
+        {
+            var expected = "Qwerty";
+            var expression = $"$Value == \"{expected}\"";
+
+            var evaluator = new ExpressionEvaluator();
+            var result = evaluator.Evaluate(expression, new {Value = expected});
+            Assert.IsNotNull(result);
+
+            var actual = (string) result;
+            Assert.AreEqual(expected, actual);
         }
 
         
@@ -112,7 +161,7 @@ namespace Remotus.Web.Tests.EvaluatorTests
                 .Replace("{{Value.ProcessName}}", value.ProcessName);
 
             var evaluator = new ExpressionEvaluator();
-            var result = evaluator.Evaluate(expected, new {Value = value});
+            var result = evaluator.Resolve(expected, new {Value = value});
             Assert.IsNotNull(result);
 
             var actual = (string) result;
