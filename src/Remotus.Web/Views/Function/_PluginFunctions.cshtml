@@ -11,7 +11,7 @@
                 var isActive = function == Model.Functions.First();
 
                     <li role="presentation" class="@(isActive ? "active" : "")">
-                        <a href="#functionTab_@(function.FunctionName)" aria-controls="functionTab_@(function.FunctionName)" role="tab" data-toggle="tab">
+                        <a href="#functionTab_@(function.FunctionID)" aria-controls="functionTab_@(function.FunctionID)" role="tab" data-toggle="tab">
                             @function.FunctionName
                         </a>
                     </li>
@@ -33,7 +33,7 @@
                         InsertionMode = InsertionMode.Replace,
                     };
 
-                    <div role="tabpanel" class="tab-pane @(isActive ? "active" : "")" id="functionTab_@(function.FunctionName)">
+                    <div role="tabpanel" class="tab-pane @(isActive ? "active" : "")" id="functionTab_@(function.FunctionID)">
 
                         @using (Ajax.BeginForm("ExecutePartial", "Function", new { pluginID = Model.PluginID, functionID = function.FunctionID }, ajaxOptions))
                         {

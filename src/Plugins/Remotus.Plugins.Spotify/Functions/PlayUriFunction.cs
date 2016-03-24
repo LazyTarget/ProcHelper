@@ -6,11 +6,11 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Spotify
 {
-    public class PauseFunction : IFunction<StatusResponse>
+    public class PlayUriFunction : IFunction<StatusResponse>
     {
         private ModelConverter _modelConverter = new ModelConverter();
 
-        public PauseFunction()
+        public PlayUriFunction()
         {
             
         }
@@ -35,7 +35,12 @@ namespace Remotus.Plugins.Spotify
                 {
                     throw new Exception("Unable to connect to Spotify");
                 }
-                Worker.Api.Pause();
+                var uri = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.Uri)?.Value;
+                if (string.IsNullOrWhiteSpace(uri))
+                    throw new ArgumentException("Invalid Spotify uri");
+                var playContext = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.Context)?.Value;
+
+                Worker.Api.PlayURL(uri, playContext);
                 var status = Worker.Api.GetStatus();
                 var res = _modelConverter.FromStatusResponse(status);
 
@@ -56,13 +61,13 @@ namespace Remotus.Plugins.Spotify
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "B525CAD9-27E6-4709-B29B-96A32438C7D0";
-            public string Name => "Pause";
+            public string ID => "43A34F59-7DE0-4796-800E-1641BB91A26B";
+            public string Name => "Play uri";
             public string Version => "1.0.0.0";
 
             public IParameterCollection GetParameters()
             {
-                IParameterCollection res = null;
+                var res = new Parameters();
                 return res;
             }
 
@@ -73,8 +78,47 @@ namespace Remotus.Plugins.Spotify
 
             public IFunction<StatusResponse> Instantiate()
             {
-                return new PauseFunction();
+                return new PlayUriFunction();
             }
+        }
+
+        public class Parameters : ParameterCollection
+        {
+            public Parameters()
+            {
+                Uri = new Parameter<string>
+                {
+                    Name = ParameterKeys.Uri,
+                    Required = true,
+                    Type = typeof(string),
+                    Value = null,
+                };
+                Context = new Parameter<string>
+                {
+                    Name = ParameterKeys.Context,
+                    Required = false,
+                    Type = typeof(string),
+                    Value = null,
+                };
+            }
+
+            public IParameter<string> Uri
+            {
+                get { return this.GetOrDefault<string>(ParameterKeys.Uri); }
+                private set { this[ParameterKeys.Uri] = value; }
+            }
+
+            public IParameter<string> Context
+            {
+                get { return this.GetOrDefault<string>(ParameterKeys.Context); }
+                private set { this[ParameterKeys.Context] = value; }
+            }
+        }
+
+        public static class ParameterKeys
+        {
+            public const string Uri = "Uri";
+            public const string Context = "Context";
         }
 
         public void Dispose()

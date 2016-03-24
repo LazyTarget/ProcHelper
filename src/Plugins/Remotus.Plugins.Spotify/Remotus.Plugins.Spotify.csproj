@@ -49,6 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Functions\GetStatusFunction.cs" />
+    <Compile Include="Functions\PlayUriFunction.cs" />
+    <Compile Include="Functions\PreviousTrackFunction.cs" />
+    <Compile Include="Functions\NextTrackFunction.cs" />
     <Compile Include="Functions\PlayFunction.cs" />
     <Compile Include="Functions\PauseFunction.cs" />
     <Compile Include="ModelConverter.cs" />

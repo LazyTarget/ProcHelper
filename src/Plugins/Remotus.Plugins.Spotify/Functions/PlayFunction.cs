@@ -57,13 +57,13 @@ namespace Remotus.Plugins.Spotify
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "E0498682-DC90-487A-A66C-F79B54531233";
-            public string Name => nameof(PlayFunction);
+            public string Name => "Play";
             public string Version => "1.0.0.0";
 
             public IParameterCollection GetParameters()
             {
-                IParameterCollection parameterCollection = null;
-                return parameterCollection;
+                IParameterCollection res = null;
+                return res;
             }
 
             IFunction IComponentInstantiator<IFunction>.Instantiate()

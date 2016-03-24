@@ -6,11 +6,11 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Spotify
 {
-    public class PauseFunction : IFunction<StatusResponse>
+    public class NextTrackFunction : IFunction<StatusResponse>
     {
-        private ModelConverter _modelConverter = new ModelConverter();
+        private readonly ModelConverter _modelConverter = new ModelConverter();
 
-        public PauseFunction()
+        public NextTrackFunction()
         {
             
         }
@@ -35,7 +35,7 @@ namespace Remotus.Plugins.Spotify
                 {
                     throw new Exception("Unable to connect to Spotify");
                 }
-                Worker.Api.Pause();
+                Worker.Api.Skip();
                 var status = Worker.Api.GetStatus();
                 var res = _modelConverter.FromStatusResponse(status);
 
@@ -56,8 +56,8 @@ namespace Remotus.Plugins.Spotify
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "B525CAD9-27E6-4709-B29B-96A32438C7D0";
-            public string Name => "Pause";
+            public string ID => "78A840E7-6C76-4A8A-B5BF-EFC68E19B945";
+            public string Name => "Next track";
             public string Version => "1.0.0.0";
 
             public IParameterCollection GetParameters()
@@ -73,7 +73,7 @@ namespace Remotus.Plugins.Spotify
 
             public IFunction<StatusResponse> Instantiate()
             {
-                return new PauseFunction();
+                return new NextTrackFunction();
             }
         }
 
