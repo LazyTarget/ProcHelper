@@ -11,7 +11,8 @@ namespace Remotus.Plugins.Spotify
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()
         {
-            yield return new PausePlaybackFunction.Descriptor();
+            yield return new PlayFunction.Descriptor();
+            yield return new PauseFunction.Descriptor();
         }
     }
 }

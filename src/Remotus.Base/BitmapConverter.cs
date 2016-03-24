@@ -45,33 +45,38 @@ namespace Remotus.Base
                     }
                 }
                 else
-                    throw new Exception(String.Format("Unexpected token or value when parsing bitmap. Token: {0}, Value: {1}", reader.TokenType, reader.Value));
+                    throw new Exception($"Unexpected token or value when parsing bitmap. " +
+                                        $"Token: {reader.TokenType}, Value: {reader.Value}");
             }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            try
+            if (value == null)
+                writer.WriteNull();
+            else
             {
-                if (value == null)
-                    writer.WriteNull();
-                else if (value is Bitmap)
+                try
                 {
-                    var img = value as Bitmap;
-                    var format = System.Drawing.Imaging.ImageFormat.Png;
-                    using (var stream = new MemoryStream())
+                    if (value is Bitmap)
                     {
-                        img.Save(stream, format);
-                        var imgData = stream.ToArray();
-                        writer.WriteValue(imgData);
+                        var img = value as Bitmap;
+                        var format = System.Drawing.Imaging.ImageFormat.Png;
+                        using (var stream = new MemoryStream())
+                        {
+                            img.Save(stream, format);
+                            var imgData = stream.ToArray();
+                            writer.WriteValue(imgData);
+                        }
                     }
+                    else
+                        throw new Exception("Expected Bitmap object value");
                 }
-                else
-                    throw new Exception("Expected Bitmap object value");
-            }
-            catch (Exception ex)
-            {
-                throw;
+                catch (Exception ex)
+                {
+                    writer.WriteNull();
+                    //throw;
+                }
             }
         }
     }

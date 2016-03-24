@@ -6,9 +6,11 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Spotify
 {
-    public class PausePlaybackFunction : IFunction<PlaybackStatus>
+    public class PauseFunction : IFunction<StatusResponse>
     {
-        public PausePlaybackFunction()
+        private ModelConverter _modelConverter = new ModelConverter();
+
+        public PauseFunction()
         {
             
         }
@@ -24,7 +26,7 @@ namespace Remotus.Plugins.Spotify
             return result;
         }
 
-        public async Task<IFunctionResult<PlaybackStatus>> Execute(IExecutionContext context, IFunctionArguments arguments)
+        public async Task<IFunctionResult<StatusResponse>> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
@@ -35,19 +37,16 @@ namespace Remotus.Plugins.Spotify
                 }
                 Worker.Api.Pause();
                 var status = Worker.Api.GetStatus();
-                var res = new PlaybackStatus
-                {
-                    Status = status,
-                };
+                var res = _modelConverter.FromStatusResponse(status);
 
-                var result = new FunctionResult<PlaybackStatus>();
+                var result = new FunctionResult<StatusResponse>();
                 result.Arguments = arguments;
                 result.Result = res;
                 return result;
             }
             catch (Exception ex)
             {
-                var result = new FunctionResult<PlaybackStatus>();
+                var result = new FunctionResult<StatusResponse>();
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
@@ -58,7 +57,7 @@ namespace Remotus.Plugins.Spotify
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "B525CAD9-27E6-4709-B29B-96A32438C7D0";
-            public string Name => nameof(PausePlaybackFunction);
+            public string Name => nameof(PauseFunction);
             public string Version => "1.0.0.0";
 
             public IParameterCollection GetParameters()
@@ -72,9 +71,9 @@ namespace Remotus.Plugins.Spotify
                 return Instantiate();
             }
 
-            public IFunction<PlaybackStatus> Instantiate()
+            public IFunction<StatusResponse> Instantiate()
             {
-                return new PausePlaybackFunction();
+                return new PauseFunction();
             }
         }
 

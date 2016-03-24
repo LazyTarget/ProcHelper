@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,9 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Commands\PausePlaybackCommand.cs" />
-    <Compile Include="Functions\PausePlaybackFunction.cs" />
-    <Compile Include="Models\PlaybackStatus.cs" />
+    <Compile Include="Functions\PlayFunction.cs" />
+    <Compile Include="Functions\PauseFunction.cs" />
+    <Compile Include="ModelConverter.cs" />
+    <Compile Include="Models\SpotifyResource.cs" />
+    <Compile Include="Models\Track.cs" />
+    <Compile Include="Models\StatusResponse.cs" />
     <Compile Include="SpotifyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Worker.cs" />
