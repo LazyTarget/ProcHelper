@@ -119,14 +119,17 @@ namespace Remotus.API.v1.Client.Controllers
                 }
                     
                 var parameters = functionDescriptor.GetParameters();
-                foreach (var param in parameters)
+                if (parameters != null)
                 {
-                    //var str = Request.Form["Param_" + param.Key];
-                    //if (str != null)
-                    //{
-                    //    var val = Converter.Convert(str, param.Value.Type);
-                    //    param.Value.Value = val;
-                    //}
+                    foreach (var param in parameters)
+                    {
+                        //var str = Request.Form["Param_" + param.Key];
+                        //if (str != null)
+                        //{
+                        //    var val = Converter.Convert(str, param.Value.Type);
+                        //    param.Value.Value = val;
+                        //}
+                    }
                 }
 
                 IFunctionArguments arg = new FunctionArguments();

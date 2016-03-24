@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\ToggleMuteActivePlaybackDeviceCommand.cs" />
+    <Content Include="Commands\ToggleMuteActivePlaybackDeviceCommand.cs" />
     <Compile Include="Functions\GetAudioSessionsFunction.cs" />
     <Compile Include="Functions\GetAudioDevicesFunction.cs" />
     <Compile Include="ModelConverter.cs" />

@@ -48,7 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\PausePlaybackCommand.cs" />
+    <Content Include="Commands\PausePlaybackCommand.cs" />
+    <Compile Include="Functions\PausePlaybackFunction.cs" />
+    <Compile Include="Models\PlaybackStatus.cs" />
     <Compile Include="SpotifyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Worker.cs" />

@@ -78,10 +78,6 @@
     <Compile Include="Interfaces\IComponentInstantiator.cs" />
     <Compile Include="Interfaces\IDescriptor.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
-    <Compile Include="Interfaces\ICommand.cs" />
-    <Compile Include="Interfaces\ICommandDescriptor.cs" />
-    <Compile Include="Interfaces\ICommandResult.cs" />
-    <Compile Include="Interfaces\ICommandPlugin.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Interfaces\IServerInfo.cs" />
     <Compile Include="Interfaces\IService.cs" />
@@ -112,7 +108,6 @@
     <Compile Include="Interfaces\IReturn.cs" />
     <Compile Include="Interfaces\Workers\IWinServiceHelper.cs" />
     <Compile Include="Models\ApiEndpoint.cs" />
-    <Compile Include="Models\CommandResult.cs" />
     <Compile Include="Models\DefaultError.cs" />
     <Compile Include="Models\DefaultLink.cs" />
     <Compile Include="Models\DefaultResponseBase.cs" />
