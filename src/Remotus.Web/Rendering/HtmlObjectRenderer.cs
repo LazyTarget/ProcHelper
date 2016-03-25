@@ -18,7 +18,16 @@ namespace Remotus.Web.Rendering
         {
             Default = new HtmlObjectRenderer();
             Default.Children.Add(new BootstrapTableHtmlObjectRenderer());
-            Default.Children.Add(new FileTemplateObjectRenderer(FileTemplateObjectRenderer.FileTemplate.Load("App_Data/RenderTemplates/ProcessDto.render")));
+
+            var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/RenderTemplates");
+            var filePaths = Directory.EnumerateFiles(directory, "*.render", SearchOption.AllDirectories);
+            foreach (var filePath in filePaths)
+            {
+                // todo: load via web.config?
+                var template = FileTemplateObjectRenderer.FileTemplate.Load(filePath);
+                var renderer = new FileTemplateObjectRenderer(template);
+                Default.Children.Add(renderer);
+            }
         }
 
 

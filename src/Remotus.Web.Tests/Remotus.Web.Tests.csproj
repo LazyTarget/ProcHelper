@@ -52,6 +52,7 @@
     <Compile Include="RendererTests\ObjectRendererTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <Content Include="RendererTests\FileTemplateObjectRendererTests\Templates\ProcessDto.render">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

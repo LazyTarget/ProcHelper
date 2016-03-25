@@ -1,7 +1,9 @@
-﻿#[Cond] $ is "Remotus.Base.ProcessDto, Remotus.Base"
-[Cond] $ is "Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"
+﻿[Cond] $ is "Remotus.Base.ProcessDto, Remotus.Base"
+#[Cond] $ is "Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"
 
 <div>
 	<p class="Property"><span class="PropertyName">Id: </span><span class="PropertyValue">{{$.Id}}</span></p>
 	<p class="Property"><span class="PropertyName">ProcessName: </span><span class="PropertyValue">{{$.ProcessName}}</span></p>
+	<p class="Property"><span class="PropertyName">MainModule: </span><span class="PropertyValue">{{$.MainModule}}</span></p>
+	<p class="Property"><span class="PropertyName">HasExited: </span><span class="PropertyValue">{{$.HasExited}}</span></p>
 </div>
