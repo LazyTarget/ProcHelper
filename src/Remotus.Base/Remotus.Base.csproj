@@ -63,6 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BitmapConverter.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="Diagnostics\ILog.cs" />

@@ -80,6 +80,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="API\ApiFactory.cs" />
     <Compile Include="API\v1\Converters\ParameterConverter.cs" />
     <Compile Include="API\v1\Converters\ProcessToNullConverter.cs" />

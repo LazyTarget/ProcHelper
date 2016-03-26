@@ -200,6 +200,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="App_Code\ExpressionEvaluator.cs" />
     <Compile Include="App_Code\HtmlTextWriterExtensions.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
