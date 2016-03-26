@@ -35,7 +35,10 @@ namespace Remotus.Base
                 Required = parameter.Required,
                 Type = parameter.Type,
             };
-            result.Value = (TValue) parameter.Value;
+
+            var converter = new Lux.Converter();
+            //result.Value = (TValue) parameter.Value;
+            result.Value = converter.Convert<TValue>(parameter.Value);
             return result;
         }
     }

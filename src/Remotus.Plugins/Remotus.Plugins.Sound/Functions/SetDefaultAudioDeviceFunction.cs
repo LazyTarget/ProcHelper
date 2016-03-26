@@ -1,22 +1,23 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AudioSwitcher.AudioApi.CoreAudio;
 using Lux;
-using Lux.Extensions;
 using Lux.Interfaces;
 using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
-    public class ToggleMuteAudioDeviceFunction : IFunction, IFunction<AudioDevice>
+    public class SetDefaultAudioDeviceFunction : IFunction, IFunction<AudioDevice>
     {
         private CoreAudioController _audioController = new CoreAudioController();
         private ModelConverter _modelConverter = new ModelConverter();
         private IConverter _converter = new Converter();
 
-        public ToggleMuteAudioDeviceFunction()
+        public SetDefaultAudioDeviceFunction()
         {
-
+            
         }
 
         public IFunctionDescriptor GetDescriptor()
@@ -38,15 +39,14 @@ namespace Remotus.Plugins.Sound
                 var deviceID = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.DeviceID)?.Value;
                 var guid = _converter.Convert<Guid>(deviceID);
                 if (guid != Guid.Empty)
+                {
                     device = await _audioController.GetDeviceAsync(guid);
+                    var r = await device.SetAsDefaultAsync();
+                    if (!r)
+                        throw new Exception($"Request resulted with: '{r}'");
+                }
                 else
-                    device = _audioController.DefaultPlaybackDevice;
-                if (device == null)
-                    throw new Exception("Device not found");
-
-                var r = await device.MuteAsync(!device.IsMuted);
-                if (!r)
-                    throw new Exception($"Request resulted with: '{r}'");
+                    device = null;
 
                 var res = _modelConverter.FromAudioDevice(device);
 
@@ -67,8 +67,8 @@ namespace Remotus.Plugins.Sound
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "78324B37-0F93-40C2-AC56-5B1D714CFC41";
-            public string Name => nameof(ToggleMuteAudioDeviceFunction);
+            public string ID => "2C7B8619-1642-41C4-97F3-FD08E46FE430";
+            public string Name => "Set default device";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -89,7 +89,7 @@ namespace Remotus.Plugins.Sound
 
             public IFunction<AudioDevice> Instantiate()
             {
-                return new ToggleMuteAudioDeviceFunction();
+                return new SetDefaultAudioDeviceFunction();
             }
         }
 
@@ -100,7 +100,7 @@ namespace Remotus.Plugins.Sound
                 DeviceID = new Parameter<string>
                 {
                     Name = ParameterKeys.DeviceID,
-                    Required = false,
+                    Required = true,
                     Type = typeof(string),
                     Value = null,
                 };
@@ -120,8 +120,8 @@ namespace Remotus.Plugins.Sound
 
         public void Dispose()
         {
-            _audioController.Dispose();
+            _audioController?.Dispose();
+            _audioController = null;
         }
-
     }
 }

@@ -14,6 +14,8 @@ namespace Remotus.Plugins.Sound
             yield return new GetAudioDevicesFunction.Descriptor();
             yield return new GetAudioSessionsFunction.Descriptor();
             yield return new ToggleMuteAudioDeviceFunction.Descriptor();
+            yield return new SetDefaultAudioDeviceFunction.Descriptor();
+            yield return new SetDefaultAudioCommunicationsDeviceFunction.Descriptor();
         }
     }
 }

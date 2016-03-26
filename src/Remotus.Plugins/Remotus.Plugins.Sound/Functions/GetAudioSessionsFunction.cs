@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AudioSwitcher.AudioApi.CoreAudio;
+using Lux;
+using Lux.Interfaces;
 using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
@@ -11,6 +13,7 @@ namespace Remotus.Plugins.Sound
     {
         private CoreAudioController _audioController = new CoreAudioController();
         private ModelConverter _modelConverter = new ModelConverter();
+        private IConverter _converter = new Converter();
 
         public GetAudioSessionsFunction()
         {
@@ -32,33 +35,22 @@ namespace Remotus.Plugins.Sound
         {
             try
             {
+                AudioSwitcher.AudioApi.CoreAudio.CoreAudioDevice device;
                 var deviceID = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.DeviceID)?.Value;
-
-                Guid guid;
-                CoreAudioDevice device = null;
-                if (string.IsNullOrEmpty(deviceID))
-                {
+                var guid = _converter.Convert<Guid>(deviceID);
+                if (guid != Guid.Empty)
+                    device = await _audioController.GetDeviceAsync(guid);
+                else
                     device = _audioController.DefaultPlaybackDevice;
-                }
-                else if (Guid.TryParse(deviceID, out guid))
-                {
-                    device = _audioController.GetDevice(guid);
-                }
-
-
                 if (device == null)
-                {
                     throw new Exception("Device not found");
-                }
-
+                
                 var sessions = device?.SessionController?.All();
                 var res = sessions?.Select(_modelConverter.FromAudioControllerState).Where(x => x != null).ToList();
 
-                var result = new FunctionResult<IList<AudioSession>>
-                {
-                    Arguments = arguments,
-                    Result = res,
-                };
+                var result = new FunctionResult<IList<AudioSession>>();
+                result.Arguments = arguments;
+                result.Result = res;
                 return result;
             }
             catch (Exception ex)
@@ -74,7 +66,7 @@ namespace Remotus.Plugins.Sound
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "D5F99DAC-03A7-4E33-878C-20CA93726DE9";
-            public string Name => nameof(GetAudioSessionsFunction);
+            public string Name => "Get audio sessions";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()

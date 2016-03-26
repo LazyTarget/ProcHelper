@@ -35,14 +35,6 @@ namespace Remotus.Plugins.Sound
         {
             try
             {
-#if DEBUG
-                if (context?.ClientInfo != null)
-                {
-                    var plugs = await context.ClientInfo.GetPlugins();
-                    var l = plugs?.ToList();
-                }
-#endif
-                
                 var deviceType = arguments?.Parameters.GetOrDefault<AudioSwitcher.AudioApi.DeviceType?>(ParameterKeys.DeviceType)?.Value;
                 var deviceState = arguments?.Parameters.GetOrDefault<AudioSwitcher.AudioApi.DeviceState?>(ParameterKeys.DeviceState)?.Value;
 
@@ -50,19 +42,19 @@ namespace Remotus.Plugins.Sound
                 IEnumerable<CoreAudioDevice> devices;
                 if (deviceType.HasValue && deviceState.HasValue)
                 {
-                    devices = _audioController?.GetDevices(deviceType.Value, deviceState.Value);
+                    devices = await _audioController.GetDevicesAsync(deviceType.Value, deviceState.Value);
                 }
                 else if (deviceType.HasValue)
                 {
-                    devices = _audioController?.GetDevices(deviceType.Value);
+                    devices = await _audioController.GetDevicesAsync(deviceType.Value);
                 }
                 else if (deviceState.HasValue)
                 {
-                    devices = _audioController?.GetDevices(deviceState.Value);
+                    devices = await _audioController.GetDevicesAsync(deviceState.Value);
                 }
                 else
                 {
-                    devices = _audioController?.GetDevices();
+                    devices = await _audioController.GetDevicesAsync();
                 }
                 var res = devices?.Select(_modelConverter.FromAudioDevice).Where(x => x != null).ToList();
 
@@ -84,7 +76,7 @@ namespace Remotus.Plugins.Sound
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "5A6600EA-AD3C-4D97-A62E-0A02F4F8294E";
-            public string Name => nameof(GetAudioDevicesFunction);
+            public string Name => "Get audio devices";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
