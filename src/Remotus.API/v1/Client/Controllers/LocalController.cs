@@ -142,13 +142,14 @@ namespace Remotus.API.v1.Client.Controllers
                 arg = sentArgs;
                 // todo: decide whether base arguments on what the descriptor says
 
-                    
-                var function = functionDescriptor.Instantiate();
-                var result = await ExecuteFunction(function, arg);
-                
-                response = ResponseFactory.CreateResponse<IFunctionResult>(this, result: result);
-                actionResult = ResponseFactory.CreateActionResult(this, response);
-                return actionResult;
+
+                using (var function = functionDescriptor.Instantiate())
+                {
+                    var result = await ExecuteFunction(function, arg);
+                    response = ResponseFactory.CreateResponse<IFunctionResult>(this, result: result);
+                    actionResult = ResponseFactory.CreateActionResult(this, response);
+                    return actionResult;
+                }
             }
             catch (Exception ex)
             {

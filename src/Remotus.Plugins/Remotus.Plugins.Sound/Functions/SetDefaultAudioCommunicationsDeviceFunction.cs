@@ -11,7 +11,7 @@ namespace Remotus.Plugins.Sound
 {
     public class SetDefaultAudioCommunicationsDeviceFunction : IFunction, IFunction<AudioDevice>
     {
-        private CoreAudioController _audioController = new CoreAudioController();
+        private CoreAudioController _audioController = SoundPlugin.AudioController;
         private ModelConverter _modelConverter = new ModelConverter();
         private IConverter _converter = new Converter();
 
@@ -120,8 +120,8 @@ namespace Remotus.Plugins.Sound
 
         public void Dispose()
         {
-            _audioController?.Dispose();
-            _audioController = null;
+            //_audioController?.Dispose();
+            //_audioController = null;
         }
     }
 }

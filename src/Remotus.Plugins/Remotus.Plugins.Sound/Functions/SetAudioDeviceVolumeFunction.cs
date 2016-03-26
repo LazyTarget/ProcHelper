@@ -9,15 +9,15 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
-    public class GetAudioSessionsFunction : IFunction, IFunction<IList<AudioSession>>
+    public class SetAudioDeviceVolumeFunction : IFunction, IFunction<AudioDevice>
     {
         private CoreAudioController _audioController = SoundPlugin.AudioController;
         private ModelConverter _modelConverter = new ModelConverter();
         private IConverter _converter = new Converter();
 
-        public GetAudioSessionsFunction()
+        public SetAudioDeviceVolumeFunction()
         {
-
+            
         }
 
         public IFunctionDescriptor GetDescriptor()
@@ -31,7 +31,7 @@ namespace Remotus.Plugins.Sound
             return result;
         }
 
-        public async Task<IFunctionResult<IList<AudioSession>>> Execute(IExecutionContext context, IFunctionArguments arguments)
+        public async Task<IFunctionResult<AudioDevice>> Execute(IExecutionContext context, IFunctionArguments arguments)
         {
             try
             {
@@ -44,18 +44,23 @@ namespace Remotus.Plugins.Sound
                     device = _audioController.DefaultPlaybackDevice;
                 if (device == null)
                     throw new Exception("Device not found");
-                
-                var sessions = device?.SessionController?.All();
-                var res = sessions?.Select(_modelConverter.FromAudioSession).Where(x => x != null).ToList();
 
-                var result = new FunctionResult<IList<AudioSession>>();
+                var volume = arguments?.Parameters.GetOrDefault<double>(ParameterKeys.Volume)?.Value;
+                if (!volume.HasValue)
+                    throw new ArgumentException("Missing volume argument");
+
+                device.Volume = volume.Value;
+
+                var res = _modelConverter.FromAudioDevice(device);
+
+                var result = new FunctionResult<AudioDevice>();
                 result.Arguments = arguments;
                 result.Result = res;
                 return result;
             }
             catch (Exception ex)
             {
-                var result = new FunctionResult<IList<AudioSession>>();
+                var result = new FunctionResult<AudioDevice>();
                 result.Arguments = arguments;
                 result.Error = DefaultError.FromException(ex);
                 return result;
@@ -65,8 +70,8 @@ namespace Remotus.Plugins.Sound
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "D5F99DAC-03A7-4E33-878C-20CA93726DE9";
-            public string Name => "Get audio sessions";
+            public string ID => "347AD1B8-D72C-407E-B3C9-4999E03C85E1";
+            public string Name => "Set audio device volume";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -85,9 +90,9 @@ namespace Remotus.Plugins.Sound
                 return Instantiate();
             }
 
-            public IFunction<IList<AudioSession>> Instantiate()
+            public IFunction<AudioDevice> Instantiate()
             {
-                return new GetAudioSessionsFunction();
+                return new SetAudioDeviceVolumeFunction();
             }
         }
 
@@ -98,9 +103,16 @@ namespace Remotus.Plugins.Sound
                 DeviceID = new Parameter<string>
                 {
                     Name = ParameterKeys.DeviceID,
-                    Required = false,
+                    Required = true,
                     Type = typeof(string),
                     Value = null,
+                };
+                Volume = new Parameter<double>
+                {
+                    Name = ParameterKeys.Volume,
+                    Required = true,
+                    Type = typeof(double),
+                    Value = 100,    // todo: replace with the current device volume?
                 };
             }
 
@@ -109,11 +121,18 @@ namespace Remotus.Plugins.Sound
                 get { return this.GetOrDefault<string>(ParameterKeys.DeviceID); }
                 private set { this[ParameterKeys.DeviceID] = value; }
             }
+
+            public IParameter<double> Volume
+            {
+                get { return this.GetOrDefault<double>(ParameterKeys.Volume); }
+                private set { this[ParameterKeys.Volume] = value; }
+            }
         }
 
         public static class ParameterKeys
         {
             public const string DeviceID = "DeviceID";
+            public const string Volume = "Volume";
         }
 
         public void Dispose()
@@ -121,6 +140,5 @@ namespace Remotus.Plugins.Sound
             //_audioController?.Dispose();
             //_audioController = null;
         }
-
     }
 }

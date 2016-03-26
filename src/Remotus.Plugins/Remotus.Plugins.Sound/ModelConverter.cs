@@ -7,7 +7,7 @@ namespace Remotus.Plugins.Sound
 {
     public class ModelConverter
     {
-        public virtual AudioSession FromAudioControllerState(AudioSwitcher.AudioApi.Session.IAudioSession state)
+        public virtual AudioSession FromAudioSession(AudioSwitcher.AudioApi.Session.IAudioSession state)
         {
             if (state == null)
                 return null;

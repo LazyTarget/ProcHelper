@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using AudioSwitcher.AudioApi.CoreAudio;
 using Remotus.Base;
 
 namespace Remotus.Plugins.Sound
 {
     public class SoundPlugin : IFunctionPlugin
     {
+        internal static readonly CoreAudioController AudioController = new CoreAudioController();
+
+
         public string ID        => "ABA6417A-65A2-4761-9B01-AA9DFFC074C0";
         public string Name      => nameof(SoundPlugin);
         public string Version   => "1.0.0.0";
@@ -16,6 +20,8 @@ namespace Remotus.Plugins.Sound
             yield return new ToggleMuteAudioDeviceFunction.Descriptor();
             yield return new SetDefaultAudioDeviceFunction.Descriptor();
             yield return new SetDefaultAudioCommunicationsDeviceFunction.Descriptor();
+            yield return new SetAudioDeviceVolumeFunction.Descriptor();
+            yield return new SetAudioSessionVolumeFunction.Descriptor();
         }
     }
 }

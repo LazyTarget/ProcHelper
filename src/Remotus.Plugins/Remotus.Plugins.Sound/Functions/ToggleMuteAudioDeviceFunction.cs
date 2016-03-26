@@ -10,7 +10,7 @@ namespace Remotus.Plugins.Sound
 {
     public class ToggleMuteAudioDeviceFunction : IFunction, IFunction<AudioDevice>
     {
-        private CoreAudioController _audioController = new CoreAudioController();
+        private CoreAudioController _audioController = SoundPlugin.AudioController;
         private ModelConverter _modelConverter = new ModelConverter();
         private IConverter _converter = new Converter();
 
@@ -44,10 +44,7 @@ namespace Remotus.Plugins.Sound
                 if (device == null)
                     throw new Exception("Device not found");
 
-                var r = await device.MuteAsync(!device.IsMuted);
-                if (!r)
-                    throw new Exception($"Request resulted with: '{r}'");
-
+                await device.MuteAsync(!device.IsMuted);
                 var res = _modelConverter.FromAudioDevice(device);
 
                 var result = new FunctionResult<AudioDevice>();
@@ -120,7 +117,8 @@ namespace Remotus.Plugins.Sound
 
         public void Dispose()
         {
-            _audioController.Dispose();
+            //_audioController?.Dispose();
+            //_audioController = null;
         }
 
     }

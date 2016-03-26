@@ -63,6 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Commands\ToggleMuteActivePlaybackDeviceCommand.cs" />
+    <Compile Include="Functions\SetAudioSessionVolumeFunction.cs" />
+    <Compile Include="Functions\SetAudioDeviceVolumeFunction.cs" />
     <Compile Include="Functions\SetDefaultAudioCommunicationsDeviceFunction.cs" />
     <Compile Include="Functions\SetDefaultAudioDeviceFunction.cs" />
     <Compile Include="Functions\GetAudioSessionsFunction.cs" />
