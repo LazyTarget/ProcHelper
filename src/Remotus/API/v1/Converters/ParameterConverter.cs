@@ -7,6 +7,11 @@ namespace Remotus.API.v1
 {
     public class ParameterConverter : JsonConverter
     {
+        public ParameterConverter()
+        {
+            
+        }
+
         public override bool CanConvert(Type objectType)
         {
             var r = typeof (IParameter).IsAssignableFrom(objectType);

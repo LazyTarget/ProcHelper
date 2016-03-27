@@ -57,6 +57,8 @@ namespace Remotus.API.v1.Models
 
     public class ResponseBase<TResult> : IResponseBase<TResult>, IResponseMetadata
     {
+        private Type _type;
+
         public ResponseBase()
         {
             Links = new Dictionary<string, ILink>();
@@ -71,6 +73,12 @@ namespace Remotus.API.v1.Models
         object IResponseBase.Result
         {
             get { return Result; }
+        }
+
+        public Type ResultType
+        {
+            get { return _type ?? Result?.GetType(); }
+            set { _type = value; }
         }
     }
 }

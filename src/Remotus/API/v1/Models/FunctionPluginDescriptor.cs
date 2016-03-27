@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 using Remotus.Base;
 
 namespace Remotus.API.v1
 {
-    [JsonConverter(typeof(FunctionPluginConverter))]
     public class FunctionPluginDescriptor : IFunctionPlugin
     {
         public FunctionPluginDescriptor()

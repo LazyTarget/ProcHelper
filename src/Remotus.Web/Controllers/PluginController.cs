@@ -16,9 +16,17 @@ using Remotus.Web.Models;
 
 namespace Remotus.Web.Controllers
 {
-    public class FunctionController : Controller
+    public class PluginController : Controller
     {
-        public async Task<ActionResult> Plugin(string clientID, string pluginID)
+        public async Task<ActionResult> Index(string clientID, string pluginID)
+        {
+            var actionResult = await ViewPlugin(clientID, pluginID);
+            return actionResult;
+        }
+
+
+        [NonAction]
+        public async Task<ActionResult> ViewPlugin(string clientID, string pluginID)
         {
             var model = await GetPluginViewModel(clientID, pluginID);
             return View("Plugin", model);

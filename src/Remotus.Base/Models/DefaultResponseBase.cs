@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Remotus.Base
 {
@@ -49,6 +50,8 @@ namespace Remotus.Base
 
     public class DefaultResponseBase<TResult> : IResponseBase<TResult>, IResponseMetadata
     {
+        private Type _type;
+
         public DefaultResponseBase()
         {
             Links = new Dictionary<string, ILink>();
@@ -57,6 +60,12 @@ namespace Remotus.Base
         public IDictionary<string, ILink> Links { get; set; }
         public IError Error { get; set; }
         public TResult Result { get; set; }
+
+        public Type ResultType
+        {
+            get { return _type ?? Result?.GetType(); }
+            set { _type = value; }
+        }
 
         object IResponseBase.Result
         {

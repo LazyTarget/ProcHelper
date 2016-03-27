@@ -7,7 +7,7 @@
         IFunctionArguments Arguments { get; }
     }
 
-    public interface IFunctionResult<TResult> : IFunctionResult, IResponseBase<TResult>
+    public interface IFunctionResult<out TResult> : IFunctionResult, IResponseBase<TResult>
     {
         
     }

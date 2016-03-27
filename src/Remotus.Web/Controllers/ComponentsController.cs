@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Lux.Extensions;
 
 namespace Remotus.Web.Controllers
 {
@@ -6,7 +8,14 @@ namespace Remotus.Web.Controllers
     {
         public ActionResult MenuList()
         {
-            var model = GetMenuListViewModel();
+            //var model = GetMenuListViewModel_FromAPI().WaitForResult();
+
+            //var task = GetMenuListViewModel_FromAPI();
+            //task.ConfigureAwait(false);
+            ////task.RunSynchronously();
+
+            var task = Task.Run(GetMenuListViewModel_FromAPI);
+            var model = task.Result;
             return PartialView("_MenuList", model);
         }
     }

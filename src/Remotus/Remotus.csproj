@@ -84,6 +84,8 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="API\ApiFactory.cs" />
+    <Compile Include="API\v1\Converters\ResponseBaseConverter.cs" />
+    <Compile Include="API\v1\Converters\ServicePluginConverter.cs" />
     <Compile Include="API\v1\Converters\ParameterConverter.cs" />
     <Compile Include="API\v1\Converters\ProcessToNullConverter.cs" />
     <Compile Include="API\v1\Converters\TypeInfoJsonConverter.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="API\v1\FullCtrlAPI.ServerController.cs" />
     <Compile Include="API\v1\FullCtrlAPI.RemoteController.cs" />
     <Compile Include="API\v1\Models\FunctionDescriptor.cs" />
+    <Compile Include="API\v1\Models\ServicePluginDescriptor.cs" />
     <Compile Include="API\v1\Models\FunctionPluginDescriptor.cs" />
     <Compile Include="API\v1\RestClientBase.cs" />
     <Compile Include="API\DeviceControllerAPI.cs" />

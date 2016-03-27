@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Remotus.API.v1;
 using Remotus.Web.Models;
 
 namespace Remotus.Web.Controllers
@@ -41,7 +43,7 @@ namespace Remotus.Web.Controllers
             functionItems.Add(new MenuListGroupItem
             {
                 Text = "Shutdown",
-                Href = Url.Action("Shutdown", "Function"),
+                Href = Url.Action("Shutdown", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-off",
             });
@@ -54,7 +56,7 @@ namespace Remotus.Web.Controllers
             functionItems.Add(new MenuListGroupItem
             {
                 Text = "Execute (Process/Script)",
-                Href = Url.Action("Execute", "Function"),
+                Href = Url.Action("Execute", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-console",
             });
@@ -67,28 +69,28 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Processes",
-                Href = Url.Action("Plugin", "Function", new { pluginID = "8315E347-633E-4990-AF12-C0FFC4527485" }),
+                Href = Url.Action("Index", "Plugin", new { pluginID = "8315E347-633E-4990-AF12-C0FFC4527485" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-tasks",
             });
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Services",
-                Href = Url.Action("Services", "Function"),
+                Href = Url.Action("Services", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-cog",
             });
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Windows (Alt-Tab)",
-                Href = Url.Action("Windows", "Function"),
+                Href = Url.Action("Windows", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-list-alt",
             });
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Windows (Resolution / Default screen)",
-                Href = Url.Action("Windows", "Function"),
+                Href = Url.Action("Windows", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-resize-full",
             });
@@ -102,7 +104,7 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Sound",
-                Href = Url.Action("Plugin", "Function", new { pluginID = "ABA6417A-65A2-4761-9B01-AA9DFFC074C0" }),
+                Href = Url.Action("Index", "Plugin", new { pluginID = "ABA6417A-65A2-4761-9B01-AA9DFFC074C0" }),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-volume-up",
             });
@@ -110,21 +112,21 @@ namespace Remotus.Web.Controllers
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Input",
-                Href = Url.Action("Input", "Function"),
+                Href = Url.Action("Input", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-italic",
             });
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Mouse",
-                Href = Url.Action("Mouse", "Function"),
+                Href = Url.Action("Mouse", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-baby-formula",
             });
             deviceItems.Add(new MenuListGroupItem
             {
                 Text = "Keyboard",
-                Href = Url.Action("Keyboard", "Function"),
+                Href = Url.Action("Keyboard", "Plugin"),
                 Disabled = !(User?.Identity?.IsAuthenticated ?? false),
                 Glyphicon = "glyphicon-font",
             });
@@ -207,6 +209,84 @@ namespace Remotus.Web.Controllers
                 {
                     Text = "Info & Settings",
                     Items = selfItems,
+                },
+            };
+
+            var model = new MenuListViewModel
+            {
+                Profile = new ProfileItemViewModel
+                {
+                    Name = User?.Identity?.Name,
+                },
+                Groups = groups,
+            };
+            return model;
+        }
+
+
+        protected async Task<MenuListViewModel> GetMenuListViewModel_FromAPI()
+        {
+            var api = new FullCtrlAPI();
+
+            var functionPlugins = await api.GetLocalFunctionPlugins();
+            var servicePlugins = await api.GetLocalServicePlugins();
+            
+            var functionItems = new List<MenuListGroupItem>();
+            var serviceItems = new List<MenuListGroupItem>();
+
+
+            #region Functions
+
+            if (functionPlugins?.Result != null)
+            {
+                foreach (var plugin in functionPlugins.Result)
+                {
+                    functionItems.Add(new MenuListGroupItem
+                    {
+                        Text = plugin.Name,
+                        Href = Url.Action("Index", "Plugin", new { pluginID = plugin.ID }),
+                        Disabled = !(User?.Identity?.IsAuthenticated ?? false),
+                        //Glyphicon = "glyphicon-",
+                    });
+                }
+            }
+            
+            #endregion
+
+
+            #region Services
+
+            if (servicePlugins?.Result != null)
+            {
+                foreach (var plugin in servicePlugins.Result)
+                {
+                    functionItems.Add(new MenuListGroupItem
+                    {
+                        Text = plugin.Name,
+                        Href = Url.Action("Index", "Plugin", new { pluginID = plugin.ID }),
+                        Disabled = !(User?.Identity?.IsAuthenticated ?? false),
+                        //Glyphicon = "glyphicon-",
+                    });
+                }
+            }
+
+            #endregion
+
+
+
+
+            var groups = new List<MenuListGroup>
+            {
+                new MenuListGroup
+                {
+                    Text = "Functions",
+                    Items = functionItems,
+                },
+
+                new MenuListGroup
+                {
+                    Text = "Services",
+                    Items = serviceItems,
                 },
             };
 

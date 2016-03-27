@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using Remotus.Base;
+﻿using Remotus.Base;
 
 namespace Remotus.API.v1
 {
-    [JsonConverter(typeof(FunctionDescriptorConverter))]
     public class FunctionDescriptor : IFunctionDescriptor
     {
         public FunctionDescriptor()

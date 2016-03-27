@@ -1,12 +1,15 @@
-﻿namespace Remotus.Base
+﻿using System;
+
+namespace Remotus.Base
 {
     public interface IResponseBase
     {
-        object Result { get; }
         IError Error { get; }
+        object Result { get; }
+        Type ResultType { get; }
     }
 
-    public interface IResponseBase<TResult> : IResponseBase
+    public interface IResponseBase<out TResult> : IResponseBase
     {
         new TResult Result { get; }
     }
