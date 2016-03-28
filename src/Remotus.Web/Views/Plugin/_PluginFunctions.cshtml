@@ -1,4 +1,5 @@
-﻿@model PluginViewModel
+﻿@using Remotus.Web.Helpers
+@model PluginViewModel
 
 <div>
     <div class="row">
@@ -62,14 +63,7 @@
                                                     <td>@param.Type</td>
 
                                                     <td>
-                                                        @if (param.Type == typeof(bool))
-                                                        {
-                                                            @Html.CheckBox("Param_" + param.Name, param.Value is bool && (bool)param.Value)
-                                                        }
-                                                        else
-                                                        {
-                                                            @Html.TextBox("Param_" + param.Name, param.Value)
-                                                        }
+                                                        @Html.ParameterEditor("Param_" + param.Name, param)
                                                     </td>
                                                 </tr>
                                             }
