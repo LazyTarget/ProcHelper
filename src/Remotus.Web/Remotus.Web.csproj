@@ -248,7 +248,6 @@
     <Compile Include="Controllers\ComponentsController.MenuList.cs" />
     <Compile Include="Controllers\ComponentsController.cs" />
     <Compile Include="Controllers\MeController.cs" />
-    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

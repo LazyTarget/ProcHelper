@@ -146,6 +146,8 @@
     <Compile Include="Models\ProcHelper\ProcessStartInfoDto.cs" />
     <Compile Include="Models\ProcHelper\StartProcessRequest.cs" />
     <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
+    <Compile Include="Scripting\Tasks\ExecuteFunctionScriptTask.cs" />
+    <Compile Include="Scripting\Script.cs" />
     <Compile Include="Models\WinServiceHelper\ContinueWinServiceRequest.cs" />
     <Compile Include="Models\WinServiceHelper\ContinueWinServiceResponse.cs" />
     <Compile Include="Models\WinServiceHelper\GetWinServicesRequest.cs" />
@@ -158,6 +160,8 @@
     <Compile Include="Models\WinServiceHelper\WinServiceDto.cs" />
     <Compile Include="Models\WinServiceHelper\WinServicesResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripting\ScriptExecutor.cs" />
+    <Compile Include="Scripting\ScriptTaskBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\AudioController\" />
