@@ -12,6 +12,8 @@ namespace Remotus.API.v1
             
         }
 
+        public override bool CanWrite => false;
+
         public override bool CanConvert(Type objectType)
         {
             var r = typeof (IParameter).IsAssignableFrom(objectType);

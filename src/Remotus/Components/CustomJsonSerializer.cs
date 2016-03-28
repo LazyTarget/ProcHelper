@@ -155,7 +155,7 @@ namespace Remotus
             Settings.Converters.Add(new API.v1.FunctionDescriptorConverter());
             Settings.Converters.Add(new API.v1.FunctionPluginConverter());
             Settings.Converters.Add(new API.v1.ProcessToNullConverter());
-            //Settings.Converters.Add(new API.v1.ResponseBaseConverter());
+            Settings.Converters.Add(new API.v1.ResponseBaseConverter());
             Settings.Converters.Add(new StringEnumConverter());
             Settings.Converters.Add(new IoCJsonConverter(Container));
             Settings.Converters.Add(new BitmapConverter());

@@ -4,7 +4,7 @@ namespace Remotus.Base
 {
     public class FunctionResult : IFunctionResult
     {
-        private Type _type;
+        protected Type _type;
 
         public FunctionResult()
         {
@@ -15,7 +15,7 @@ namespace Remotus.Base
         public IError Error { get; set; }
         public object Result { get; set; }
 
-        public Type ResultType
+        public virtual Type ResultType
         {
             get { return _type ?? Result?.GetType(); }
             set { _type = value; }
@@ -28,6 +28,12 @@ namespace Remotus.Base
         {
             get { return (TResult)base.Result; }
             set { base.Result = value; }
+        }
+
+        public override Type ResultType
+        {
+            get { return _type ?? typeof (TResult) ?? Result?.GetType(); }
+            set { _type = value; }
         }
     }
 }

@@ -77,7 +77,7 @@ namespace Remotus.API.v1.Models
 
         public Type ResultType
         {
-            get { return _type ?? Result?.GetType(); }
+            get { return _type ?? typeof(TResult) ?? Result?.GetType(); }
             set { _type = value; }
         }
     }
