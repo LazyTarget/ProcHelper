@@ -14,3 +14,7 @@ Future features:
 * Able to simulate keyboard and mouse input
 * Change display resolution
 * Able to Start/Stop Windows Services
+
+
+Contribution
+Feel free to send pull requests
