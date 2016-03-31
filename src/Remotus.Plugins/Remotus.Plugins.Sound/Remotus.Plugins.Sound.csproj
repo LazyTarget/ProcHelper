@@ -62,20 +62,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Commands\ToggleMuteActivePlaybackDeviceCommand.cs" />
+    <Compile Include="Functions\SetAudioDeviceMutedFunction.cs" />
+    <Compile Include="Functions\SetAudioSessionMutedFunction.cs" />
     <Compile Include="Functions\SetAudioSessionVolumeFunction.cs" />
     <Compile Include="Functions\SetAudioDeviceVolumeFunction.cs" />
     <Compile Include="Functions\SetDefaultAudioCommunicationsDeviceFunction.cs" />
     <Compile Include="Functions\SetDefaultAudioDeviceFunction.cs" />
     <Compile Include="Functions\GetAudioSessionsFunction.cs" />
     <Compile Include="Functions\GetAudioDevicesFunction.cs" />
+    <Compile Include="Functions\ToggleAudioSessionMutedFunction.cs" />
     <Compile Include="ModelConverter.cs" />
     <Compile Include="Models\AudioDevice.cs" />
     <Compile Include="Models\AudioSession.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="SoundPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Functions\ToggleMuteAudioDeviceFunction.cs" />
+    <Compile Include="Functions\ToggleAudioDeviceMutedFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">

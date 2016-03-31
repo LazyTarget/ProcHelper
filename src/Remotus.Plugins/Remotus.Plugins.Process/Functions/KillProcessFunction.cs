@@ -56,7 +56,7 @@ namespace Remotus.Plugins.Process
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "1B6FC85B-E86D-43F4-B16D-C99BC3810F8C";
-            public string Name => nameof(KillProcessFunction);
+            public string Name => "Kill process";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()

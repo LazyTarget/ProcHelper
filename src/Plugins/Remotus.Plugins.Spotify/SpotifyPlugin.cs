@@ -6,7 +6,7 @@ namespace Remotus.Plugins.Spotify
     public class SpotifyPlugin : IFunctionPlugin
     {
         public string ID        => "79A54741-590C-464D-B1E9-0CC606771493";
-        public string Name      => nameof(SpotifyPlugin);
+        public string Name      => "Spotify";
         public string Version   => "1.0.0.0";
 
         public IEnumerable<IFunctionDescriptor> GetFunctions()

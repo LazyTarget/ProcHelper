@@ -6,11 +6,11 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Process
 {
-    public class GetProcessesFunction : IFunction<IList<ProcessDto>>
+    public class SearchProcessesFunction : IFunction<IList<ProcessDto>>
     {
         private IProcessFinder _processFinder;
 
-        public GetProcessesFunction()
+        public SearchProcessesFunction()
         {
             _processFinder = new ProcessFinder();
         }
@@ -30,14 +30,34 @@ namespace Remotus.Plugins.Process
         {
             try
             {
-                IEnumerable<ProcessDto> enumerable;
-                var processName = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.ProcessName)?.Value;
-                if (!string.IsNullOrEmpty(processName))
-                    enumerable = _processFinder.GetProcessesByName(processName);
-                else
-                    enumerable = _processFinder.GetProcesses();
+                List<ProcessDto> list;
+                var query = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.Query)?.Value;
+                if (!string.IsNullOrEmpty(query))
+                {
+                    list = new List<ProcessDto>();
+                    List<ProcessDto> all = null;
 
-                var list = enumerable.ToList();
+                    var parts = query.Split(new[] { ',', ';' });
+                    foreach (var p in parts)
+                    {
+                        var q = p.Trim();
+                        var exact = q.StartsWith("\"") && q.EndsWith("\"");
+                        if (exact)
+                            list.AddRange(_processFinder.GetProcessesByName(q.Trim('"')));
+                        else
+                        {
+                            if (all == null)
+                                all = _processFinder.GetProcesses().ToList();
+                            var matches = all.Where(x =>
+                                                    x.ProcessName.IndexOf(q, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                                             .ToList();
+                            list.AddRange(matches);
+                        }
+                    }
+                }
+                else
+                    list = _processFinder.GetProcesses().ToList();
+                
                 var result = new FunctionResult<IList<ProcessDto>>
                 {
                     Arguments = arguments,
@@ -57,8 +77,8 @@ namespace Remotus.Plugins.Process
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "10924BB2-09BF-4C5C-A120-2D7649C36D70";
-            public string Name => "Get processes";
+            public string ID => "3362B21A-3235-4F64-94C7-AB3A7A31BA08";
+            public string Name => "Search processes";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -79,7 +99,7 @@ namespace Remotus.Plugins.Process
 
             public IFunction<IList<ProcessDto>> Instantiate()
             {
-                return new GetProcessesFunction();
+                return new SearchProcessesFunction();
             }
         }
 
@@ -87,25 +107,25 @@ namespace Remotus.Plugins.Process
         {
             public Parameters()
             {
-                ProcessName = new Parameter<string>
+                Query = new Parameter<string>
                 {
-                    Name = ParameterKeys.ProcessName,
+                    Name = ParameterKeys.Query,
                     Required = false,
                     Type = typeof(string),
                     Value = null,
                 };
             }
 
-            public IParameter<string> ProcessName
+            public IParameter<string> Query
             {
-                get { return this.GetOrDefault<string>(ParameterKeys.ProcessName); }
-                private set { this[ParameterKeys.ProcessName] = value; }
+                get { return this.GetOrDefault<string>(ParameterKeys.Query); }
+                private set { this[ParameterKeys.Query] = value; }
             }
         }
 
         public static class ParameterKeys
         {
-            public const string ProcessName = "ProcessName";
+            public const string Query = "Query";
         }
 
         public void Dispose()

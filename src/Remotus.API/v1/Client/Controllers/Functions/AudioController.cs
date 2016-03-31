@@ -14,9 +14,14 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         [Route("api/v1/audio/sessions/list")]
         public async Task<IResponseBase<IEnumerable<AudioSession>>> GetSessions(string deviceID)
         {
-            var function = new GetAudioSessionsFunction();
-            var parameters = function.GetDescriptor().GetParameters();
-            parameters.SetParamValue(GetAudioSessionsFunction.ParameterKeys.DeviceID, deviceID);
+            //var function = new GetAudioSessionsFunction();
+            //var parameters = function.GetDescriptor().GetParameters();
+            //parameters.SetParamValue(GetAudioSessionsFunction.ParameterKeys.DeviceID, deviceID);
+
+            var descriptor = new GetAudioSessionsFunction.Descriptor();
+            var parameters = descriptor.GetParameters();
+            parameters.DeviceID.Value = deviceID;
+            var function = descriptor.Instantiate();
 
             var arguments = new FunctionArguments();
             arguments.Parameters = parameters;
@@ -48,10 +53,16 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         [Route("api/v1/audio/devices/list/{deviceType}/{deviceState}")]
         public async Task<IResponseBase<IEnumerable<AudioDevice>>> GetDevices(AudioDeviceType? deviceType, AudioDeviceState? deviceState)
         {
-            var function = new GetAudioDevicesFunction();
-            var parameters = function.GetDescriptor().GetParameters();
-            parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceType, deviceType);
-            parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceState, deviceState);
+            //var function = new GetAudioDevicesFunction();
+            //var parameters = function.GetDescriptor().GetParameters();
+            //parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceType, deviceType);
+            //parameters.SetParamValue(GetAudioDevicesFunction.ParameterKeys.DeviceState, deviceState);
+
+            var descriptor = new GetAudioDevicesFunction.Descriptor();
+            var parameters = descriptor.GetParameters();
+            parameters.DeviceType.Value = deviceType;
+            parameters.DeviceState.Value = deviceState;
+            var function = descriptor.Instantiate();
 
             var arguments = new FunctionArguments();
             arguments.Parameters = parameters;
@@ -98,9 +109,14 @@ namespace Remotus.API.v1.Client.Controllers.Functions
         [Route("api/v1/audio/device/togglemute/{deviceID}")]
         public async Task<IResponseBase<object>> ToggleDeviceMute(string deviceID)
         {
-            var function = new ToggleMuteAudioDeviceFunction();
-            var parameters = function.GetDescriptor().GetParameters();
-            parameters.SetParamValue(ToggleMuteAudioDeviceFunction.ParameterKeys.DeviceID, deviceID);
+            //var function = new ToggleAudioDeviceMutedFunction();
+            //var parameters = function.GetDescriptor().GetParameters();
+            //parameters.SetParamValue(ToggleAudioDeviceMutedFunction.ParameterKeys.DeviceID, deviceID);
+
+            var descriptor = new ToggleAudioDeviceMutedFunction.Descriptor();
+            var parameters = descriptor.GetParameters();
+            parameters.DeviceID.Value = deviceID;
+            var function = descriptor.Instantiate();
 
             var arguments = new FunctionArguments();
             arguments.Parameters = parameters;

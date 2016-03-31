@@ -63,7 +63,7 @@ namespace Remotus.Plugins.Process
         public class Descriptor : IFunctionDescriptor
         {
             public string ID => "EF39CE7D-EE2D-47FE-AB76-50D185AAB0FB";
-            public string Name => nameof(StartProcessFunction);
+            public string Name => "Start process";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
