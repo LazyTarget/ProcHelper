@@ -51,8 +51,11 @@ namespace Remotus.Web
                             valueStr += itemStr;
                         }
 
-                        // todo: custom replace
+                        var s = startIndex - "{{".Length;
+                        expr = expr.Remove(startIndex - "{{".Length, endloopIndex + "{{end:foreach}}".Length);
+                        expr = expr.Substring(0, s) + valueStr + expr.Substring(s);
 
+                        index = expr.IndexOf("{{");
                         continue;
                     }
                     

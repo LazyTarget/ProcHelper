@@ -59,16 +59,23 @@ namespace Remotus.Web.Rendering
         {
             try
             {
-                foreach (var objectRenderer in Children)
+                if (Children != null && Children.Any())
                 {
-                    if (objectRenderer == null)
-                        continue;
-                    var canRender = objectRenderer.CanRender(value);
-                    if (!canRender)
-                        continue;
+                    var reference = new Lux.Model.ObjectModel();
+                    reference.DefineProperty("Value", null, value, true);
+                    reference.DefineProperty("Renderer", typeof(IObjectRenderer), this, true);
 
-                    objectRenderer.Render(writer, value);
-                    return;
+                    foreach (var objectRenderer in Children)
+                    {
+                        if (objectRenderer == null)
+                            continue;
+                        var canRender = objectRenderer.CanRender(reference);
+                        if (!canRender)
+                            continue;
+
+                        objectRenderer.Render(writer, reference);
+                        return;
+                    }
                 }
 
                 var type = value?.GetType();
