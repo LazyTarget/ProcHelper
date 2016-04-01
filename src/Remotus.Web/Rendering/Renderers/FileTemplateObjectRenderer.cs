@@ -80,7 +80,9 @@ namespace Remotus.Web.Rendering
 
         public class FileTemplate : IFileTemplate
         {
-            private FileTemplate()
+            private FileSystemWatcher _watcher;
+
+            public FileTemplate()
             {
 
             }
@@ -89,18 +91,50 @@ namespace Remotus.Web.Rendering
             public IObjectRendererCondition[] Conditions { get; private set; }
 
 
-            public static FileTemplate Load(string filePath)
+            public void Load(string filePath, bool watch = true)
             {
                 filePath = Path.IsPathRooted(filePath)
                     ? filePath
                     : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
-                var fileLines = File.ReadAllLines(filePath);
-                var template = Parse(fileLines);
-                return template;
+
+                var fileLines = new List<string>();
+                using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var reader = new StreamReader(stream))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        fileLines.Add(line);
+                    }
+                }
+                LoadFile(fileLines.ToArray());
+
+
+                _watcher?.Dispose();
+                if (watch)
+                {
+                    var dir = Path.GetDirectoryName(filePath);
+                    var fileName = Path.GetFileName(filePath);
+                    _watcher = new FileSystemWatcher(dir, fileName);
+                    _watcher.Changed += WatcherOnChanged;
+                    _watcher.EnableRaisingEvents = true;
+                }
             }
 
-            public static FileTemplate Parse(string[] fileLines)
+            private void WatcherOnChanged(object sender, FileSystemEventArgs args)
             {
+                Load(args.FullPath, watch: true);
+            }
+
+
+            private void LoadFile(string[] fileLines)
+            {
+                if (fileLines == null)
+                {
+                    Conditions = new IObjectRendererCondition[0];
+                    RawTemplate = null;
+                    return;
+                }
                 var conditions = new List<IObjectRendererCondition>();
 
                 var lineIndex = 0;
@@ -123,11 +157,9 @@ namespace Remotus.Web.Rendering
                 }
 
                 var rawTemplate = string.Join(Environment.NewLine, fileLines.Skip(lineIndex + 1));
-
-                var template = new FileTemplate();
-                template.Conditions = conditions.ToArray();
-                template.RawTemplate = rawTemplate;
-                return template;
+                
+                Conditions = conditions.ToArray();
+                RawTemplate = rawTemplate;
             }
         }
     }

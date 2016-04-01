@@ -1,4 +1,5 @@
-﻿[Cond] $ is "Remotus.Base.ProcessDto, Remotus.Base"
+﻿[Cond] false
+#[Cond] $ is "Remotus.Base.ProcessDto, Remotus.Base"
 #[Cond] $ is "Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"
 
 <div>

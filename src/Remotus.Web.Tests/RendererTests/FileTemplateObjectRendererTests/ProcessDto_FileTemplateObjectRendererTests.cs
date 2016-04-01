@@ -14,7 +14,8 @@ namespace Remotus.Web.Tests.RendererTests.FileTemplateObjectRendererTests
         {
             var baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RendererTests/FileTemplateObjectRendererTests/Templates");
             var filePath = Path.Combine(baseDir, "ProcessDto.render");
-            var template = FileTemplateObjectRenderer.FileTemplate.Load(filePath);
+            var template = new FileTemplateObjectRenderer.FileTemplate();
+            template.Load(filePath, watch: false);
             return template;
         }
 

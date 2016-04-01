@@ -24,7 +24,8 @@ namespace Remotus.Web.Rendering
             foreach (var filePath in filePaths)
             {
                 // todo: load via web.config?
-                var template = FileTemplateObjectRenderer.FileTemplate.Load(filePath);
+                var template = new FileTemplateObjectRenderer.FileTemplate();
+                template.Load(filePath, watch: true);
                 var renderer = new FileTemplateObjectRenderer(template);
                 Default.Children.Add(renderer);
             }
