@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Globalization;
 using System.Linq;
 
@@ -17,8 +18,55 @@ namespace Remotus.Web
                 var length = endIndex - startIndex;
                 var subject = expr.Substring(startIndex, length);
 
-                var value = Evaluate(subject, reference);
-                var valueStr = (value ?? "").ToString();
+                var valueStr = "";
+                if (subject.StartsWith("begin:foreach", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var subExpr = subject.Remove(0, "begin:foreach".Length).Trim().Trim(' ', '(', ')').Trim();
+                    var inIdx = subExpr.IndexOf(" in ");
+
+                    var target = subExpr.Substring(0, inIdx).Trim();
+                    var source = subExpr.Substring(inIdx + " in ".Length).Trim();
+                    var sourceValue = Evaluate(source, reference);
+                    var loopSource = sourceValue as IEnumerable;
+
+                    if (loopSource != null)
+                    {
+                        var newRef = new Lux.Model.ObjectModel();
+                        var mirror = reference as Lux.Model.MirrorObjectModel ?? new Lux.Model.MirrorObjectModel(reference);
+                        //foreach (var property in mirror.GetProperties())
+                        //{
+                        //    newRef.DefineProperty(property.Name, property.Type, property.Value, property.ReadOnly);
+                        //}
+
+                        newRef.DefineProperty(target, null, null, false);
+
+                        var endloopIndex = expr.IndexOf("{{end:foreach}}", endIndex);   // todo: support for nested loops
+                        var loopTemplate = expr.Substring(endIndex + "}}".Length, endloopIndex - endIndex - "{{".Length);
+
+                        foreach (var item in loopSource)
+                        {
+                            newRef.SetPropertyValue(target, item);
+
+                            var itemStr = Resolve(loopTemplate, newRef);
+                            valueStr += itemStr;
+                        }
+
+                        // todo: custom replace
+
+                        continue;
+                    }
+                    
+                }
+                else if (subject.EndsWith("end:foreach", StringComparison.InvariantCultureIgnoreCase))
+                {
+
+                }
+                else
+                {
+                    var value = Evaluate(subject, reference);
+                    valueStr = (value ?? "").ToString();
+                }
+
                 expr = expr.Replace("{{" + subject + "}}", valueStr);
 
                 index = expr.IndexOf("{{");
@@ -54,7 +102,7 @@ namespace Remotus.Web
             {
                 object subReference = reference;
                 int index = 0;
-                while (true)
+                while (index >= 0)
                 {
                     var exprOperator = ExpressionOperator.GetNext(expr, index, includeText: false);
                     if (exprOperator.Operator == Operator.None)
@@ -151,12 +199,18 @@ namespace Remotus.Web
         {
             if (!string.IsNullOrWhiteSpace(propertyName))
             {
-                Lux.Model.IObjectModel objectMirror =
-                    reference is Newtonsoft.Json.Linq.JObject
-                        ? new JsonObjectModel((Newtonsoft.Json.Linq.JObject) reference)
-                        : (reference is System.Xml.Linq.XElement
-                            ? new Lux.Model.Xml.XmlObjectModel((System.Xml.Linq.XElement) reference)
-                            : (Lux.Model.IObjectModel) new Lux.Model.MirrorObjectModel(reference));
+                Lux.Model.IObjectModel objectMirror = reference as Lux.Model.IObjectModel;
+
+                if (objectMirror == null)
+                {
+                    objectMirror =
+                        reference is Newtonsoft.Json.Linq.JObject
+                            ? new JsonObjectModel((Newtonsoft.Json.Linq.JObject) reference)
+                            : (reference is System.Xml.Linq.XElement
+                                ? new Lux.Model.Xml.XmlObjectModel((System.Xml.Linq.XElement) reference)
+                                : (Lux.Model.IObjectModel) new Lux.Model.MirrorObjectModel(reference));
+                }
+                
                 var property = objectMirror.GetProperty(propertyName);
                 if (property != null)
                 {
