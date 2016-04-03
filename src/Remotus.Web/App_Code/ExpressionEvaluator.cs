@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Remotus.Web
 {
@@ -90,14 +93,19 @@ namespace Remotus.Web
 
             bool boolVal;
             long longVal;
+            int intVal;
             float floatVal;
             if (bool.TryParse(expr, out boolVal))
             {
                 return boolVal;
             }
-            else if (float.TryParse(expr, NumberStyles.Any, CultureInfo.InvariantCulture, out floatVal))
+            else if (float.TryParse(expr, NumberStyles.Any, CultureInfo.InvariantCulture, out floatVal) && (floatVal % 1 != 0))
             {
                 return floatVal;
+            }
+            else if (int.TryParse(expr, NumberStyles.Any, CultureInfo.InvariantCulture, out intVal))
+            {
+                return intVal;
             }
             else if (long.TryParse(expr, NumberStyles.Any, CultureInfo.InvariantCulture, out longVal))
             {
@@ -109,11 +117,12 @@ namespace Remotus.Web
                 int index = 0;
                 while (index >= 0)
                 {
-                    var exprOperator = ExpressionOperator.GetNext(expr, index, includeText: false);
-                    if (exprOperator.Operator == Operator.None)
-                    {
-                        exprOperator = ExpressionOperator.GetNext(expr, index, includeText: true);
-                    }
+                    //var exprOperator = ExpressionOperator.GetNext(expr, index, includeText: false);
+                    //if (exprOperator.Operator == Operator.None)
+                    //{
+                    //    exprOperator = ExpressionOperator.GetNext(expr, index, includeText: true);
+                    //}
+                    var exprOperator = ExpressionOperator.GetNext(expr, index, includeText: true);
 
                     if (exprOperator == null)
                     {
@@ -159,15 +168,63 @@ namespace Remotus.Web
                             //throw new InvalidOperationException("Missing reference name");
                         }
                     }
-                    else if (exprOperator.Operator == Operator.Property)
+                    else if (exprOperator.Operator == Operator.Member)
                     {
                         var textOp2 = ExpressionOperator.GetNext(expression, exprOperator.Index + 1, includeText: true);
                         if (textOp2.Index > index)
                             index = textOp2.Index + (textOp2.OperatorExpr?.Length ?? 0);
                         if (textOp2.Operator == Operator.Text)
                         {
-                            var propName = textOp2.OperatorExpr;
-                            subReference = GetReferenceProperty(subReference, propName);
+                            var memberName = textOp2.OperatorExpr;
+
+                            var nextOp2 = ExpressionOperator.GetNext(expression, textOp2.Index + (textOp2.OperatorExpr?.Length ?? 0), includeText: false);
+                            if (nextOp2.Operator == Operator.MethodStart)
+                            {
+                                var reg = Regex.Matches(expression.Substring(nextOp2.Index), @"\(([^\)]+)\)");
+                                var match = reg.Cast<Match>().FirstOrDefault();
+                                if (match == null)
+                                {
+                                    throw new Exception("Invalid method syntax");
+                                }
+
+                                var methodContent = match.Value ?? "";
+                                if (methodContent.StartsWith("("))
+                                    methodContent = methodContent.Substring("(".Length);
+                                if (methodContent.EndsWith(")"))
+                                    methodContent = methodContent.Substring(0, methodContent.Length - ")".Length);
+
+                                var parts = methodContent.Split(',').Select(x => x.Trim()).ToArray();
+                                var parameters = new List<object>();
+                                foreach (var part in parts)
+                                {
+                                    var p = part;
+                                    if (p.Count(c => c == '(') != p.Count(c => c == ')'))
+                                        if (p.Split('.').LastOrDefault()?.Contains('(') ?? false)
+                                            if (!p.EndsWith(")"))
+                                                p += ")";       // temp fix
+
+                                    var param = Evaluate(p, reference);
+                                    parameters.Add(param);
+                                }
+
+                                var type = subReference.GetType();
+                                var methodInfo = type.GetRuntimeMethod(memberName, parameters.Select(x => x.GetType()).ToArray());
+                                if (methodInfo == null)
+                                    methodInfo = type.GetMethod(memberName);
+
+                                var value = methodInfo.Invoke(subReference, parameters.ToArray());
+                                subReference = value;
+
+                                index = match.Index + methodContent.Length;
+                            }
+                            else if (nextOp2.Operator == Operator.IndexorStart)
+                            {
+                                throw new NotImplementedException();
+                            }
+                            else
+                            {
+                                subReference = GetReferenceProperty(subReference, memberName);
+                            }
                         }
                         else
                         {
@@ -244,7 +301,7 @@ namespace Remotus.Web
             {
                 switch (op)
                 {
-                    case Operator.Property:
+                    case Operator.Member:
                         return ".";
                     case Operator.Space:
                         return " ";
@@ -252,6 +309,16 @@ namespace Remotus.Web
                         return " is ";
                     case Operator.Reference:
                         return "$";
+                    case Operator.MethodStart:
+                        return "(";
+                    case Operator.MethodEnd:
+                        return ")";
+                    case Operator.IndexorStart:
+                        return "[";
+                    case Operator.IndexorEnd:
+                        return "]";
+                    case Operator.Modulus:
+                        return "%";
                     case Operator.Text:
                         return "[TEXT]";
                     default:
@@ -328,8 +395,12 @@ namespace Remotus.Web
                         //if (op == Operator.Text && result.Index >= 0)
                         //    continue;
                         if (op != Operator.Text)
-                            if (result.OperatorExpr != null && result.OperatorExpr.Length >= (expr?.Length ?? 0))
+                        {
+                            //if (result.OperatorExpr != null && result.OperatorExpr.Length >= (expr?.Length ?? 0))
+                            //    continue;
+                            if (result.OperatorExpr != null && result.OperatorExpr.Length >= (expr?.Length ?? 0) && result.Index <= index)
                                 continue;
+                        }
                         if (op == Operator.Text && (result.OperatorExpr?.Length ?? 0) > 0)
                             if (expr != null && result.OperatorExpr != null && expr.StartsWith(result.OperatorExpr))
                                 continue;
@@ -343,13 +414,35 @@ namespace Remotus.Web
                 }
                 return result;
             }
+
+            public static ExpressionOperator GetNextOfOperator(string expression, int startIndex, Operator op)
+            {
+                ExpressionOperator result = null;
+                while (startIndex >= 0)
+                {
+                    var r = GetNext(expression, startIndex, includeText: op == Operator.Text);
+                    if (r != null)
+                    {
+                        if (r.Operator == op)
+                        {
+                            result = r;
+                            break;
+                        }
+                    }
+
+                    //startIndex++;
+                    startIndex += Math.Max(1, r?.OperatorExpr?.Length ?? 0);
+                }
+                return result;
+            }
+
         }
 
-        private enum Operator
+        protected enum Operator
         {
             None,
             Reference,
-            Property,
+            Member,
             IndexorStart,
             IndexorEnd,
             MethodStart,

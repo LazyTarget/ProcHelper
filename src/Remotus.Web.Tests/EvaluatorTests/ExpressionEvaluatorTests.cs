@@ -168,5 +168,62 @@ namespace Remotus.Web.Tests.EvaluatorTests
             Assert.AreEqual(expected, actual);
         }
 
+
+        [TestCase]
+        public void ExpressionEvaluator_EvaluateMethod()
+        {
+            var calc = new Calculator();
+            var reference = new
+            {
+                Calculator = calc,
+            };
+            var expected = calc.Add(10, 35);
+            var expression = "$Calculator.Add(10, 35)";
+
+            var evaluator = new ExpressionEvaluator();
+            var result = evaluator.Evaluate(expression, reference);
+            Assert.IsNotNull(result);
+
+            var actual = (int)result;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase]
+        public void ExpressionEvaluator_EvaluateNestedMethods()
+        {
+            var calc = new Calculator();
+            var reference = new
+            {
+                Calculator = calc,
+            };
+            var expected = calc.Add(10, calc.Subtract(35, 15));
+            var expression = "$Calculator.Add(10, $Calculator.Subtract(35, 15))";
+
+            var evaluator = new ExpressionEvaluator();
+            var result = evaluator.Evaluate(expression, reference);
+            Assert.IsNotNull(result);
+
+            var actual = (int)result;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        protected class Calculator
+        {
+            public int Round(decimal d)
+            {
+                return (int) decimal.Round(d);
+            }
+
+            public int Add(int x, int y)
+            {
+                return x + y;
+            }
+
+            public int Subtract(int x, int y)
+            {
+                return x - y;
+            }
+        }
     }
 }
