@@ -1,22 +1,9 @@
-﻿#[Cond] false
-[Cond] $.Value is "System.Collections.Generic.IEnumerable`1[[Remotus.Base.ProcessDto, Remotus.Base]]"
+﻿[Cond] true
+#[Cond] $.Value is "System.Collections.Generic.IEnumerable`1[[Remotus.Base.ProcessDto, Remotus.Base]]"
 ##[Cond] $ is "System.Collections.Generic.IEnumerable`1[[Remotus.Base.ProcessDto, Remotus.Base, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]"
 ##[Cond] $ is "System.Collections.Generic.IEnumerable`1[[Remotus.Base.ProcessDto, Remotus.Base, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
 
 <div>
-	<p>Cond: "IEnumerable&lt;ProcessDto&gt;"</p>
-	<p>Type: {{$.Value}}</p>
-	<hr/>
-	
-	<div>
-		{{begin:foreach(x in $.Value)}}
-		<p>Row: {{$x}}</p>
-		<p>Id: {{$x.Id}}</p>
-		<p>ProcessName: {{$x.ProcessName}}</p>
-		<div>
-			{{$.Renderer}}
-		</div>
-		<hr/>
-		{{end:foreach}}
-	</div>
+	DEFAULT!!!
+	<p>{{$.Value}}</p>
 </div>

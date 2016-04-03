@@ -20,9 +20,13 @@ namespace Remotus.Web.Helpers
             var sb = new StringBuilder();
             try
             {
+                var reference = new Lux.Model.ObjectModel();
+                reference.DefineProperty("Value", null, value, true);
+                reference.DefineProperty("Renderer", typeof(IObjectRenderer), renderer, true);
+
                 using (var textWriter = new StringWriter(sb))
                 {
-                    renderer.Render(textWriter, value);
+                    renderer.Render(textWriter, reference);
                 }
             }
             catch (Exception ex)

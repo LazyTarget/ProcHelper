@@ -17,28 +17,22 @@ namespace Remotus.Web.Rendering
         static HtmlObjectRenderer()
         {
             Default = new HtmlObjectRenderer();
-            Default.Children.Add(new BootstrapTableHtmlObjectRenderer());
+
 
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/RenderTemplates");
-            var filePaths = Directory.EnumerateFiles(directory, "*.render", SearchOption.AllDirectories);
-            foreach (var filePath in filePaths)
-            {
-                // todo: load via web.config?
-                var template = new FileTemplateObjectRenderer.FileTemplate();
-                template.Load(filePath, watch: true);
-                var renderer = new FileTemplateObjectRenderer(template);
-                Default.Children.Add(renderer);
-            }
+
+            Default.SubRenderers.Children.Add(new TemplateDirectoryObjectRenderer(directory));
+            Default.SubRenderers.Children.Add(new BootstrapTableHtmlObjectRenderer());
         }
 
 
 
         public HtmlObjectRenderer()
         {
-            Children = new List<IObjectRenderer>();
+            SubRenderers = new ObjectRendererCollection();
         }
 
-        public IList<IObjectRenderer> Children { get; private set; }
+        public ObjectRendererCollection SubRenderers { get; private set; }
 
 
         public virtual bool CanRender(object value)
@@ -59,21 +53,12 @@ namespace Remotus.Web.Rendering
         {
             try
             {
-                if (Children != null && Children.Any())
+                if (SubRenderers != null)
                 {
-                    var reference = new Lux.Model.ObjectModel();
-                    reference.DefineProperty("Value", null, value, true);
-                    reference.DefineProperty("Renderer", typeof(IObjectRenderer), this, true);
-
-                    foreach (var objectRenderer in Children)
+                    var canRender = SubRenderers.CanRender(value);
+                    if (canRender)
                     {
-                        if (objectRenderer == null)
-                            continue;
-                        var canRender = objectRenderer.CanRender(reference);
-                        if (!canRender)
-                            continue;
-
-                        objectRenderer.Render(writer, reference);
+                        SubRenderers.Render(writer, value);
                         return;
                     }
                 }

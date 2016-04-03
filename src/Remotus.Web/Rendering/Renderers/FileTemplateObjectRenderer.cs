@@ -7,7 +7,7 @@ namespace Remotus.Web.Rendering
 {
     public class FileTemplateObjectRenderer : IObjectRenderer
     {
-        protected readonly IFileTemplate Template;
+        public readonly IFileTemplate Template;
         protected readonly ExpressionEvaluator Evaluator = new ExpressionEvaluator();
 
         public FileTemplateObjectRenderer(IFileTemplate fileTemplate)
@@ -49,6 +49,7 @@ namespace Remotus.Web.Rendering
 
         public interface IFileTemplate
         {
+            string FilePath { get; }
             string RawTemplate { get; }
             IObjectRendererCondition[] Conditions { get; }
         }
@@ -78,7 +79,7 @@ namespace Remotus.Web.Rendering
 
         
 
-        public class FileTemplate : IFileTemplate
+        public class FileTemplate : IFileTemplate, IDisposable
         {
             private FileSystemWatcher _watcher;
 
@@ -87,15 +88,26 @@ namespace Remotus.Web.Rendering
 
             }
 
+            public string FilePath { get; private set; }
             public string RawTemplate { get; private set; }
             public IObjectRendererCondition[] Conditions { get; private set; }
 
+
+
+            private void WatcherOnEvent(object sender, FileSystemEventArgs args)
+            {
+                Load(args.FullPath, watch: true);
+            }
 
             public void Load(string filePath, bool watch = true)
             {
                 filePath = Path.IsPathRooted(filePath)
                     ? filePath
                     : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
+                if (!File.Exists(filePath))
+                {
+                    return;
+                }
 
                 var fileLines = new List<string>();
                 using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -107,6 +119,7 @@ namespace Remotus.Web.Rendering
                         fileLines.Add(line);
                     }
                 }
+                FilePath = filePath;
                 LoadFile(fileLines.ToArray());
 
 
@@ -116,14 +129,9 @@ namespace Remotus.Web.Rendering
                     var dir = Path.GetDirectoryName(filePath);
                     var fileName = Path.GetFileName(filePath);
                     _watcher = new FileSystemWatcher(dir, fileName);
-                    _watcher.Changed += WatcherOnChanged;
+                    _watcher.Changed += WatcherOnEvent;
                     _watcher.EnableRaisingEvents = true;
                 }
-            }
-
-            private void WatcherOnChanged(object sender, FileSystemEventArgs args)
-            {
-                Load(args.FullPath, watch: true);
             }
 
 
@@ -160,6 +168,12 @@ namespace Remotus.Web.Rendering
                 
                 Conditions = conditions.ToArray();
                 RawTemplate = rawTemplate;
+            }
+
+            public void Dispose()
+            {
+                _watcher?.Dispose();
+                _watcher = null;
             }
         }
     }

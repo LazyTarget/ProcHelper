@@ -252,9 +252,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\EditorHtmlHelperExtensions.cs" />
+    <Compile Include="Rendering\Renderers\TemplateDirectoryObjectRenderer.cs" />
+    <Compile Include="Rendering\Renderers\ObjectRendererCollection.cs" />
     <Compile Include="Rendering\Renderers\BootstrapTableHtmlObjectRenderer.cs" />
     <Compile Include="Rendering\IObjectRenderer.cs" />
-    <Compile Include="Rendering\HtmlObjectRenderer.cs" />
+    <Compile Include="Rendering\Renderers\HtmlObjectRenderer.cs" />
     <Compile Include="App_Code\JsonObjectModel.cs" />
     <Compile Include="Helpers\ObjectRendererHtmlHelperExtensions.cs" />
     <Compile Include="Hubs\ChatHub.cs" />

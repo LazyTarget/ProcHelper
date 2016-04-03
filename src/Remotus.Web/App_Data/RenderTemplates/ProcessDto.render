@@ -1,6 +1,6 @@
-﻿[Cond] true
-#[Cond] $.Value is "Remotus.Base.ProcessDto, Remotus.Base"
-#[Cond] $ is "Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"
+﻿#[Cond] true
+[Cond] $.Value is "Remotus.Base.ProcessDto, Remotus.Base"
+##[Cond] $ is "Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"
 
 <div>
 	<p class="Property"><span class="PropertyName">Id: </span><span class="PropertyValue">{{$.Value.Id}}</span></p>
