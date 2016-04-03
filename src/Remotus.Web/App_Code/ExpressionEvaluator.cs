@@ -52,10 +52,12 @@ namespace Remotus.Web
                         }
 
                         var s = startIndex - "{{".Length;
-                        expr = expr.Remove(startIndex - "{{".Length, endloopIndex + "{{end:foreach}}".Length);
-                        expr = expr.Substring(0, s) + valueStr + expr.Substring(s);
+                        var l = (expr.Length - s) - (expr.Length - endloopIndex) + "{{end:foreach}}".Length;
+                        var res = expr.Remove(s, l);
+                        expr = res.Substring(0, s) + valueStr + res.Substring(s);
 
-                        index = expr.IndexOf("{{");
+                        //index = expr.IndexOf("{{");
+                        index = expr.IndexOf("{{", s +1);
                         continue;
                     }
                     
