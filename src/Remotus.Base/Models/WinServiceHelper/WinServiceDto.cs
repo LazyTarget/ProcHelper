@@ -24,22 +24,22 @@ namespace Remotus.Base
 
         public string ServiceName
         {
-            get { return _winServiceController.ServiceName; }
+            get { return _winServiceController?.ServiceName; }
         }
 
         public string DisplayName
         {
-            get { return _winServiceController.DisplayName; }
+            get { return _winServiceController?.DisplayName; }
         }
 
         public string MachineName
         {
-            get { return _winServiceController.MachineName; }
+            get { return _winServiceController?.MachineName; }
         }
 
         public ServiceControllerStatus Status
         {
-            get { return _winServiceController.Status; }
+            get { return _winServiceController?.Status ?? default(ServiceControllerStatus); }
         }
 
         public string ImagePath
@@ -56,27 +56,27 @@ namespace Remotus.Base
 
         public bool CanPauseAndContinue
         {
-            get { return _winServiceController.CanPauseAndContinue; }
+            get { return _winServiceController?.CanPauseAndContinue ?? false; }
         }
 
         public bool CanStop
         {
-            get { return _winServiceController.CanStop; }
+            get { return _winServiceController?.CanStop ?? false; }
         }
 
         public bool CanShutdown
         {
-            get { return _winServiceController.CanShutdown; }
+            get { return _winServiceController?.CanShutdown ?? false; }
         }
 
         public ServiceType ServiceType
         {
-            get { return _winServiceController.ServiceType; }
+            get { return _winServiceController?.ServiceType ?? default(ServiceType); }
         }
 
         public List<WinServiceDto> ServicesDependedOn
         {
-            get { return _winServiceController.ServicesDependedOn.Select(x => new WinServiceDto(x)).ToList(); }
+            get { return _winServiceController?.ServicesDependedOn.Select(x => new WinServiceDto(x)).ToList(); }
             //get { return null; }
         }
 

@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solutio
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Services", "Remotus.Plugins.Services\Remotus.Plugins.Services.csproj", "{63821537-6B6F-4412-BA4E-5799D51AEF01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{9329460C-6D0C-4EC3-B85F-D9A17069E3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9329460C-6D0C-4EC3-B85F-D9A17069E3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9329460C-6D0C-4EC3-B85F-D9A17069E3DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +78,6 @@ Global
 		{3B22B620-56C3-44E6-8635-4EA1D8B09437} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{1A5291C5-BBB7-4924-BC67-8EE3D6FC5BF4} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{42BE24E3-F30D-468D-A304-B3214E46779F} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
+		{63821537-6B6F-4412-BA4E-5799D51AEF01} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 	EndGlobalSection
 EndGlobal

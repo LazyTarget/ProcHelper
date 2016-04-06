@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lux.IO;
 using Remotus.Base;
-using Remotus.Plugins.Process;
-using Remotus.Plugins.Sound;
-using Remotus.Plugins.Spotify;
 
 namespace Remotus.API.Data
 {
@@ -29,9 +26,10 @@ namespace Remotus.API.Data
 
             // todo: populate via assembly load
 
-            plugins.Add(new SoundPlugin());
-            plugins.Add(new ProcessPlugin());
-            plugins.Add(new SpotifyPlugin());
+            plugins.Add(new Plugins.Sound.SoundPlugin());
+            plugins.Add(new Plugins.Process.ProcessPlugin());
+            plugins.Add(new Plugins.Services.ServicesPlugin());
+            plugins.Add(new Plugins.Spotify.SpotifyPlugin());
             return plugins;
         }
     }
