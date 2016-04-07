@@ -51,11 +51,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
+    <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Remotus\Remotus.csproj">
+    <ProjectReference Include="..\..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
       <Name>Remotus</Name>
     </ProjectReference>
