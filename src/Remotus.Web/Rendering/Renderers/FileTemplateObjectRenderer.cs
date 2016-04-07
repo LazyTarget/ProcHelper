@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Remotus.Web.Rendering
 {
@@ -71,9 +72,43 @@ namespace Remotus.Web.Rendering
 
             public bool Validate(object value, ExpressionEvaluator evaluator)
             {
-                var result = evaluator.Evaluate(Expression, value);
-                var cond = (bool) result;
-                return cond;
+                try
+                {
+                    var result = evaluator.Evaluate(Expression, value);
+                    var cond = (bool) result;
+                    return cond;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+        }
+
+        protected class RegexObjectRendererCondition : IObjectRendererCondition
+        {
+            public RegexObjectRendererCondition(string expression)
+            {
+                Expression = expression;
+            }
+
+            public string Expression { get; }
+
+            public bool Validate(object value, ExpressionEvaluator evaluator)
+            {
+                try
+                {
+                    var str = (value ?? "").ToString();
+                    var pattern = Expression;
+                    var matches = Regex.Matches(str, pattern);
+                    var match = matches.Cast<Match>().FirstOrDefault(x => x.Success);
+                    var res = match != null && match.Success;
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
             }
         }
 
@@ -154,6 +189,12 @@ namespace Remotus.Web.Rendering
                     {
                         var expression = line.Substring("[Cond]".Length).Trim();
                         var cond = new ObjectRendererCondition(expression);
+                        conditions.Add(cond);
+                    }
+                    else if (line.StartsWith("[Cond-Regex]", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var expression = line.Substring("[Cond-Regex]".Length).Trim();
+                        var cond = new RegexObjectRendererCondition(expression);
                         conditions.Add(cond);
                     }
                     else

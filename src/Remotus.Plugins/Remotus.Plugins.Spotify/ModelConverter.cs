@@ -48,8 +48,11 @@ namespace Remotus.Plugins.Spotify
             var albumArtSize = AlbumArtSize.Size320;
             //result.AlbumArt = state.GetAlbumArt(albumArtSize);
             var bytes = state.GetAlbumArtAsByteArray(albumArtSize); // todo: arg for wheter to load images?
-            using (var stream = new System.IO.MemoryStream(bytes, false))
-                result.AlbumArt = new Bitmap(stream);
+            if (bytes != null)
+            {
+                using (var stream = new System.IO.MemoryStream(bytes, false))
+                    result.AlbumArt = new Bitmap(stream);
+            }
             return result;
         }
 

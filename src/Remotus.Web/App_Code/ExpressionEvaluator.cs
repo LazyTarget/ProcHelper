@@ -259,6 +259,12 @@ namespace Remotus.Web
 
         private object GetReferenceProperty(object reference, string propertyName)
         {
+            if (reference == null)
+            {
+                return null;
+                //throw new InvalidOperationException("Reference is null!");
+            }
+
             if (!string.IsNullOrWhiteSpace(propertyName))
             {
                 Lux.Model.IObjectModel objectMirror = reference as Lux.Model.IObjectModel;

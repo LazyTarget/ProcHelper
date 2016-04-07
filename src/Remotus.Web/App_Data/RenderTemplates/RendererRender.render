@@ -1,0 +1,6 @@
+﻿#[Cond] false
+[Cond] $ is "Remotus.Web.Rendering.IObjectRenderer, Remotus.Web"
+
+<div>
+	Renderer: {{$}}
+</div>
