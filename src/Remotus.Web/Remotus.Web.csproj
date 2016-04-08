@@ -252,6 +252,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\EditorHtmlHelperExtensions.cs" />
+    <Compile Include="Rendering\Renderers\JsonObjectRenderer.cs" />
     <Compile Include="Rendering\Renderers\TemplateDirectoryObjectRenderer.cs" />
     <Compile Include="Rendering\Renderers\ObjectRendererCollection.cs" />
     <Compile Include="Rendering\Renderers\BootstrapTableHtmlObjectRenderer.cs" />

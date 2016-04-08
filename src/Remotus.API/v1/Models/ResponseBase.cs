@@ -62,9 +62,12 @@ namespace Remotus.API.v1.Models
         public ResponseBase()
         {
             Links = new Dictionary<string, ILink>();
+            Metadata = new Dictionary<string, object>();
         }
 
         public IDictionary<string, ILink> Links { get; set; }
+
+        public IDictionary<string, object> Metadata { get; set; }
 
         public IError Error { get; set; }
 

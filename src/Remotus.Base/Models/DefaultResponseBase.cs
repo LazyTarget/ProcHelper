@@ -55,9 +55,11 @@ namespace Remotus.Base
         public DefaultResponseBase()
         {
             Links = new Dictionary<string, ILink>();
+            Metadata = new Dictionary<string, object>();
         }
 
         public IDictionary<string, ILink> Links { get; set; }
+        public IDictionary<string, object> Metadata { get; set; }
         public IError Error { get; set; }
         public TResult Result { get; set; }
 

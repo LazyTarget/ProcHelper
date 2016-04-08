@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,6 +15,7 @@ using Lux;
 using Remotus.API.v1;
 using Remotus.Base;
 using Remotus.Web.Models;
+using Remotus.Web.Rendering;
 
 namespace Remotus.Web.Controllers
 {
@@ -69,7 +72,10 @@ namespace Remotus.Web.Controllers
         public async Task<FormattedContentResult<IResponseBase<IFunctionResult>>> Execute(string clientID, string pluginID, string functionID)
         {
             var serializer = new CustomJsonSerializer();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
+            IResponseBase<IFunctionResult> response;
             try
             {
                 var resp = await GetFunctionPlugins(clientID);
@@ -105,53 +111,51 @@ namespace Remotus.Web.Controllers
                 //var function = functionDescriptor.Instantiate();
                 //var result = await function.Execute(arg);
 
-                var response = await ExecuteFunction(clientID, pluginID, functionID, arg);
+                response = await ExecuteFunction(clientID, pluginID, functionID, arg);
                 response.EnsureSuccess();
-                //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
-                
-                //var json = serializer.Serialize(response);
-                //var actionResult = new ContentResult
-                //{
-                //    Content = json,
-                //    ContentType = "application/json",
-                //    ContentEncoding = Encoding.UTF8,
-                //};
-                //return actionResult;
-
-                MediaTypeFormatter formatter = new JsonMediaTypeFormatter
-                {
-                    SerializerSettings = serializer.GetSerializerSettings(),
-                };
-                MediaTypeHeaderValue mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
-                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(Request.HttpMethod), Request.Url);
-                var actionResult = new FormattedContentResult<IResponseBase<IFunctionResult>>(HttpStatusCode.OK, response, formatter, mediaType, request);
-                return actionResult;
             }
             catch (Exception ex)
             {
-                var response = DefaultResponseBase.CreateError<IFunctionResult>(DefaultError.FromException(ex));
-                //var actionResult = new JsonResult<IResponseBase<IFunctionResult>>(response, settings, Encoding.UTF8, request);
-                //return actionResult;
-
-                //var json = serializer.Serialize(response);
-                //var actionResult = new ContentResult
-                //{
-                //    Content = json,
-                //    ContentType = "application/json",
-                //    ContentEncoding = Encoding.UTF8,
-                //};
-                //return actionResult;
-
-                MediaTypeFormatter formatter = new JsonMediaTypeFormatter
-                {
-                    SerializerSettings = serializer.GetSerializerSettings(),
-                };
-                MediaTypeHeaderValue mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
-                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(Request.HttpMethod), Request.Url);
-                var actionResult = new FormattedContentResult<IResponseBase<IFunctionResult>>(HttpStatusCode.OK, response, formatter, mediaType, request);
-                return actionResult;
+                response = DefaultResponseBase.CreateError<IFunctionResult>(DefaultError.FromException(ex));
             }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            var requestGuid = Guid.NewGuid();
+            if (_requests.Count >= 5)
+            {
+                _requests.Remove(_requests.Keys.First());
+            }
+            _requests[requestGuid] = response;
+
+
+            var metadata = response as IResponseMetadata;
+            if (metadata != null)
+            {
+                metadata.Metadata["RequestGuid"] = requestGuid;
+                metadata.Metadata["ExecutionTime"] = stopwatch.Elapsed;
+            }
+
+            MediaTypeFormatter formatter = new JsonMediaTypeFormatter
+            {
+                SerializerSettings = serializer.GetSerializerSettings(),
+            };
+            MediaTypeHeaderValue mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
+            HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(Request.HttpMethod), Request.Url);
+            var actionResult = new FormattedContentResult<IResponseBase<IFunctionResult>>(HttpStatusCode.OK, response, formatter, mediaType, request);
+            return actionResult;
         }
+
+
+        private static Dictionary<Guid, IResponseBase<IFunctionResult>> _requests = new Dictionary<Guid, IResponseBase<IFunctionResult>>(5);
+        private static Dictionary<Guid, IObjectRenderer> _renderers = new Dictionary<Guid, IObjectRenderer>
+        {
+            { Guid.Parse("37E3938B-9A56-4214-B12C-2BB94A90A5BE"), new HtmlObjectRenderer() },
+            { Guid.Parse("B34793F1-EDBC-4A86-BD28-EC6CD7F97237"), HtmlObjectRenderer.Default },
+            { Guid.Parse("C781DE9B-56C3-45E1-B1B7-A0D77E640B9D"), new JsonObjectRenderer() },
+        };
 
 
         public async Task<ActionResult> ExecutePartial(string clientID, string pluginID, string functionID)
@@ -159,6 +163,46 @@ namespace Remotus.Web.Controllers
             var result = await Execute(clientID, pluginID, functionID);
             var model = result?.Content;
             return PartialView("_FunctionResult", model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> FormatResult(Guid? requestGuid, Guid? formatterGuid)
+        {
+            IObjectRenderer renderer = formatterGuid.HasValue && _renderers.ContainsKey(formatterGuid.Value) ? _renderers[formatterGuid.Value] : null;
+            IResponseBase<IFunctionResult> resp = requestGuid.HasValue && _requests.ContainsKey(requestGuid.Value) ? _requests[requestGuid.Value] : null;
+            object value = resp?.Result?.Result;
+
+            var sb = new StringBuilder();
+            try
+            {
+                if (renderer != null)
+                {
+                    var reference = new Lux.Model.ObjectModel();
+                    reference.DefineProperty("Value", null, value, true);
+                    reference.DefineProperty("Renderer", typeof(IObjectRenderer), renderer, true);
+
+                    using (var textWriter = new StringWriter(sb))
+                    {
+                        renderer.Render(textWriter, reference);
+                    }
+                }
+                else
+                {
+                    var str = value?.ToString();
+                    sb.Append(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            var html = sb.ToString();
+
+            var actionResult = new ContentResult();
+            actionResult.Content = html;
+            actionResult.ContentType = "text/html";
+            return actionResult;
         }
 
         

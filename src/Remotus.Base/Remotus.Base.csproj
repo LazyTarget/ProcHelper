@@ -146,6 +146,7 @@
     <Compile Include="Models\ProcHelper\ProcessStartInfoDto.cs" />
     <Compile Include="Models\ProcHelper\StartProcessRequest.cs" />
     <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
+    <Compile Include="Models\ResponseMetadata.cs" />
     <Compile Include="Scripting\Tasks\ExecuteFunctionScriptTask.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Models\WinServiceHelper\ContinueWinServiceRequest.cs" />

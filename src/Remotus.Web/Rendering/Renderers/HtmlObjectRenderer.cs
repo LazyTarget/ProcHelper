@@ -22,7 +22,7 @@ namespace Remotus.Web.Rendering
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data/RenderTemplates");
             var templateDirRenderer = new TemplateDirectoryObjectRenderer(directory);
 
-            Default.SubRenderers.Children.Add(templateDirRenderer);
+            //Default.SubRenderers.Children.Add(templateDirRenderer);
             Default.SubRenderers.Children.Add(new BootstrapTableHtmlObjectRenderer() { SubRenderers = templateDirRenderer});
         }
 
