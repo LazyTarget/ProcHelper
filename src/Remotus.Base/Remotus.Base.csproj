@@ -76,6 +76,7 @@
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Interfaces\API\IRemotusAPI.cs" />
     <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IComponentInstantiator.cs" />

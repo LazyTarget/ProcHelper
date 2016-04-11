@@ -3,6 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
 using System.Web.Http.Results;
 
 namespace Remotus.API
@@ -54,8 +57,28 @@ namespace Remotus.API
             else if (mediaType == null)
                 mediaType = formatter.SupportedMediaTypes.FirstOrDefault();
 
-            var actionResult = new FormattedContentResult<TResult>(statusCode, result, formatter, mediaType, request);
+            var actionResult = new CustomFormattedContentResult<TResult>(statusCode, result, formatter, mediaType, request);
             return actionResult;
+        }
+
+
+        private class CustomFormattedContentResult<TRes> : FormattedContentResult<TRes>
+        {
+            public CustomFormattedContentResult(HttpStatusCode statusCode, TRes content, MediaTypeFormatter formatter, MediaTypeHeaderValue mediaType, HttpRequestMessage request)
+                : base(statusCode, content, formatter, mediaType, request)
+            {
+            }
+
+            public CustomFormattedContentResult(HttpStatusCode statusCode, TRes content, MediaTypeFormatter formatter, MediaTypeHeaderValue mediaType, ApiController controller)
+                : base(statusCode, content, formatter, mediaType, controller)
+            {
+            }
+
+            public override Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+            {
+                var response = base.ExecuteAsync(cancellationToken);
+                return response;
+            }
         }
 
     }

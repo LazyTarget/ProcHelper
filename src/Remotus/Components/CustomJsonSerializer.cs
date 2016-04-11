@@ -126,7 +126,7 @@ namespace Remotus
         public CustomJsonSerializerSettings()
         {
             Container = new UnityAdaptorContainer();
-            Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<>));
+            Container.Bind(typeof(IResponseBase), typeof(DefaultResponseBase<object>));
             Container.Bind(typeof(IResponseBase<>), typeof(DefaultResponseBase<>));
             Container.Bind(typeof(IError), typeof(DefaultError));
             Container.Bind(typeof(ILink), typeof(DefaultLink));

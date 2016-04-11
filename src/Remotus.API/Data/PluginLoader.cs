@@ -30,6 +30,7 @@ namespace Remotus.API.Data
             plugins.Add(new Plugins.Process.ProcessPlugin());
             plugins.Add(new Plugins.Services.ServicesPlugin());
             plugins.Add(new Plugins.Spotify.SpotifyPlugin());
+            plugins.Add(new Plugins.Scripting.ScriptingPlugin());
             return plugins;
         }
     }

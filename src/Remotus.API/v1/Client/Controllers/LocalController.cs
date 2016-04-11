@@ -168,6 +168,7 @@ namespace Remotus.API.v1.Client.Controllers
                 {
                     ClientInfo = Program.Service?.Client?.ClientInfo,
                     Logger = new TraceLogger(),
+                    Remotus = new FullCtrlAPI(),
                 };
 
                 var result = await function.Execute(context, arguments);

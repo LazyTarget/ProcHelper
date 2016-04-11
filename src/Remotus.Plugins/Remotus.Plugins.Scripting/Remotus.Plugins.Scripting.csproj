@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B321FE3C-C595-488C-B505-0A90A0963A7C}</ProjectGuid>
+    <ProjectGuid>{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Remotus.API.Client</RootNamespace>
-    <AssemblyName>Remotus.API.Client</AssemblyName>
+    <RootNamespace>Remotus.Plugins.Scripting</RootNamespace>
+    <AssemblyName>Remotus.Plugins.Scripting</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,20 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\MemoryScriptDataStore.cs" />
+    <Compile Include="Data\FileSystemScriptDataStore.cs" />
+    <Compile Include="Data\IScriptDataStore.cs" />
+    <Compile Include="ScriptFunction.cs" />
+    <Compile Include="ScriptFunctionDescriptor.cs" />
+    <Compile Include="ScriptingPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
+    <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
-      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
-      <Name>Remotus.Plugins.Sound</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

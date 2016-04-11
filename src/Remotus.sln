@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Spotify", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Services", "Remotus.Plugins\Remotus.Plugins.Services\Remotus.Plugins.Services.csproj", "{63821537-6B6F-4412-BA4E-5799D51AEF01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Scripting", "Remotus.Plugins\Remotus.Plugins.Scripting\Remotus.Plugins.Scripting.csproj", "{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63821537-6B6F-4412-BA4E-5799D51AEF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +85,6 @@ Global
 		{1A5291C5-BBB7-4924-BC67-8EE3D6FC5BF4} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{42BE24E3-F30D-468D-A304-B3214E46779F} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{63821537-6B6F-4412-BA4E-5799D51AEF01} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
+		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 	EndGlobalSection
 EndGlobal

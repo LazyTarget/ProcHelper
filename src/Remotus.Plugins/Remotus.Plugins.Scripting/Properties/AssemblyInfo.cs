@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FullCtrl.API.Client")]
+[assembly: AssemblyTitle("Remotus.Plugins.Scripting")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FullCtrl.API.Client")]
+[assembly: AssemblyProduct("Remotus.Plugins.Scripting")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b321fe3c-c595-488c-b505-0a90a0963a7c")]
+[assembly: Guid("48863ce1-8c66-4cb5-8d3c-c52693df51b8")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Remotus.Base.Scripting
@@ -7,6 +6,8 @@ namespace Remotus.Base.Scripting
     public class ExecuteFunctionScriptTask : ScriptTaskBase
     {
         public override string Name => "ExecuteFunction";
+
+        public string ClientID { get; set; }
 
         public string PluginID { get; set; }
 
@@ -17,27 +18,18 @@ namespace Remotus.Base.Scripting
 
         public override async Task<IResponseBase> Execute(IExecutionContext context)
         {
-            var plugins = await context.ClientInfo.GetPlugins();
-            var plugin = plugins?.FirstOrDefault(x => string.Equals(x.ID, PluginID, StringComparison.OrdinalIgnoreCase));
-            var functionPlugin = plugin as IFunctionPlugin;
-            var functionDescriptor = functionPlugin?.GetFunctions()?.FirstOrDefault(x => string.Equals(x.ID, FunctionID, StringComparison.OrdinalIgnoreCase));
-            if (functionDescriptor != null)
+            try
             {
-                try
-                {
-                    using (var function = functionDescriptor?.Instantiate())
-                    {
-                        var result = await function.Execute(context, Arguments);
-                        return result;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var result = DefaultResponseBase.CreateError(DefaultError.FromException(ex));
-                    return result;
-                }
+                var response = ClientID != null
+                    ? await context.Remotus.ExecuteRemoteFunction(ClientID, PluginID, FunctionID, Arguments)
+                    : await context.Remotus.ExecuteLocalFunction(PluginID, FunctionID, Arguments);
+                return response;
             }
-            return null;
+            catch (Exception ex)
+            {
+                var result = DefaultResponseBase.CreateError(DefaultError.FromException(ex));
+                return result;
+            }
         }
     }
 }

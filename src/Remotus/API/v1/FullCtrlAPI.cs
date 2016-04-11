@@ -1,8 +1,9 @@
 ﻿using System;
+using Remotus.Base;
 
 namespace Remotus.API.v1
 {
-    public partial class FullCtrlAPI : RestClientBase
+    public partial class FullCtrlAPI : RestClientBase, IRemotusAPI
     {
         public FullCtrlAPI()
         {

@@ -6,5 +6,6 @@ namespace Remotus.API
     {
         public IClientInfo ClientInfo { get; set; }
         public ILog Logger { get; set; }
+        public IRemotusAPI Remotus { get; set; }
     }
 }

@@ -4,5 +4,6 @@
     {
         IClientInfo ClientInfo { get; }
         ILog Logger { get; }
+        IRemotusAPI Remotus { get; }
     }
 }
