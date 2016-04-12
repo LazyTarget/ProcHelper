@@ -14,6 +14,7 @@ namespace Remotus.Plugins.Spotify
             yield return new PlayFunction.Descriptor();
             yield return new PauseFunction.Descriptor();
             yield return new PlayUriFunction.Descriptor();
+            yield return new TogglePlayingFunction.Descriptor();
             yield return new PreviousTrackFunction.Descriptor();
             yield return new NextTrackFunction.Descriptor();
             yield return new GetStatusFunction.Descriptor();
