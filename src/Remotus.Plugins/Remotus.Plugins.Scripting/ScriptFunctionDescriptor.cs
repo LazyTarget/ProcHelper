@@ -1,4 +1,5 @@
-﻿using Remotus.Base;
+﻿using System.Linq;
+using Remotus.Base;
 using Remotus.Base.Scripting;
 
 namespace Remotus.Plugins.Scripting
@@ -25,6 +26,28 @@ namespace Remotus.Plugins.Scripting
         public IParameterCollection GetParameters()
         {
             IParameterCollection res = null;
+            var executableScriptTask = Script?.Tasks?.OfType<ExecuteFunctionScriptTask>().ToArray();
+            if (executableScriptTask != null)
+            {
+                foreach (var executeFunctionScriptTask in executableScriptTask)
+                {
+                    var parameters = executeFunctionScriptTask?.Arguments?.Parameters;
+                    if (parameters != null && parameters.Any())
+                    {
+                        if (res == null)
+                        {
+                            res = new ParameterCollection();
+                        }
+
+                        foreach (var parameter in parameters)
+                        {
+                            if (string.IsNullOrWhiteSpace(parameter.Key))
+                                continue;
+                            res[parameter.Key] = parameter.Value;
+                        }
+                    }
+                }
+            }
             return res;
         }
 

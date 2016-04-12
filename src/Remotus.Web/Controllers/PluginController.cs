@@ -108,9 +108,6 @@ namespace Remotus.Web.Controllers
                 var arg = new FunctionArguments();
                 arg.Parameters = parameters;
 
-                //var function = functionDescriptor.Instantiate();
-                //var result = await function.Execute(arg);
-
                 response = await ExecuteFunction(clientID, pluginID, functionID, arg);
                 response.EnsureSuccess();
             }

@@ -27,7 +27,7 @@ namespace Remotus.Plugins.Scripting
         {
             _executor.Context = context;
 
-            var response = await _executor.Execute(_descriptor.Script);
+            var response = await _executor.Execute(_descriptor.Script, arguments?.Parameters);
             var result = new FunctionResult
             {
                 Arguments = arguments,

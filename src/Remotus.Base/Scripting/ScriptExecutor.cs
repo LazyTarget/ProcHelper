@@ -8,7 +8,7 @@ namespace Remotus.Base.Scripting
     {
         public IExecutionContext Context { get; set; }
 
-        public async Task<IResponseBase> Execute(Script script)
+        public async Task<IResponseBase> Execute(Script script, IParameterCollection parameterCollection)
         {
             var results = new List<IResponseBase>();
             IResponseBase result = DefaultResponseBase.Create<IEnumerable<IResponseBase>>(results);
@@ -17,7 +17,7 @@ namespace Remotus.Base.Scripting
             {
                 foreach (var task in script.Tasks)
                 {
-                    var res = await task.Execute(Context);
+                    var res = await task.Execute(Context, parameterCollection);
                     results.Add(res);
                 }
             }

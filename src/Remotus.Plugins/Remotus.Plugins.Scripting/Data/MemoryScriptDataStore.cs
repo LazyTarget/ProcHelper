@@ -22,7 +22,22 @@ namespace Remotus.Plugins.Scripting
                     {
                         PluginID = "ABA6417A-65A2-4761-9B01-AA9DFFC074C0",
                         FunctionID = "78324B37-0F93-40C2-AC56-5B1D714CFC41",
-                        Arguments = null,
+                        Arguments = new FunctionArguments
+                        {
+                            Parameters = new ParameterCollection
+                            {
+                                {
+                                    "DeviceID",
+                                    new Parameter<string>
+                                    {
+                                        Name = "DeviceID",
+                                        Required = false,
+                                        Type = typeof(string),
+                                        Value = null,
+                                    }
+                                },
+                            },
+                        },
                     },
                 },
             };

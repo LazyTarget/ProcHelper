@@ -16,10 +16,18 @@ namespace Remotus.Base.Scripting
         public IFunctionArguments Arguments { get; set; }
 
 
-        public override async Task<IResponseBase> Execute(IExecutionContext context)
+        public override async Task<IResponseBase> Execute(IExecutionContext context, IParameterCollection parameterCollection)
         {
             try
             {
+                if (Arguments?.Parameters != null && parameterCollection != null)
+                {
+                    foreach (var parameter in parameterCollection)
+                    {
+                        Arguments.Parameters[parameter.Key] = parameter.Value;
+                    }
+                }
+
                 var response = ClientID != null
                     ? await context.Remotus.ExecuteRemoteFunction(ClientID, PluginID, FunctionID, Arguments)
                     : await context.Remotus.ExecuteLocalFunction(PluginID, FunctionID, Arguments);

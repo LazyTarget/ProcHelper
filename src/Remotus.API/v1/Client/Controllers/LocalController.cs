@@ -139,7 +139,9 @@ namespace Remotus.API.v1.Client.Controllers
                 var serializer = Configuration.Formatters.JsonFormatter.CreateJsonSerializer();
                 var json = await Request.Content.ReadAsStringAsync();
                 var sentArgs = serializer.Deserialize<IFunctionArguments>(new JsonTextReader(new StringReader(json)));
-                arg = sentArgs;
+                arg = sentArgs ?? new FunctionArguments();
+                arg.Descriptor = functionDescriptor;
+
                 // todo: decide whether base arguments on what the descriptor says
 
 
