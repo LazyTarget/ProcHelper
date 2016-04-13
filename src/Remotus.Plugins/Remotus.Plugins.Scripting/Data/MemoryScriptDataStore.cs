@@ -55,6 +55,7 @@ namespace Remotus.Plugins.Scripting
             };
             Scripts.Add(testScript);
 
+#if DEBUG
             Type[] extraTypes = new[]
             {
                 typeof(ExecuteFunctionScriptTask), 
@@ -72,16 +73,9 @@ namespace Remotus.Plugins.Scripting
             fileSystem.DeleteFile(filePath);
             using (var stream = fileSystem.OpenFile(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-
-                var ser = new Lux.Serialization.Xml.DotNetXmlSerializer();
-                var xml = ser.Serialize(testScript);
-                using (var sw = new StreamWriter(stream, Encoding.UTF8))
-                {
-                    sw.Write(xml);
-                }
-
                 serializer.Serialize(stream, testScript);
             }
+#endif
         }
 
         public List<Script> Scripts { get; set; }

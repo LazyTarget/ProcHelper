@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
@@ -9,7 +10,7 @@ namespace Remotus.Base.Scripting
     [Serializable]
     public class ExecuteFunctionScriptTask : ScriptTaskBase, IXmlSerializable
     {
-        public override string Name => "ExecuteFunction";
+        public override string Name => "ExecuteFunctionTask";
 
         public string ClientID { get; set; }
 
@@ -33,7 +34,7 @@ namespace Remotus.Base.Scripting
                     }
                 }
 
-                var response = ClientID != null
+                var response = !string.IsNullOrWhiteSpace(ClientID)
                     ? await context.Remotus.ExecuteRemoteFunction(ClientID, PluginID, FunctionID, Arguments)
                     : await context.Remotus.ExecuteLocalFunction(PluginID, FunctionID, Arguments);
                 return response;
@@ -45,6 +46,9 @@ namespace Remotus.Base.Scripting
             }
         }
 
+
+        #region IXmlSerializable
+
         public XmlSchema GetSchema()
         {
             return null;
@@ -52,28 +56,29 @@ namespace Remotus.Base.Scripting
 
         public void ReadXml(XmlReader reader)
         {
-            string elem = "ExeTask";
-
-            if (reader.MoveToContent() == XmlNodeType.Element && reader.LocalName == elem)
+            if (reader.MoveToContent() == XmlNodeType.Element && reader.LocalName == Name)
             {
-                //Name = reader[nameof(Name)];
-                ClientID = reader[nameof(ClientID)];
-                PluginID = reader[nameof(PluginID)];
-                FunctionID = reader[nameof(FunctionID)];
+                var elem = (XElement)XNode.ReadFrom(reader);
+                
+                ClientID = elem.Element(nameof(ClientID))?.Value;
+                PluginID = elem.Element(nameof(PluginID))?.Value;
+                FunctionID = elem.Element(nameof(FunctionID))?.Value;
 
-                if (reader.ReadToDescendant("Parameters"))
+                var paramsElem = elem.Element("Parameters");
+                if (paramsElem != null)
                 {
-                    while (reader.MoveToContent() == XmlNodeType.Element && reader.LocalName == "Parameter")
+                    var paramsElements = paramsElem.Elements("Parameter");
+                    foreach (var e in paramsElements)
                     {
                         var parameter = new Parameter();
-                        parameter.Name = reader[nameof(parameter.Name)];
-                        parameter.Value = reader[nameof(parameter.Value)];
-                        var typeStr = reader[nameof(parameter.Type)];
+                        parameter.Name = e.Element(nameof(parameter.Name))?.Value;
+                        parameter.Value = e.Element(nameof(parameter.Value))?.Value;
+                        var typeStr = e.Element(nameof(parameter.Type))?.Value;
                         parameter.Type = !string.IsNullOrEmpty(typeStr)
                             ? Type.GetType(typeStr, throwOnError: true)
                             : null;
 
-                        var bstr = reader["Required"];
+                        var bstr = e.Element("Required")?.Value;
                         bool b;
                         bool.TryParse(bstr, out b);
                         parameter.Required = b;
@@ -81,16 +86,15 @@ namespace Remotus.Base.Scripting
                         Arguments = Arguments ?? new FunctionArguments();
                         Arguments.Parameters = Arguments.Parameters ?? new ParameterCollection();
                         Arguments.Parameters.Add(parameter.Name, parameter);
-                        reader.Read();
                     }
-                    reader.Read();
+
                 }
             }
         }
         
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteElementString(nameof(Name), Name);
+            //writer.WriteElementString(nameof(Name), Name);
             writer.WriteElementString(nameof(ClientID), ClientID);
             writer.WriteElementString(nameof(PluginID), PluginID);
             writer.WriteElementString(nameof(FunctionID), FunctionID);
@@ -110,5 +114,8 @@ namespace Remotus.Base.Scripting
             }
             writer.WriteEndElement();
         }
+
+        #endregion
+
     }
 }

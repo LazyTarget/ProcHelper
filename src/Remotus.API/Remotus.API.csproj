@@ -159,7 +159,11 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_Data\Scripts\TestScript.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>

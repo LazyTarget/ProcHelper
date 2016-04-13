@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ID>3FE0E633-771F-4B75-BFB7-BE520EC11FF1</ID>
+  <Name>Mute and Pause Spotify script</Name>
+  <Version>1.0.0.0</Version>
+  <Tasks>
+    <ExecuteFunctionTask>
+      <ClientID />
+      <PluginID>ABA6417A-65A2-4761-9B01-AA9DFFC074C0</PluginID>
+      <FunctionID>78324B37-0F93-40C2-AC56-5B1D714CFC41</FunctionID>
+      <Parameters>
+        <Parameter>
+          <Name>DeviceID</Name>
+          <Value />
+          <Type>System.String</Type>
+          <Required>False</Required>
+        </Parameter>
+      </Parameters>
+    </ExecuteFunctionTask>
+    <ExecuteFunctionTask>
+      <ClientID />
+      <PluginID>79A54741-590C-464D-B1E9-0CC606771493</PluginID>
+      <FunctionID>B525CAD9-27E6-4709-B29B-96A32438C7D0</FunctionID>
+      <Parameters />
+    </ExecuteFunctionTask>
+  </Tasks>
+</Script>

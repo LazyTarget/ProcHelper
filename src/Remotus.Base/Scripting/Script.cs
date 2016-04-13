@@ -15,8 +15,8 @@ namespace Remotus.Base.Scripting
         public string Version { get; set; }
 
         [XmlArray(nameof(Tasks), IsNullable = true)]
-        [XmlArrayItem("ExeTask", typeof(ExecuteFunctionScriptTask))]
-        //[XmlArrayItem("Task", typeof(ScriptTaskBase))]
+        [XmlArrayItem("ExecuteFunctionTask", typeof(ExecuteFunctionScriptTask))]
+        [XmlArrayItem("Task", typeof(ScriptTaskBase))]
         //public ScriptTaskBase[] Tasks { get; set; }
         public ExecuteFunctionScriptTask[] Tasks { get; set; }
     }
