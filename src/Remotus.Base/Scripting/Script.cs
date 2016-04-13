@@ -1,5 +1,8 @@
+using System.Xml.Serialization;
+
 namespace Remotus.Base.Scripting
 {
+    [XmlInclude(typeof(ExecuteFunctionScriptTask))]
     public class Script : IComponentDescriptor
     {
         public Script()
@@ -11,6 +14,10 @@ namespace Remotus.Base.Scripting
         public string Name { get; set; }
         public string Version { get; set; }
 
-        public ScriptTaskBase[] Tasks { get; set; }
+        [XmlArray(nameof(Tasks), IsNullable = true)]
+        [XmlArrayItem("ExeTask", typeof(ExecuteFunctionScriptTask))]
+        //[XmlArrayItem("Task", typeof(ScriptTaskBase))]
+        //public ScriptTaskBase[] Tasks { get; set; }
+        public ExecuteFunctionScriptTask[] Tasks { get; set; }
     }
 }

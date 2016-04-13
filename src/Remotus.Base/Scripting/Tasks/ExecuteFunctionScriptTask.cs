@@ -1,9 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Remotus.Base.Scripting
 {
-    public class ExecuteFunctionScriptTask : ScriptTaskBase
+    [Serializable]
+    public class ExecuteFunctionScriptTask : ScriptTaskBase, IXmlSerializable
     {
         public override string Name => "ExecuteFunction";
 
@@ -12,7 +16,8 @@ namespace Remotus.Base.Scripting
         public string PluginID { get; set; }
 
         public string FunctionID { get; set; }
-
+        
+        [XmlIgnore]
         public IFunctionArguments Arguments { get; set; }
 
 
@@ -38,6 +43,72 @@ namespace Remotus.Base.Scripting
                 var result = DefaultResponseBase.CreateError(DefaultError.FromException(ex));
                 return result;
             }
+        }
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string elem = "ExeTask";
+
+            if (reader.MoveToContent() == XmlNodeType.Element && reader.LocalName == elem)
+            {
+                //Name = reader[nameof(Name)];
+                ClientID = reader[nameof(ClientID)];
+                PluginID = reader[nameof(PluginID)];
+                FunctionID = reader[nameof(FunctionID)];
+
+                if (reader.ReadToDescendant("Parameters"))
+                {
+                    while (reader.MoveToContent() == XmlNodeType.Element && reader.LocalName == "Parameter")
+                    {
+                        var parameter = new Parameter();
+                        parameter.Name = reader[nameof(parameter.Name)];
+                        parameter.Value = reader[nameof(parameter.Value)];
+                        var typeStr = reader[nameof(parameter.Type)];
+                        parameter.Type = !string.IsNullOrEmpty(typeStr)
+                            ? Type.GetType(typeStr, throwOnError: true)
+                            : null;
+
+                        var bstr = reader["Required"];
+                        bool b;
+                        bool.TryParse(bstr, out b);
+                        parameter.Required = b;
+
+                        Arguments = Arguments ?? new FunctionArguments();
+                        Arguments.Parameters = Arguments.Parameters ?? new ParameterCollection();
+                        Arguments.Parameters.Add(parameter.Name, parameter);
+                        reader.Read();
+                    }
+                    reader.Read();
+                }
+            }
+        }
+        
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteElementString(nameof(Name), Name);
+            writer.WriteElementString(nameof(ClientID), ClientID);
+            writer.WriteElementString(nameof(PluginID), PluginID);
+            writer.WriteElementString(nameof(FunctionID), FunctionID);
+
+            writer.WriteStartElement(nameof(Arguments.Parameters));
+            if (Arguments?.Parameters != null)
+            {
+                foreach (var pair in Arguments.Parameters)
+                {
+                    writer.WriteStartElement("Parameter");
+                    writer.WriteElementString(nameof(pair.Value.Name), pair.Value.Name);
+                    writer.WriteElementString(nameof(pair.Value.Value), pair.Value.Value?.ToString());
+                    writer.WriteElementString(nameof(pair.Value.Type), pair.Value.Type?.ToString());
+                    writer.WriteElementString(nameof(pair.Value.Required), pair.Value.Required.ToString());
+                    writer.WriteEndElement();
+                }
+            }
+            writer.WriteEndElement();
         }
     }
 }
