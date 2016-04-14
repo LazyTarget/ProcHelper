@@ -160,9 +160,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Scripts\TestScript.xml">
+    <None Include="App_Data\Scripts\TestScript.remotus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
