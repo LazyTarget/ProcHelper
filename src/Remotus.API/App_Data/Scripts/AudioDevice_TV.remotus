@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ID>65775778-973C-4334-8A82-C82D75F1A88C</ID>
+  <Name>Set default playback device - TV</Name>
+  <Version>1.0.0.0</Version>
+  <Tasks>
+    <ExecuteFunctionTask>
+      <ClientID />
+      <PluginID>ABA6417A-65A2-4761-9B01-AA9DFFC074C0</PluginID>
+      <FunctionID>2C7B8619-1642-41C4-97F3-FD08E46FE430</FunctionID>
+      <Parameters>
+        <Parameter>
+          <Name>DeviceID</Name>
+          <Value>59bc92b7-ab20-4841-aa41-6a313e3134df</Value>
+          <Type>System.String</Type>
+          <Required>True</Required>
+        </Parameter>
+      </Parameters>
+    </ExecuteFunctionTask>
+  </Tasks>
+</Script>

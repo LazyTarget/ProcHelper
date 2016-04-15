@@ -24,16 +24,32 @@ namespace Remotus.Plugins.Scripting
         {
             var serializer = new XmlSerializer(typeof(Script));
 
-            var filePaths = _fileSystem.EnumerateFiles(Directory, "*.xml", SearchOption);
+            var filePattern = "*.remotus|*.xml";
+            var pattern = SearchOption == SearchOption.AllDirectories
+                ? Directory + "/**/" + filePattern
+                : Directory + "/" + filePattern;
+            var fileSystemHelper = new FileSystemHelper(_fileSystem);
+            var filePaths = fileSystemHelper.FindFilesWildcard(pattern);
+
+            var scripts = new List<Script>();
             foreach (var filePath in filePaths)
             {
-                using (var stream = _fileSystem.OpenFile(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                try
                 {
-                    var obj = serializer.Deserialize(stream);
-                    var script = (Script) obj;
-                    yield return script;
+                    using (var stream = _fileSystem.OpenFile(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        var obj = serializer.Deserialize(stream);
+                        var script = obj as Script;
+                        if (script != null)
+                            scripts.Add(script);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    
                 }
             }
+            return scripts;
         }
 
         public string Directory { get; set; }

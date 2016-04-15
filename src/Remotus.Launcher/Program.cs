@@ -31,10 +31,15 @@ namespace Remotus.Launcher
                 if (bool.TryParse(System.Configuration.ConfigurationManager.AppSettings.Get("AttachDebugger"), out attach) && attach)
                     System.Diagnostics.Debugger.Launch();
             }
+
             try
             {
-                var action = args[0];
-                if (string.Equals(action, "associate", StringComparison.InvariantCultureIgnoreCase))
+                var action = args?.Length > 0 ? args[0] : null;
+                if (string.IsNullOrWhiteSpace(action))
+                {
+                    
+                }
+                else if (string.Equals(action, "associate", StringComparison.InvariantCultureIgnoreCase))
                 {
                     InstallFileAssociations();
                 }

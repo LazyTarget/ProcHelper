@@ -16,7 +16,7 @@ namespace Remotus.Plugins.Scripting
         public IEnumerable<IFunctionDescriptor> GetFunctions()
         {
             var scripts = _dataStore.GetScripts();
-            var descriptors = scripts.Select(ScriptFunctionDescriptor.FromScript);
+            var descriptors = scripts?.Select(ScriptFunctionDescriptor.FromScript);
             return descriptors;
         }
     }

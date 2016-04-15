@@ -31,6 +31,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Scripting", "Remotus.Plugins\Remotus.Plugins.Scripting\Remotus.Plugins.Scripting.csproj", "{48863CE1-8C66-4CB5-8D3C-C52693DF51B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Launcher", "Remotus.Launcher\Remotus.Launcher.csproj", "{464154A9-BAC8-47B7-8100-AF2FDA4C9D68}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD84ADA9-E373-49FE-B889-74EE1F1643A7} = {CD84ADA9-E373-49FE-B889-74EE1F1643A7}
+		{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33} = {EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
