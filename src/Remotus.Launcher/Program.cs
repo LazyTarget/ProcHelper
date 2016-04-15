@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Xml.Serialization;
+using BrendanGrant.Helpers.FileAssociation;
 using Lux.Extensions;
 using Lux.IO;
-using Remotus.API;
 using Remotus.Base;
 using Remotus.Base.Scripting;
+using ExecutionContext = Remotus.API.ExecutionContext;
 
 namespace Remotus.Launcher
 {
@@ -22,22 +24,66 @@ namespace Remotus.Launcher
                                                $"UserInteractive: {Environment.UserInteractive}. " +
                                                $"Command line: {Environment.CommandLine} " +
                                                $"Args: {String.Join(" ", args)}");
-
-            // todo: install file associations, pointing to this exe (Assembly.GetExecutingAssembly().Location)
-            // todo: open .remotus files
-
-            var action = args[0];
-            if (action == "run")
+            
+            if (!System.Diagnostics.Debugger.IsAttached)
             {
-                var filePath = args[1];
-                RunScript(filePath, null);
+                bool attach;
+                if (bool.TryParse(System.Configuration.ConfigurationManager.AppSettings.Get("AttachDebugger"), out attach) && attach)
+                    System.Diagnostics.Debugger.Launch();
+            }
+            try
+            {
+                var action = args[0];
+                if (string.Equals(action, "associate", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    InstallFileAssociations();
+                }
+                else if (string.Equals(action, "run", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var filePath = args[1];
+                    RunScript(filePath, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine("Error occured in launcher");
+                Environment.ExitCode = 1;
+            }
+            System.Diagnostics.Trace.WriteLine($"Remotus launcher, exit code: {Environment.ExitCode}");
+        }
+
+
+        private static void InstallFileAssociations()
+        {
+            var prog = new ProgramAssociationInfo("Remotus.remotus");
+            if (!prog.Exists)
+            {
+                prog.Create();
+            }
+            prog.Description = "Remotus script file";
+            prog.Verbs = new ProgramVerb[]
+            {
+                    new ProgramVerb("Open", $"\"{Assembly.GetExecutingAssembly().Location}\" run %1"),
+                    new ProgramVerb("Run", $"\"{Assembly.GetExecutingAssembly().Location}\" Run %1"),
+                    //new ProgramVerb("Edit", $"\"{Assembly.GetExecutingAssembly().Location}\" \"edit %1\""),
+            };
+
+
+            var ext = ".remotus";
+            var association = new FileAssociationInfo(ext);
+            if (association.Exists)
+            {
+                // Exists already
+            }
+            else
+            {
+                association.Create();
+                association.ContentType = "application/xml";
+                association.PerceivedType = PerceivedTypes.Text;
+                association.ProgID = prog.ProgID;
             }
         }
 
-        private static void InstallAssociations()
-        {
-            //BrendanGrant.Helpers.FileAssociation.
-        }
 
         private static void RunScript(string filePath, object parameters)
         {
