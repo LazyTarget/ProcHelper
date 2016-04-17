@@ -31,6 +31,8 @@ namespace Remotus.API.Data
             plugins.Add(new Plugins.Services.ServicesPlugin());
             plugins.Add(new Plugins.Spotify.SpotifyPlugin());
             plugins.Add(new Plugins.Scripting.ScriptingPlugin());
+            plugins.Add(new Plugins.Input.MouseInputPlugin());
+            plugins.Add(new Plugins.Input.KeyboardInputPlugin());
             return plugins;
         }
     }

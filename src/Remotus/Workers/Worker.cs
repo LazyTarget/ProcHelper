@@ -215,7 +215,7 @@ namespace Remotus
 
             var response = new KeyResponse
             {
-                Request = request,
+                //Request = request,
                 VirtualKeyCode = request.VirtualKeyCode,
                 IsDown = isDown,
             };
@@ -228,7 +228,7 @@ namespace Remotus
 
             var response = new KeyResponse
             {
-                Request = request,
+                //Request = request,
                 VirtualKeyCode = request.VirtualKeyCode,
                 IsDown = !isUp,
             };
@@ -241,7 +241,7 @@ namespace Remotus
 
             var response = new KeyResponse
             {
-                Request = request,
+                //Request = request,
                 VirtualKeyCode = request.VirtualKeyCode,
                 IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
                 //IsDown = true,
@@ -255,7 +255,7 @@ namespace Remotus
 
             var response = new KeyResponse
             {
-                Request = request,
+                //Request = request,
                 VirtualKeyCode = request.VirtualKeyCode,
                 IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
                 //IsDown = false,
@@ -269,7 +269,7 @@ namespace Remotus
 
             var response = new KeyResponse
             {
-                Request = request,
+                //Request = request,
                 VirtualKeyCode = request.VirtualKeyCode,
                 IsDown = _inputHelper.IsKeyDown(request.VirtualKeyCode),
             };
