@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ID>65C2D8A1-5154-4252-9BD9-5191DC0060A6</ID>
+  <Name>Set default playback device - Speaker</Name>
+  <Version>1.0.0.0</Version>
+  <Tasks>
+    <ExecuteFunctionTask>
+      <ClientID />
+      <PluginID>ABA6417A-65A2-4761-9B01-AA9DFFC074C0</PluginID>
+      <FunctionID>2C7B8619-1642-41C4-97F3-FD08E46FE430</FunctionID>
+      <Parameters>
+        <Parameter>
+          <Name>DeviceID</Name>
+          <Value>eb8a1574-8a08-48a1-ae11-d330d58032c6</Value>
+          <Type>System.String</Type>
+          <Required>True</Required>
+        </Parameter>
+      </Parameters>
+    </ExecuteFunctionTask>
+  </Tasks>
+</Script>

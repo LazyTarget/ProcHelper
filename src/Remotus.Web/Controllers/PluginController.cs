@@ -209,7 +209,7 @@ namespace Remotus.Web.Controllers
             var api = new FullCtrlAPI();
 
             IResponseBase<IEnumerable<IPlugin>> response =
-                clientID != null
+                !string.IsNullOrWhiteSpace(clientID)
                     ? await api.GetRemotePlugins(clientID)
                     : await api.GetLocalPlugins();
             return response;
@@ -220,7 +220,7 @@ namespace Remotus.Web.Controllers
             var api = new FullCtrlAPI();
 
             IResponseBase<IEnumerable<IFunctionPlugin>> response =
-                clientID != null
+                !string.IsNullOrWhiteSpace(clientID)
                     ? await api.GetRemoteFunctionPlugins(clientID)
                     : await api.GetLocalFunctionPlugins();
             return response;
@@ -231,7 +231,7 @@ namespace Remotus.Web.Controllers
             var api = new FullCtrlAPI();
 
             IResponseBase<IEnumerable<IServicePlugin>> response =
-                clientID != null
+                !string.IsNullOrWhiteSpace(clientID)
                     ? await api.GetRemoteServicePlugins(clientID)
                     : await api.GetLocalServicePlugins();
             return response;
@@ -244,7 +244,7 @@ namespace Remotus.Web.Controllers
             var api = new FullCtrlAPI();
 
             IResponseBase<IFunctionResult> response =
-                clientID != null
+                !string.IsNullOrWhiteSpace(clientID)
                     ? await api.ExecuteRemoteFunction(clientID, pluginID, functionID, arguments)
                     : await api.ExecuteLocalFunction(pluginID, functionID, arguments);
             return response;

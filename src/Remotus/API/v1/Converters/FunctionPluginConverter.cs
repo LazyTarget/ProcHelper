@@ -38,6 +38,12 @@ namespace Remotus.API.v1
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null)
+            {
+                reader.Skip();
+                return null;
+            }
+
             var val = existingValue ?? new FunctionPluginDescriptor();
             var p = (IFunctionPlugin) val;
 

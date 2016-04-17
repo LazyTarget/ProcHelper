@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ID>DC694942-B6BA-43A3-84E7-9D79554E6547</ID>
+  <Name>Set default playback device - Headset</Name>
+  <Version>1.0.0.0</Version>
+  <Tasks>
+    <ExecuteFunctionTask>
+      <ClientID />
+      <PluginID>ABA6417A-65A2-4761-9B01-AA9DFFC074C0</PluginID>
+      <FunctionID>2C7B8619-1642-41C4-97F3-FD08E46FE430</FunctionID>
+      <Parameters>
+        <Parameter>
+          <Name>DeviceID</Name>
+          <Value>9d026e7e-ae7f-4309-8fb4-50fdb65261cc</Value>
+          <Type>System.String</Type>
+          <Required>True</Required>
+        </Parameter>
+      </Parameters>
+    </ExecuteFunctionTask>
+  </Tasks>
+</Script>

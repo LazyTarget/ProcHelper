@@ -48,6 +48,12 @@ namespace Remotus.API.v1
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null)
+            {
+                reader.Skip();
+                return null;
+            }
+
             var settings = new CustomJsonSerializerSettings();
             
             //IResponseBase p = existingValue as IResponseBase ?? new DefaultResponseBase<object>();

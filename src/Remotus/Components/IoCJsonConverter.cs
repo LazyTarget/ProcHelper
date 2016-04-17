@@ -33,6 +33,12 @@ namespace Remotus
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null)
+            {
+                reader.Skip();
+                return null;
+            }
+
             object result;
             var target = serializer.Deserialize<JToken>(reader);
             if (target.Type != JTokenType.Null)
