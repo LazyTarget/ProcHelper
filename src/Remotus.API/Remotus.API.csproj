@@ -114,6 +114,7 @@
     <Compile Include="Config\ServerConfig.cs" />
     <Compile Include="Config\ClientConfig.cs" />
     <Compile Include="Data\IPluginStore.cs" />
+    <Compile Include="Data\StockPluginLoader.cs" />
     <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
