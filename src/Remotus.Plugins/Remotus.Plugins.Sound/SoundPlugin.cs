@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AudioSwitcher.AudioApi.CoreAudio;
 using Remotus.Base;
 
@@ -6,7 +7,10 @@ namespace Remotus.Plugins.Sound
 {
     public class SoundPlugin : IFunctionPlugin
     {
-        internal static readonly CoreAudioController AudioController = new CoreAudioController();
+        private static readonly Lazy<CoreAudioController> _audioController =
+            new Lazy<CoreAudioController>(() => new CoreAudioController());
+
+        internal static readonly CoreAudioController AudioController = _audioController.Value;
 
 
         public string ID        => "ABA6417A-65A2-4761-9B01-AA9DFFC074C0";

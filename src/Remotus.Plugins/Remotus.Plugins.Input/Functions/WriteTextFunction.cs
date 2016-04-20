@@ -7,9 +7,9 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Input
 {
-    public class GetKeyInfoFunction : IFunction, IFunction<KeyResponse>
+    public class WriteTextFunction : IFunction, IFunction<KeyResponse>
     {
-        public GetKeyInfoFunction()
+        public WriteTextFunction()
         {
             
         }
@@ -29,13 +29,12 @@ namespace Remotus.Plugins.Input
         {
             try
             {
-                var virtualKeyCode = arguments?.Parameters.GetOrDefault<VirtualKeyCode>(ParameterKeys.VirtualKeyCode)?.Value;
-                if (!virtualKeyCode.HasValue)
-                {
-                    throw new ArgumentException("Invalid VirtualKeyCode", nameof(arguments));
-                }
-                
-                var res = KeyboardInputPlugin.GetKeyInfo(virtualKeyCode.Value);
+                var text = arguments?.Parameters.GetOrDefault<string>(ParameterKeys.Text)?.Value;
+
+                // Work
+                KeyboardInputPlugin.InputSimulator.Keyboard.TextEntry(text);
+
+                KeyResponse res = null;
 
                 var result = new FunctionResult<KeyResponse>();
                 result.Arguments = arguments;
@@ -54,8 +53,8 @@ namespace Remotus.Plugins.Input
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "22287AD3-56A5-49A1-B6CC-99BE9947A832";
-            public string Name => "Get key info";
+            public string ID => "AACEB5FA-C958-4830-B882-EC9011A3F82B";
+            public string Name => "Write text";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -76,7 +75,7 @@ namespace Remotus.Plugins.Input
 
             public IFunction<KeyResponse> Instantiate()
             {
-                return new GetKeyInfoFunction();
+                return new WriteTextFunction();
             }
         }
 
@@ -84,25 +83,25 @@ namespace Remotus.Plugins.Input
         {
             public Parameters()
             {
-                VirtualKeyCode = new Parameter<VirtualKeyCode>
+                VirtualKeyCode = new Parameter<string>
                 {
-                    Name = ParameterKeys.VirtualKeyCode,
-                    Required = false,
-                    Type = typeof(VirtualKeyCode),
-                    Value = default(VirtualKeyCode),
+                    Name = ParameterKeys.Text,
+                    Required = true,
+                    Type = typeof(string),
+                    Value = null,
                 };
             }
 
-            public IParameter<VirtualKeyCode> VirtualKeyCode
+            public IParameter<string> VirtualKeyCode
             {
-                get { return this.GetOrDefault<VirtualKeyCode>(ParameterKeys.VirtualKeyCode); }
-                private set { this[ParameterKeys.VirtualKeyCode] = value; }
+                get { return this.GetOrDefault<string>(ParameterKeys.Text); }
+                private set { this[ParameterKeys.Text] = value; }
             }
         }
 
         public static class ParameterKeys
         {
-            public const string VirtualKeyCode = "VirtualKeyCode";
+            public const string Text = "Text";
         }
 
         public void Dispose()

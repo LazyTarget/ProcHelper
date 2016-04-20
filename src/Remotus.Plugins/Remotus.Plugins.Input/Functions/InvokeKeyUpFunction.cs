@@ -7,9 +7,9 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Input
 {
-    public class GetKeyInfoFunction : IFunction, IFunction<KeyResponse>
+    public class InvokeKeyUpFunction : IFunction, IFunction<KeyResponse>
     {
-        public GetKeyInfoFunction()
+        public InvokeKeyUpFunction()
         {
             
         }
@@ -34,7 +34,10 @@ namespace Remotus.Plugins.Input
                 {
                     throw new ArgumentException("Invalid VirtualKeyCode", nameof(arguments));
                 }
-                
+
+                // Work
+                KeyboardInputPlugin.InputSimulator.Keyboard.KeyUp(virtualKeyCode.Value);
+
                 var res = KeyboardInputPlugin.GetKeyInfo(virtualKeyCode.Value);
 
                 var result = new FunctionResult<KeyResponse>();
@@ -54,8 +57,8 @@ namespace Remotus.Plugins.Input
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "22287AD3-56A5-49A1-B6CC-99BE9947A832";
-            public string Name => "Get key info";
+            public string ID => "047F0D8A-5E9E-4E62-88B9-7067D7B3F163";
+            public string Name => "Invoke key up";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -76,7 +79,7 @@ namespace Remotus.Plugins.Input
 
             public IFunction<KeyResponse> Instantiate()
             {
-                return new GetKeyInfoFunction();
+                return new InvokeKeyUpFunction();
             }
         }
 

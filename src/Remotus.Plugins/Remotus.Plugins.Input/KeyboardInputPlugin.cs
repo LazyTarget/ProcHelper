@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using WindowsInput;
+using WindowsInput.Native;
 using Remotus.Base;
 
 namespace Remotus.Plugins.Input
@@ -17,6 +18,23 @@ namespace Remotus.Plugins.Input
         public IEnumerable<IFunctionDescriptor> GetFunctions()
         {
             yield return new GetKeyInfoFunction.Descriptor();
+            yield return new InvokeKeyDownFunction.Descriptor();
+            yield return new InvokeKeyUpFunction.Descriptor();
+            yield return new InvokeKeyPressFunction.Descriptor();
+            yield return new WriteTextFunction.Descriptor();
+        }
+
+
+
+        protected internal static KeyResponse GetKeyInfo(VirtualKeyCode virtualKeyCode)
+        {
+            var isDown = InputSimulator.InputDeviceState.IsKeyDown(virtualKeyCode);
+            var res = new KeyResponse
+            {
+                VirtualKeyCode = virtualKeyCode,
+                IsDown = isDown,
+            };
+            return res;
         }
     }
 }

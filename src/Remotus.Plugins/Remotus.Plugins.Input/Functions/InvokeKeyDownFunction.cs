@@ -7,9 +7,9 @@ using Remotus.Base;
 
 namespace Remotus.Plugins.Input
 {
-    public class GetKeyInfoFunction : IFunction, IFunction<KeyResponse>
+    public class InvokeKeyDownFunction : IFunction, IFunction<KeyResponse>
     {
-        public GetKeyInfoFunction()
+        public InvokeKeyDownFunction()
         {
             
         }
@@ -34,7 +34,10 @@ namespace Remotus.Plugins.Input
                 {
                     throw new ArgumentException("Invalid VirtualKeyCode", nameof(arguments));
                 }
-                
+
+                // Work
+                KeyboardInputPlugin.InputSimulator.Keyboard.KeyDown(virtualKeyCode.Value);
+
                 var res = KeyboardInputPlugin.GetKeyInfo(virtualKeyCode.Value);
 
                 var result = new FunctionResult<KeyResponse>();
@@ -54,8 +57,8 @@ namespace Remotus.Plugins.Input
 
         public class Descriptor : IFunctionDescriptor
         {
-            public string ID => "22287AD3-56A5-49A1-B6CC-99BE9947A832";
-            public string Name => "Get key info";
+            public string ID => "F7F52CD2-E29B-4459-8FCC-6E707CBA7235";
+            public string Name => "Invoke key down";
             public string Version => "1.0.0.0";
 
             IParameterCollection IFunctionDescriptor.GetParameters()
@@ -76,7 +79,7 @@ namespace Remotus.Plugins.Input
 
             public IFunction<KeyResponse> Instantiate()
             {
-                return new GetKeyInfoFunction();
+                return new InvokeKeyDownFunction();
             }
         }
 

@@ -44,6 +44,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Functions\InvokeKeyPressFunction.cs" />
+    <Compile Include="Functions\WriteTextFunction.cs" />
+    <Compile Include="Functions\InvokeKeyUpFunction.cs" />
+    <Compile Include="Functions\InvokeKeyDownFunction.cs" />
     <Compile Include="Functions\GetKeyInfoFunction.cs" />
     <Compile Include="Functions\MoveMouseToOnVirtualDesktopFunction.cs" />
     <Compile Include="Functions\MoveMouseToFunction.cs" />
