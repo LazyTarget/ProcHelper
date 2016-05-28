@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Http;
 using Lux.Extensions;
 using Microsoft.Owin.Hosting;
+using Owin;
 using Remotus.API.Data;
 using Remotus.Base;
 
@@ -26,6 +28,8 @@ namespace Remotus.API
         public ClientConfig Config { get; private set; }
 
         public IClientInfo ClientInfo { get { return _clientInfo; } }
+
+        private StartupClient _startupClient;
 
 
         private void LoadPlugins()
@@ -73,7 +77,13 @@ namespace Remotus.API
 
         protected virtual IDisposable StartAsSelftHost(StartOptions options)
         {
-            var res = WebApp.Start<StartupClient>(options);
+            //var res = WebApp.Start<StartupClient>(options);
+            var res = WebApp.Start(options, (app) =>
+            {
+                var startup = new StartupClient();
+                startup.Configuration(app);
+                _startupClient = startup;
+            });
             return res;
         }
 
@@ -98,6 +108,7 @@ namespace Remotus.API
                 },
             };
 
+            
 
             // Start WebAPI
             Console.WriteLine("Server starting");
@@ -107,9 +118,11 @@ namespace Remotus.API
 
             Console.WriteLine("Server started");
 
-
+            
             // Plugins
             LoadPlugins();
+
+            _startupClient?._Configuration?.MapHttpAttributeRoutes();
 
             lock (_plugins)
             {
@@ -124,6 +137,23 @@ namespace Remotus.API
                     catch (Exception ex)
                     {
                         
+                    }
+                }
+
+                
+                if (_startupClient?._Configuration?.Routes != null)
+                {
+                    var webPlugins = _plugins.Values.OfType<IWebPlugin>().ToList();
+                    foreach (var webPlugin in webPlugins)
+                    {
+                        try
+                        {
+                            webPlugin.RegisterRoutes(_startupClient._Configuration.Routes);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
             }

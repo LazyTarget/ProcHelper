@@ -121,6 +121,7 @@
     <Compile Include="FullCtrlClient.cs" />
     <Compile Include="FullCtrlServer.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
+    <Compile Include="Interfaces\IWebPlugin.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
@@ -178,10 +179,6 @@
     <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Input\Remotus.Plugins.Input.csproj">
-      <Project>{89ef6d13-e726-466f-a99a-e43c3665ed49}</Project>
-      <Name>Remotus.Plugins.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Process\Remotus.Plugins.Process.csproj">
       <Project>{1a5291c5-bbb7-4924-bc67-8ee3d6fc5bf4}</Project>

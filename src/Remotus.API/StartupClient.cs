@@ -8,6 +8,8 @@ namespace Remotus.API
 {
     public class StartupClient
     {
+        public HttpConfiguration _Configuration;
+
         public void Configuration(IAppBuilder app)
         {
             ConfigureWebApi(app);
@@ -52,6 +54,8 @@ namespace Remotus.API
             //};
 
             app.UseWebApi(config);
+
+            _Configuration = config;
         }
 
     }
