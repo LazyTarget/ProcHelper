@@ -18,7 +18,7 @@ namespace Remotus.API.v1.Server.Controllers
             IEnumerable<IClientInfo> result = null;
             try
             {
-                result = Program.Service?.Server?.GetClients();
+                result = Program.Service?.GetClients();
 
                 var response = CreateResponse(result);
                 return response;
@@ -37,7 +37,7 @@ namespace Remotus.API.v1.Server.Controllers
         {
             try
             {
-                object result = Program.Service?.Server?.RegisterClient(clientInfo);
+                object result = Program.Service?.RegisterClient(clientInfo);
 
                 var response = CreateResponse(result);
                 return response;

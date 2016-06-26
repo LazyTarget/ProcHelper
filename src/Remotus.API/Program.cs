@@ -33,6 +33,9 @@ namespace Remotus.API
 
         private static void CurrentDomain_OnFirstChanceException(object sender, FirstChanceExceptionEventArgs eventArgs)
         {
+            if (eventArgs.Exception.Source == "AudioSwitcher.AudioApi.CoreAudio")
+                return;
+
             LogManager.GetLoggerFor("OnFirstChanceException").Error(() => "FirstChanceException", eventArgs.Exception);
         }
 
@@ -44,6 +47,7 @@ namespace Remotus.API
 
         private static void RunService(string[] args)
         {
+            Service = new ServiceInstance();
             var winService = new WinService.WinService(Service);
             var services = new System.ServiceProcess.ServiceBase[] { winService };
             System.ServiceProcess.ServiceBase.Run(services);

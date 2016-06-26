@@ -111,22 +111,20 @@
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
-    <Compile Include="Config\ServerConfig.cs" />
-    <Compile Include="Config\ClientConfig.cs" />
+    <Compile Include="Config\ClientEndpointConfig.cs" />
+    <Compile Include="Config\ApiConfig.cs" />
     <Compile Include="Data\IPluginStore.cs" />
     <Compile Include="Data\StockPluginLoader.cs" />
     <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
-    <Compile Include="FullCtrlClient.cs" />
-    <Compile Include="FullCtrlServer.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
     <Compile Include="Components\NamespaceHttpControllerSelector.cs" />
-    <Compile Include="StartupServer.cs" />
+    <Compile Include="StartupConfig.cs" />
     <Compile Include="v1\Client\Controllers\Functions\AudioController.cs" />
     <Compile Include="v1\Client\Controllers\BaseController.cs" />
     <Compile Include="Components\CustomObjectModelBinder.cs" />
@@ -145,7 +143,6 @@
     <Compile Include="v1\Client\Controllers\Functions\ProcessController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StartupClient.cs" />
     <Compile Include="v1\Models\ResponseBase.cs" />
     <Compile Include="WinService\WinService.cs">
       <SubType>Component</SubType>

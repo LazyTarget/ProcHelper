@@ -6,8 +6,10 @@ using Owin;
 
 namespace Remotus.API
 {
-    public class StartupServer
+    public class StartupConfig
     {
+        public HttpConfiguration _Configuration;
+
         public void Configuration(IAppBuilder app)
         {
             ConfigureWebApi(app);
@@ -17,7 +19,7 @@ namespace Remotus.API
         public void ConfigureWebApi(IAppBuilder app)
         {
             var config = new HttpConfiguration();
-            config.Properties["InstanceID"] = Program.Service?.Server?.ServerInfo?.InstanceID;
+            config.Properties["InstanceID"] = Program.Service?.ClientInfo?.ClientID;
 
             // Formatters
             var settings = new CustomJsonSerializerSettings();
@@ -29,8 +31,10 @@ namespace Remotus.API
 
             // Filters
             config.Filters.Add(new DebugActionFilter());
-            config.Filters.Add(new ControllerCategoryActionFilterAttribute("Server"));
-            //config.Filters.Add(new ActionCategoryActionFilterAttribute("Server"));
+            //config.Filters.Add(new ControllerCategoryActionFilterAttribute("Server"));
+            ////config.Filters.Add(new ActionCategoryActionFilterAttribute("Server"));
+            //config.Filters.Add(new ControllerCategoryActionFilterAttribute("Client"));
+            ////config.Filters.Add(new ActionCategoryActionFilterAttribute("Client"));
 
             // Routes
             config.MapHttpAttributeRoutes();
@@ -47,11 +51,13 @@ namespace Remotus.API
             //);
             //r.DataTokens["Namespaces"] = new string[]
             //{
-            //    "Remotus.API.v1.Server.Controllers",
-            //    "Remotus.API.v2.Server.Controllers"
+            //    "Remotus.API.v1.Client.Controllers",
+            //    "Remotus.API.v2.Client.Controllers"
             //};
 
             app.UseWebApi(config);
+
+            _Configuration = config;
         }
 
     }

@@ -25,7 +25,7 @@ namespace Remotus.API.v1.Client.Controllers
             IEnumerable<IPlugin> result = null;
             try
             {
-                result = Program.Service?.Client?.GetPlugins();
+                result = Program.Service?.GetPlugins();
                 
                 var response = ResponseFactory.CreateResponse<IEnumerable<IPlugin>>(this, result: result);
                 var actionResult = ResponseFactory.CreateActionResult(this, response);
@@ -47,7 +47,7 @@ namespace Remotus.API.v1.Client.Controllers
             IEnumerable<IFunctionPlugin> result = null;
             try
             {
-                result = Program.Service?.Client?.GetPlugins().OfType<IFunctionPlugin>();
+                result = Program.Service?.GetPlugins().OfType<IFunctionPlugin>();
 
                 var response = ResponseFactory.CreateResponse<IEnumerable<IFunctionPlugin>>(this, result: result);
                 var actionResult = ResponseFactory.CreateActionResult(this, response);
@@ -69,7 +69,7 @@ namespace Remotus.API.v1.Client.Controllers
             IEnumerable<IServicePlugin> result = null;
             try
             {
-                result = Program.Service?.Client?.GetPlugins().OfType<IServicePlugin>();
+                result = Program.Service?.GetPlugins().OfType<IServicePlugin>();
 
                 var response = ResponseFactory.CreateResponse<IEnumerable<IServicePlugin>>(this, result: result);
                 var actionResult = ResponseFactory.CreateActionResult(this, response);
@@ -168,7 +168,7 @@ namespace Remotus.API.v1.Client.Controllers
             {
                 IExecutionContext context = new ExecutionContext
                 {
-                    ClientInfo = Program.Service?.Client?.ClientInfo,
+                    ClientInfo = Program.Service?.ClientInfo,
                     Logger = new TraceLogger(),
                     Remotus = new FullCtrlAPI(),
                 };
