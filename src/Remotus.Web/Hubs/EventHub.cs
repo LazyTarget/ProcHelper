@@ -19,7 +19,7 @@ namespace Remotus.Web.Hubs
 
         public void Send(string channelName, string eventName, string json)
         {
-            Clients.All.onEvent(channelName, eventName, json);
+            Clients.All.onEvent(channelName, eventName, json, DateTime.UtcNow);
         }
 
         
@@ -31,6 +31,8 @@ namespace Remotus.Web.Hubs
                 ThreadPool.QueueUserWorkItem((sender) =>
                     Debug.WriteLine($"EventHub::Loop exited: {_loop.Execute(this)}"));
             }
+            
+            Clients.Others.onEvent(Context.ConnectionId, "onConnected");
 
             _instanceCount++;
             Debug.WriteLine("EventHub::OnConnected() Instance count: " + _instanceCount);
@@ -40,6 +42,9 @@ namespace Remotus.Web.Hubs
         public override Task OnReconnected()
         {
             Debug.WriteLine("EventHub::OnReconnected() Instance count: " + _instanceCount);
+
+            Clients.Others.onEvent(Context.ConnectionId, "onReconnected");
+
             return base.OnReconnected();
         }
 
@@ -51,6 +56,9 @@ namespace Remotus.Web.Hubs
             {
                 _loop.CancellationToken.Cancel();
             }
+
+
+            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected");
 
             return base.OnDisconnected(stopCalled);
         }
@@ -94,7 +102,7 @@ namespace Remotus.Web.Hubs
                         }
 
                         Debug.WriteLine("ExecuteLoop::" + loopCount);
-                        hub.Send(hub.GetHashCode().ToString(), "ads", "{ name: 'peter' }");
+                        hub.Send("-- "+ hub.GetHashCode() + "--", "computer is running...", "{ data: true, name: 'peter' }");
                         Debug.WriteLine("Sending message...");
 
 

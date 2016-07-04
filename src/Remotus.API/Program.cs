@@ -7,12 +7,12 @@ using Remotus.Base;
 
 namespace Remotus.API
 {
-    class Program
+    public static class Program
     {
         internal static ServiceInstance Service;
 
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
