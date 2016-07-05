@@ -10,8 +10,6 @@ namespace Remotus.API.Hubs
     public class EventHub : Hub
     {
         private static readonly HashSet<string> _connections = new HashSet<string>();
-
-        private static int _instanceCount;
         private static readonly ExecuteLoop _loop = new ExecuteLoop();
 
         public EventHub()
@@ -35,14 +33,18 @@ namespace Remotus.API.Hubs
             }
         }
 
+        private void StartLoop()
+        {
+            ThreadPool.QueueUserWorkItem((sender) =>
+                    Debug.WriteLine($"EventHub::Loop exited: {_loop.Execute(this)}"));
+        }
 
 
         public override Task OnConnected()
         {
-            if (_instanceCount == 0)
+            if (_connections.Count == 0)
             {
-                ThreadPool.QueueUserWorkItem((sender) =>
-                    Debug.WriteLine($"EventHub::Loop exited: {_loop.Execute(this)}"));
+                //StartLoop();
             }
 
             var version = Context.QueryString["hub-version"];
@@ -55,39 +57,36 @@ namespace Remotus.API.Hubs
             }
 
             
-            _instanceCount++;
             _connections.Add(Context.ConnectionId);
-            Debug.WriteLine("EventHub::OnConnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
+            Debug.WriteLine("EventHub::OnConnected() Instance count: {0}", _connections.Count);
 
-            Clients.Others.onEvent(Context.ConnectionId, "onConnected");
+            Clients.Others.onEvent(Context.ConnectionId, "onConnected", "Client has connected");
 
             return base.OnConnected();
         }
 
         public override Task OnReconnected()
         {
-            _instanceCount++;
             _connections.Add(Context.ConnectionId);
-            Debug.WriteLine("EventHub::OnReconnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
+            Debug.WriteLine("EventHub::OnReconnected() Instance count: {0}", _connections.Count);
 
-            Clients.Others.onEvent(Context.ConnectionId, "onReconnected");
+            Clients.Others.onEvent(Context.ConnectionId, "onReconnected", "Client has reconnected");
             return base.OnReconnected();
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            _instanceCount--;
             _connections.Remove(Context.ConnectionId);
-            Debug.WriteLine("EventHub::OnDisconnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
+            Debug.WriteLine("EventHub::OnDisconnected() Instance count: {0}", _connections.Count);
 
-            if (_instanceCount <= 0 && _loop.Executing)
+            if (_connections.Count <= 0 && _loop.Executing)
             {
                 if (!_loop.CancellationToken.IsCancellationRequested)
                     _loop.CancellationToken.Cancel();
             }
 
 
-            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected");
+            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected", "Client has disconnected");
 
             return base.OnDisconnected(stopCalled);
         }

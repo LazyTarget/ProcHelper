@@ -61,9 +61,9 @@ namespace Remotus.API
 
 
             var signalrConf = new HubConfiguration();
-            signalrConf.EnableDetailedErrors = true;
-            signalrConf.EnableJavaScriptProxies = true;
-            signalrConf.EnableJSONP = true;
+            signalrConf.EnableDetailedErrors = true;        // only for debug
+            signalrConf.EnableJavaScriptProxies = true;     // todo: remove
+            signalrConf.EnableJSONP = true;                 // todo: remove
             app.MapSignalR("/signalr", signalrConf);
 
             _Configuration = config;
