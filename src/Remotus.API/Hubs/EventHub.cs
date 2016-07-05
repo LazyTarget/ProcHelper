@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
-namespace Remotus.Web.Hubs
+namespace Remotus.API.Hubs
 {
     public class EventHub : Hub
     {
+        private static readonly HashSet<string> _connections = new HashSet<string>();
+
         private static int _instanceCount;
         private static readonly ExecuteLoop _loop = new ExecuteLoop();
 
@@ -22,7 +25,17 @@ namespace Remotus.Web.Hubs
             Clients.All.onEvent(channelName, eventName, json, DateTime.UtcNow);
         }
 
-        
+        public void Discover()
+        {
+            foreach (var connection in _connections)
+            {
+                if (connection == Context.ConnectionId)
+                    continue;
+                Clients.Caller.onEvent(connection, "some eventName", "I am here... @" + connection, DateTime.UtcNow);
+            }
+        }
+
+
 
         public override Task OnConnected()
         {
@@ -31,30 +44,46 @@ namespace Remotus.Web.Hubs
                 ThreadPool.QueueUserWorkItem((sender) =>
                     Debug.WriteLine($"EventHub::Loop exited: {_loop.Execute(this)}"));
             }
+
+            var version = Context.QueryString["hub-version"];
+            if (version != "1.0")
+            {
+                // ...
+                Clients.Caller.notifyWrongVersion();
+
+                // able to deny connection??
+            }
+
             
+            _instanceCount++;
+            _connections.Add(Context.ConnectionId);
+            Debug.WriteLine("EventHub::OnConnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
+
             Clients.Others.onEvent(Context.ConnectionId, "onConnected");
 
-            _instanceCount++;
-            Debug.WriteLine("EventHub::OnConnected() Instance count: " + _instanceCount);
             return base.OnConnected();
         }
 
         public override Task OnReconnected()
         {
-            Debug.WriteLine("EventHub::OnReconnected() Instance count: " + _instanceCount);
+            _instanceCount++;
+            _connections.Add(Context.ConnectionId);
+            Debug.WriteLine("EventHub::OnReconnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
 
             Clients.Others.onEvent(Context.ConnectionId, "onReconnected");
-
             return base.OnReconnected();
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
             _instanceCount--;
-            Debug.WriteLine("EventHub::OnDisconnected() Instance count: " + _instanceCount);
-            if (_instanceCount <= 0)
+            _connections.Remove(Context.ConnectionId);
+            Debug.WriteLine("EventHub::OnDisconnected() Instance count: {0}/{1}", _instanceCount, _connections.Count);
+
+            if (_instanceCount <= 0 && _loop.Executing)
             {
-                _loop.CancellationToken.Cancel();
+                if (!_loop.CancellationToken.IsCancellationRequested)
+                    _loop.CancellationToken.Cancel();
             }
 
 

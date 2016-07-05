@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 
-namespace Remotus.Web.Hubs
+namespace Remotus.API.Hubs
 {
     public class ChatHub : Hub
     {

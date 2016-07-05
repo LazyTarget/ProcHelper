@@ -260,8 +260,6 @@
     <Compile Include="Rendering\Renderers\HtmlObjectRenderer.cs" />
     <Compile Include="App_Code\JsonObjectModel.cs" />
     <Compile Include="Helpers\ObjectRendererHtmlHelperExtensions.cs" />
-    <Compile Include="Hubs\ChatHub.cs" />
-    <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\FunctionModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />

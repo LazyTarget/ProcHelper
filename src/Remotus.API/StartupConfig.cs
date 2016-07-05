@@ -2,6 +2,7 @@
 using System.Web.Http.Dispatcher;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Routing;
+using Microsoft.AspNet.SignalR;
 using Owin;
 
 namespace Remotus.API
@@ -56,6 +57,14 @@ namespace Remotus.API
             //};
 
             app.UseWebApi(config);
+
+
+
+            var signalrConf = new HubConfiguration();
+            signalrConf.EnableDetailedErrors = true;
+            signalrConf.EnableJavaScriptProxies = true;
+            signalrConf.EnableJSONP = true;
+            app.MapSignalR("/signalr", signalrConf);
 
             _Configuration = config;
         }

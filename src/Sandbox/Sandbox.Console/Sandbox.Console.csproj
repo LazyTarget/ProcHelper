@@ -92,6 +92,10 @@
       <Project>{c259b631-17cd-4123-b520-c8212239535a}</Project>
       <Name>Remotus.API</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Remotus\Remotus.csproj">
+      <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
+      <Name>Remotus</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
