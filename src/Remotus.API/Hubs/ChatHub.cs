@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
 
 namespace Remotus.API.Hubs
 {
@@ -33,6 +34,19 @@ namespace Remotus.API.Hubs
 
         }
 
-        
+        public override Task OnConnected()
+        {
+            return base.OnConnected();
+        }
+
+        public override Task OnReconnected()
+        {
+            return base.OnReconnected();
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            return base.OnDisconnected(stopCalled);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Remotus;
+using Remotus.API.Models;
 using Timer = System.Timers.Timer;
 
 namespace Sandbox.Console
@@ -37,6 +39,11 @@ namespace Sandbox.Console
                     System.Console.WriteLine("Trying to connect to SignalR server");
                     t = ConnectHub();
                     t.Wait(millisecondsTimeout: -1);
+                }
+                catch (AggregateException ex)
+                {
+                    System.Console.WriteLine("Error connecting to SignalR server: " + ex.InnerException.Message);
+                    System.Diagnostics.Debug.WriteLine(ex);
                 }
                 catch (Exception ex)
                 {
@@ -80,6 +87,11 @@ namespace Sandbox.Console
                         t = ConnectHub();
                         t.Wait(millisecondsTimeout: -1);
                     }
+                    catch (AggregateException ex)
+                    {
+                        System.Console.WriteLine("Error connecting to SignalR server: " + ex.InnerException.Message);
+                        System.Diagnostics.Debug.WriteLine(ex);
+                    }
                     catch (Exception ex)
                     {
                         System.Console.WriteLine("Error connecting to SignalR server: " + ex.Message);
@@ -108,6 +120,8 @@ namespace Sandbox.Console
             {
                 var customJsonSerializerSettings = new CustomJsonSerializerSettings();
                 var jsonSerializerSettings = customJsonSerializerSettings.Settings;
+                var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
+                jsonSerializer.Formatting = Formatting.None;
 
                 // Hub context
                 var url = "http://localhost:9000/signalr";
@@ -117,10 +131,24 @@ namespace Sandbox.Console
                 queryString["username"] = Environment.UserName;
                 queryString["UserDomainName"] = Environment.UserDomainName;
 
+                var handshake = new HubHandshake();
+                handshake.MachineName = Environment.MachineName;
+                handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                handshake.UserName = Environment.UserName;
+                handshake.UserDomainName = Environment.UserDomainName;
+                handshake.ClientVersion = "1.0";
+                handshake.ClientKey = "qSdhjkZ672zzz";
+
+                var stringBuilder = new StringBuilder();
+                var stringWriter = new StringWriter(stringBuilder);
+                jsonSerializer.Serialize(stringWriter, handshake);
+                var handshakeJson = stringBuilder.ToString();
+                
                 // Instantiate
                 _connection = new HubConnection(url, queryString);
-                _connection.JsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
+                _connection.JsonSerializer = jsonSerializer;
                 _connection.StateChanged += Connection_OnStateChanged;
+                _connection.Headers["App-Handshake"] = handshakeJson;
 
                 // Subscriptions
                 _hubEventProxy = _connection.CreateHubProxy("EventHub");
@@ -166,6 +194,8 @@ namespace Sandbox.Console
                 _reconnectTimer.Stop();
                 return;
             }
+            if (_connection.State != ConnectionState.Disconnected)
+                return;
 
             Task t;
             try
@@ -173,6 +203,11 @@ namespace Sandbox.Console
                 System.Console.WriteLine("Trying to re-connect to SignalR server");
                 t = ConnectHub();
                 t.Wait(millisecondsTimeout: -1);
+            }
+            catch (AggregateException ex)
+            {
+                System.Console.WriteLine("Error re-connecting to SignalR server: " + ex.InnerException.Message);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
             catch (Exception ex)
             {

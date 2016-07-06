@@ -3,7 +3,9 @@ using System.Web.Http.Dispatcher;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Routing;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Hubs;
 using Owin;
+using Remotus.API.Components;
 
 namespace Remotus.API
 {
@@ -60,11 +62,31 @@ namespace Remotus.API
 
 
 
-            var signalrConf = new HubConfiguration();
-            signalrConf.EnableDetailedErrors = true;        // only for debug
-            signalrConf.EnableJavaScriptProxies = true;     // todo: remove
-            signalrConf.EnableJSONP = true;                 // todo: remove
-            app.MapSignalR("/signalr", signalrConf);
+            app.Map("/signalr", map =>
+            {
+                // Setup the CORS middleware to run before SignalR.
+                // By default this will allow all origins. You can 
+                // configure the set of origins and/or http verbs by
+                // providing a cors options with a different policy.
+                //map.UseCors(CorsOptions.AllowAll);
+
+                var signalrConf = new HubConfiguration();
+                signalrConf.EnableDetailedErrors = true;        // only for debug
+                signalrConf.EnableJavaScriptProxies = true;     // todo: remove
+                
+                // You can enable JSONP by uncommenting line below.
+                // JSONP requests are insecure but some older browsers (and some
+                // versions of IE) require JSONP to work cross domain
+                //signalrConf.EnableJSONP = true;
+
+                var authorizer = new CustomHubAuthorizeAttribute();
+                var module = new AuthorizeModule(authorizer, authorizer);
+                GlobalHost.HubPipeline.AddModule(module);
+
+                map.RunSignalR(signalrConf);
+            });
+
+            //app.MapSignalR("/signalr", signalrConf);
 
             _Configuration = config;
         }

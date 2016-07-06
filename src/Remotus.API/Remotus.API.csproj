@@ -118,6 +118,7 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
+    <Compile Include="Components\CustomHubAuthorizeAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ClientEndpointConfig.cs" />
     <Compile Include="Config\ApiConfig.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />
+    <Compile Include="Models\HubHandshake.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
