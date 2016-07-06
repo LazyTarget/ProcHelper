@@ -31,27 +31,8 @@ namespace Sandbox.Console
             //var timeout = TimeSpan.FromMinutes(1);
             //Thread.Sleep(timeout);
 
-            Task t = null;
-            while (t == null || t.IsFaulted || !t.IsCompleted || _connection == null)
-            {
-                try
-                {
-                    System.Console.WriteLine("Trying to connect to SignalR server");
-                    t = ConnectHub();
-                    t.Wait(millisecondsTimeout: -1);
-                }
-                catch (AggregateException ex)
-                {
-                    System.Console.WriteLine("Error connecting to SignalR server: " + ex.InnerException.Message);
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
-                catch (Exception ex)
-                {
-                    System.Console.WriteLine("Error connecting to SignalR server: " + ex.Message);
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
-            }
-            
+            _connection = InitHub();
+            ConnectToHub(_connection);
 
             while (true)
             {
@@ -81,22 +62,7 @@ namespace Sandbox.Console
                 }
                 else if (input == "start")
                 {
-                    try
-                    {
-                        System.Console.WriteLine("Trying to connect to SignalR server");
-                        t = ConnectHub();
-                        t.Wait(millisecondsTimeout: -1);
-                    }
-                    catch (AggregateException ex)
-                    {
-                        System.Console.WriteLine("Error connecting to SignalR server: " + ex.InnerException.Message);
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Console.WriteLine("Error connecting to SignalR server: " + ex.Message);
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
+                    ConnectToHub(_connection);
                 }
                 else if (input == "stop")
                 {
@@ -114,65 +80,84 @@ namespace Sandbox.Console
         }
 
 
-        static async Task<HubConnection> ConnectHub()
+
+
+        static HubConnection InitHub()
         {
-            if (_connection == null)
+            var customJsonSerializerSettings = new CustomJsonSerializerSettings();
+            var jsonSerializerSettings = customJsonSerializerSettings.Settings;
+            var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
+            jsonSerializer.Formatting = Formatting.None;
+
+            // Hub context
+            var url = "http://localhost:9000/signalr";
+            var queryString = new Dictionary<string, string>();
+            queryString["hub-version"] = "1.0";
+            queryString["machine-name"] = Environment.MachineName;
+            queryString["username"] = Environment.UserName;
+            queryString["UserDomainName"] = Environment.UserDomainName;
+
+            var handshake = new HubHandshake();
+            handshake.MachineName = Environment.MachineName;
+            handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            handshake.UserName = Environment.UserName;
+            handshake.UserDomainName = Environment.UserDomainName;
+            handshake.ClientVersion = "1.0";
+            handshake.ClientKey = "qSdhjkZ672zzz";
+            handshake.Address = new Uri("http://localhost:9000");
+
+            var stringBuilder = new StringBuilder();
+            var stringWriter = new StringWriter(stringBuilder);
+            jsonSerializer.Serialize(stringWriter, handshake);
+            var handshakeJson = stringBuilder.ToString();
+
+            // Instantiate
+            var connection = new HubConnection(url, queryString);
+            connection.JsonSerializer = jsonSerializer;
+            connection.StateChanged += Connection_OnStateChanged;
+            connection.Headers["App-Handshake"] = handshakeJson;
+
+            // Subscriptions
+            _hubEventProxy = connection.CreateHubProxy("EventHub");
+            var onEventSub = _hubEventProxy.Subscribe("onEvent");
+            onEventSub.Received += OnEventSubOnReceived;
+            System.Console.WriteLine("Subscribing to EventHub:onEvent");
+
+            var hubChatProxy = connection.CreateHubProxy("ChatHub");
+            var onChatSub = hubChatProxy.Subscribe("addNewMessageToPage");
+            onChatSub.Received += OnEventSubOnReceived;
+            System.Console.WriteLine("Subscribing to ChatHub:addNewMessageToPage");
+            return connection;
+        }
+
+
+        static void ConnectToHub(HubConnection connection)
+        {
+            Task t;
+            try
             {
-                var customJsonSerializerSettings = new CustomJsonSerializerSettings();
-                var jsonSerializerSettings = customJsonSerializerSettings.Settings;
-                var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
-                jsonSerializer.Formatting = Formatting.None;
+                // Start
+                System.Console.WriteLine("Connecting to SignalR server...");
+                t = connection.Start();
+                t.Wait(millisecondsTimeout: -1);
 
-                // Hub context
-                var url = "http://localhost:9000/signalr";
-                var queryString = new Dictionary<string, string>();
-                queryString["hub-version"] = "1.0";
-                queryString["machine-name"] = Environment.MachineName;
-                queryString["username"] = Environment.UserName;
-                queryString["UserDomainName"] = Environment.UserDomainName;
-
-                var handshake = new HubHandshake();
-                handshake.MachineName = Environment.MachineName;
-                handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                handshake.UserName = Environment.UserName;
-                handshake.UserDomainName = Environment.UserDomainName;
-                handshake.ClientVersion = "1.0";
-                handshake.ClientKey = "qSdhjkZ672zzz";
-
-                var stringBuilder = new StringBuilder();
-                var stringWriter = new StringWriter(stringBuilder);
-                jsonSerializer.Serialize(stringWriter, handshake);
-                var handshakeJson = stringBuilder.ToString();
-                
-                // Instantiate
-                _connection = new HubConnection(url, queryString);
-                _connection.JsonSerializer = jsonSerializer;
-                _connection.StateChanged += Connection_OnStateChanged;
-                _connection.Headers["App-Handshake"] = handshakeJson;
-
-                // Subscriptions
-                _hubEventProxy = _connection.CreateHubProxy("EventHub");
-                var onEventSub = _hubEventProxy.Subscribe("onEvent");
-                onEventSub.Received += OnEventSubOnReceived;
-                System.Console.WriteLine("Subscribing to EventHub:onEvent");
-
-                var hubChatProxy = _connection.CreateHubProxy("ChatHub");
-                var onChatSub = hubChatProxy.Subscribe("addNewMessageToPage");
-                onChatSub.Received += OnEventSubOnReceived;
-                System.Console.WriteLine("Subscribing to ChatHub:addNewMessageToPage");
+                // Connected
+                if (connection.State == ConnectionState.Connected)
+                {
+                    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
+                    System.Console.WriteLine("Token: " + connection.ConnectionToken);
+                }
             }
-
-            // Start
-            System.Console.WriteLine("Connecting to SignalR server...");
-            await _connection.Start();
-
-            // Connected
-            if (_connection.State == ConnectionState.Connected)
+            catch (AggregateException ex)
             {
-                System.Console.WriteLine("Connected as: " + _connection.ConnectionId);
-                System.Console.WriteLine("Token: " + _connection.ConnectionToken);
+                System.Console.WriteLine("Error connecting to SignalR server: " + ex.InnerException.Message);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
-            return _connection;
+            catch (Exception ex)
+            {
+                System.Console.WriteLine("Error connecting to SignalR server: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
 
@@ -197,23 +182,7 @@ namespace Sandbox.Console
             if (_connection.State != ConnectionState.Disconnected)
                 return;
 
-            Task t;
-            try
-            {
-                System.Console.WriteLine("Trying to re-connect to SignalR server");
-                t = ConnectHub();
-                t.Wait(millisecondsTimeout: -1);
-            }
-            catch (AggregateException ex)
-            {
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + ex.InnerException.Message);
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + ex.Message);
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
+            ConnectToHub(_connection);
         }
 
 

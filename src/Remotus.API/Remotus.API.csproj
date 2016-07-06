@@ -128,7 +128,12 @@
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
+    <Compile Include="Hubs\Client.cs" />
+    <Compile Include="Hubs\ClientManager.cs" />
+    <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\EventHub.cs" />
+    <Compile Include="Hubs\HubServer.cs" />
+    <Compile Include="Hubs\MainHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />
     <Compile Include="Models\HubHandshake.cs" />

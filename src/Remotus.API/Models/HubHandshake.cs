@@ -15,5 +15,6 @@ namespace Remotus.API.Models
         public string MachineName { get; set; }
         public string UserName { get; set; }
         public string UserDomainName { get; set; }
+        public Uri Address { get; set; }
     }
 }
