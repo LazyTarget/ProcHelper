@@ -17,17 +17,35 @@ namespace Remotus.API.Hubs
 
         public void OnConnected(HubCallerContext context)
         {
-            
+            lock (_locker)
+            {
+                var client = _clientManager.GetClient(context.ConnectionId);
+                if (client == null)
+                {
+                    _clientManager.RegisterClient(context);
+                }
+            }
         }
 
         public void OnReconnected(HubCallerContext context)
         {
-            
+            lock (_locker)
+            {
+                var client = _clientManager.GetClient(context.ConnectionId);
+                if (client == null)
+                {
+                    _clientManager.RegisterClient(context);
+                }
+            }
         }
 
         public void OnDisconnected(HubCallerContext context, bool stopCalled)
         {
-            
+            lock (_locker)
+            {
+                _clientManager.UnregisterClient(context);
+            }
         }
+
     }
 }

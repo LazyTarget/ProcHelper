@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Remotus.API.Models;
 
 namespace Remotus.API.Hubs
 {
-    class Client
+    public class Client
     {
+        public string ConnectionId { get; set; }
+        public bool Connected { get; set; }
+        public HubHandshake Handshake { get; set; }
     }
 }
