@@ -84,12 +84,14 @@ namespace Sandbox.Console
                 }
                 catch (AggregateException ex)
                 {
-                    System.Console.WriteLine($"Error executing command '{verb}': {ex.InnerException.Message}");
+                    var msg = ex.GetBaseException().Message;
+                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
                     System.Diagnostics.Debug.WriteLine(ex);
                 }
                 catch (Exception ex)
                 {
-                    System.Console.WriteLine($"Error executing command '{verb}': {ex.InnerException.Message}");
+                    var msg = ex.GetBaseException().Message;
+                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
                     System.Diagnostics.Debug.WriteLine(ex);
                 }
             }
@@ -116,8 +118,7 @@ namespace Sandbox.Console
             {
                 //_hubEventProxy.Invoke("Discover");
             }
-            else if (verb == "connect" ||
-                     verb == "connect-hub")
+            else if (verb == "connect")
             {
                 VerbConnectHub(a);
             }
@@ -139,8 +140,7 @@ namespace Sandbox.Console
             }
             else if (verb == "send")
             {
-                //var text = input.Substring(0, "say ".Length);
-                //_hubEventProxy.Invoke("Send", new[] { text });
+                VerbSendToHub(a);
             }
         }
 
@@ -164,7 +164,8 @@ namespace Sandbox.Console
                 .WithDescription("Enter the hubs to connect to. Seperate with commas");
             p.SetupHelp("help");
 
-            var args = a.Verb == "connect"
+            var args = a.Verb == "connect" ||
+                       a.Verb == "connect-hub"
                 ? a.Arguments
                 : new string[0];
             var r = p.Parse(args);
@@ -254,8 +255,10 @@ namespace Sandbox.Console
             }
 
             System.Console.WriteLine("Connecting to SignalR server...");
-            var connectTimeout = _reconnectArgs?.ConnectTimeout ?? TimeSpan.FromSeconds(30);
-            connection.Start().Wait(connectTimeout);
+            var timeout = arguments.Timeout;
+            var task = connection.Start();
+            task.Wait(timeout);
+
             if (connection.State == ConnectionState.Connected)
             {
                 System.Console.WriteLine("Connected as: " + connection.ConnectionId);
@@ -318,7 +321,9 @@ namespace Sandbox.Console
             else
             {
                 System.Console.WriteLine("Re-connecting to SignalR server...");
-                _connection.Start().Wait(arguments.ConnectTimeout);
+                var timeout = arguments.Timeout;
+                var task = _connection.Start();
+                task.Wait(timeout);
             }
         }
 
@@ -414,7 +419,7 @@ namespace Sandbox.Console
                 var arguments = new ReconnectArguments();
                 if (_reconnectArgs != null)
                 {
-                    arguments.ConnectTimeout = _reconnectArgs.ConnectTimeout;
+                    arguments.Timeout = _reconnectArgs.Timeout;
                     arguments.ReconnectInterval = _reconnectArgs.ReconnectInterval;
                 }
                 arguments.AutoReconnect = false;
@@ -423,12 +428,14 @@ namespace Sandbox.Console
             }
             catch (AggregateException ex)
             {
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + ex.InnerException.Message);
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine("Error re-connecting to SignalR server: " + msg);
                 System.Diagnostics.Debug.WriteLine(ex);
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + ex.Message);
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine("Error re-connecting to SignalR server: " + msg);
                 System.Diagnostics.Debug.WriteLine(ex);
             }
         }
@@ -491,8 +498,8 @@ namespace Sandbox.Console
         }
         
 
-
         
+
         private static void VerbUnsubscribeHub(CommandArguments a)
         {
             var p = new FluentCommandLineParser<UnsubscribeArguments>();
@@ -545,6 +552,75 @@ namespace Sandbox.Console
                 {
                     subscription.Received -= OnHubReceive;
                 }
+            }
+        }
+
+
+        
+        
+        private static void VerbSendToHub(CommandArguments a)
+        {
+            var p = new FluentCommandLineParser<SendToHubArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.HubName)
+                .As('h', "hub")
+                .WithDescription("Hub name");
+            p.Setup(x => x.Method)
+                .As('m', "method")
+                .WithDescription("Method name");
+            p.Setup(x => x.Args)
+                .As('a', "args")
+                .WithDescription("Method arguments");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "send" ||
+                       a.Verb == "send-to-hub"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                SendToHub(p.Object);
+            }
+        }
+        
+
+        private static void SendToHub(SendToHubArguments arguments)
+        {
+            if (_connection == null)
+            {
+                System.Console.WriteLine("No server initialized...");
+                return;
+            }
+
+            if (arguments == null)
+                throw new ArgumentNullException(nameof(arguments));
+            if (string.IsNullOrWhiteSpace(arguments.HubName))
+                throw new ArgumentNullException(nameof(arguments.HubName));
+            if (string.IsNullOrWhiteSpace(arguments.Method))
+                throw new ArgumentNullException(nameof(arguments.Method));
+
+            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
+                ? _hubProxies[arguments.HubName]
+                : null;
+            if (hubProxy != null)
+            {
+                object[] args = arguments.Args?.Cast<object>().ToArray() ?? new object[0];
+                var timeout = arguments.Timeout;
+                var task = hubProxy.Invoke(arguments.Method, args);
+                task.Wait(timeout);
+            }
+            else
+            {
+                
             }
         }
 

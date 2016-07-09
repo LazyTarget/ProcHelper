@@ -16,6 +16,11 @@ namespace Remotus.API.Hubs
         }
 
 
+        public void Send(string name)
+        {
+            Send(name, "foo bar");
+        }
+
         public void Send(string name, string message)
         {
             Clients.All.addNewMessageToPage(name, message);

@@ -86,6 +86,7 @@
     <Compile Include="Arguments\DisconnectArguments.cs" />
     <Compile Include="Arguments\ReconnectArguments.cs" />
     <Compile Include="Arguments\ConnectArguments.cs" />
+    <Compile Include="Arguments\SendToHubArguments.cs" />
     <Compile Include="Arguments\UnsubscribeArguments.cs" />
     <Compile Include="Arguments\SubscribeArguments.cs" />
     <Compile Include="Program.cs" />
