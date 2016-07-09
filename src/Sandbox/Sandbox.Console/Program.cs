@@ -24,6 +24,7 @@ namespace Sandbox.Console
         private static readonly Timer _reconnectTimer;
         private static readonly object _connectLock;
         private static readonly Dictionary<string, IHubProxy> _hubProxies;
+        private static ZeroconfService.NetServiceBrowser _zeroconfBrowser; 
 
 
         static Program()
@@ -72,8 +73,15 @@ namespace Sandbox.Console
                     var args = new string[0];
                     if (!string.IsNullOrWhiteSpace(input))
                         args = input.Split(' ');
-                    verb = args.Length > 0 ? args[0] : null;
-                    args = args.Length > 1 ? args.Skip(1).ToArray() : args;
+                    var switchIndex = args.ToList().FindIndex(x => x.StartsWith("/"));
+                    if (switchIndex < 0)
+                        switchIndex = args.Length;
+                    verb = switchIndex > 0
+                        ? String.Join(" ", args.Take(switchIndex))
+                        : args.Length > 0 ? args[0] : null;
+                    args = switchIndex > 0
+                        ? args.Skip(switchIndex).ToArray()
+                        : args.Length > 1 ? args.Skip(1).ToArray() : args;
 
                     var a = new CommandArguments
                     {
@@ -102,6 +110,7 @@ namespace Sandbox.Console
         {
             System.Console.WriteLine("Commands: ");
             System.Console.WriteLine("* discover");
+            System.Console.WriteLine("* zeroconf");
             System.Console.WriteLine("* connect");
             System.Console.WriteLine("* reconnect");
             System.Console.WriteLine("* disconnect");
@@ -117,6 +126,16 @@ namespace Sandbox.Console
             if (verb == "discover")
             {
                 //_hubEventProxy.Invoke("Discover");
+            }
+            if (verb == "zeroconf-resolve" ||
+                verb == "zeroconf resolve")
+            {
+                VerbZeroConfResolve(a);
+            }
+            if (verb == "zeroconf-publish" ||
+                verb == "zeroconf publish")
+            {
+                VerbZeroConfPublish(a);
             }
             else if (verb == "connect")
             {
@@ -638,6 +657,174 @@ namespace Sandbox.Console
                 }
             }
         }
+
+
+
+
+        
+        private static void VerbZeroConfResolve(CommandArguments a)
+        {
+            var p = new FluentCommandLineParser<ZeroConfResolveArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.Host)
+                .As('h', "host")
+                .WithDescription("Host name");
+            p.Setup(x => x.Type)
+                .As('t', "type")
+                .WithDescription("Type. (ex: '_http._tcp')");
+            p.Setup(x => x.Domain)
+                .As('d', "domain")
+                .WithDescription("Domain. (ex: 'local')");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "zeroconf resolve" ||
+                       a.Verb == "zeroconf-resolve"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                ZeroConfResolve(p.Object);
+            }
+        }
+        
+
+        private static void ZeroConfResolve(ZeroConfResolveArguments arguments)
+        {
+            arguments = arguments ?? new ZeroConfResolveArguments();
+
+            
+
+            if (_zeroconfBrowser == null)
+            {
+                _zeroconfBrowser = new ZeroconfService.NetServiceBrowser();
+                _zeroconfBrowser.DidFindDomain += (browser, name, coming) =>
+                {
+                    System.Console.WriteLine($"DidFindDomain: {name} [{coming}]");
+                };
+                _zeroconfBrowser.DidFindService += (browser, service, coming) =>
+                {
+                    System.Console.WriteLine($"DidFindService: {service} ({service.Name}) [{coming}]");
+                };
+                _zeroconfBrowser.DidRemoveDomain += (browser, name, coming) =>
+                {
+                    System.Console.WriteLine($"DidRemoveDomain: {name} [{coming}]");
+                };
+                _zeroconfBrowser.DidRemoveService += (browser, service, coming) =>
+                {
+                    System.Console.WriteLine($"DidRemoveService: {service} ({service.Name}) [{coming}]");
+                };
+            }
+            System.Console.WriteLine("Stopping ZeroConf browser...");
+            _zeroconfBrowser.Stop();
+
+
+
+            //_zeroconfBrowser.SearchForBrowseableDomains();
+            //_zeroconfBrowser.SearchForRegistrationDomains();
+            System.Console.WriteLine($"Searching for ZeroConf services with type '{arguments.Type} and domain '{arguments.Domain}'");
+            _zeroconfBrowser.SearchForService(arguments.Type, arguments.Domain);
+        }
+
+
+
+        
+        
+        private static void VerbZeroConfPublish(CommandArguments a)
+        {
+            var p = new FluentCommandLineParser<ZeroConfPublishArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.Name)
+                .As('n', "name")
+                .WithDescription("Name of the record");
+            p.Setup(x => x.Type)
+                .As('t', "type")
+                .WithDescription("Type. (ex: '_http._tcp')");
+            p.Setup(x => x.Domain)
+                .As('d', "domain")
+                .WithDescription("Domain. (ex: 'local')");
+            p.Setup(x => x.Port)
+                .As('p', "port")
+                .WithDescription("Port");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "zeroconf publish" ||
+                       a.Verb == "zeroconf-publish"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                ZeroConfPublish(p.Object);
+            }
+        }
+        
+
+        private static void ZeroConfPublish(ZeroConfPublishArguments arguments)
+        {
+            if (arguments == null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            var net = new ZeroconfService.NetService(arguments.Domain, arguments.Type, arguments.Name, arguments.Port);
+            net.DidPublishService += service =>
+            {
+                System.Console.WriteLine($"DidPublishService: {service} ({service.Name})");
+            };
+            net.DidNotPublishService += (service, exception) =>
+            {
+                System.Console.WriteLine($"DidNotPublishService: {service} ({service.Name}) [{exception.ErrorType}] :: {exception.Function} - {exception.Message}");
+            };
+            net.DidResolveService += service =>
+            {
+                System.Console.WriteLine($"DidResolveService: {service} ({service.Name})");
+            };
+            net.DidNotResolveService += (service, exception) =>
+            {
+                System.Console.WriteLine($"DidNotResolveService: {service} ({service.Name}) [{exception.ErrorType}] :: {exception.Function} - {exception.Message}");
+            };
+            net.DidUpdateTXT += service =>
+            {
+                System.Console.WriteLine($"DidUpdateTXT: {service} ({service.Name})");
+            };
+            System.Console.WriteLine("Publishing ZeroConf record...");
+            net.Publish();
+            net.StartMonitoring();
+            System.Console.WriteLine($"Name: {net.Name}");
+            System.Console.WriteLine($"HostName: {net.HostName}");
+            System.Console.WriteLine($"Addresses: {string.Join(",", net.Addresses)}");
+            System.Console.WriteLine($"Port: {net.Port}");
+            System.Console.WriteLine($"Type: {net.Type}");
+            System.Console.WriteLine($"Domain: {net.Domain}");
+
+            while (true)
+            {
+                var input = System.Console.ReadLine();
+                System.Console.WriteLine("Write 'stop' to end the ZeroConf publish");
+                if (input == "stop")
+                    break;
+            }
+
+            net.Stop();
+            net.StopMonitoring();
+            net.Dispose();
+        }
+
 
     }
 }
