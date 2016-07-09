@@ -20,11 +20,10 @@ namespace Sandbox.Console
     static class Program
     {
         private static HubConnection _connection;
-        private static IHubProxy _hubEventProxy;
-        private static readonly Timer _reconnectTimer;
         private static ReconnectArguments _reconnectArgs;
-        private static Dictionary<string, IHubProxy> _hubProxies;
+        private static readonly Timer _reconnectTimer;
         private static readonly object _connectLock;
+        private static readonly Dictionary<string, IHubProxy> _hubProxies;
 
 
         static Program()
@@ -160,6 +159,9 @@ namespace Sandbox.Console
                 .As('p', "port")
                 .SetDefault(9000)
                 .WithDescription("Enter the port to the SignalR server");
+            p.Setup(x => x.Hubs)
+                .As("hubs")
+                .WithDescription("Enter the hubs to connect to. Seperate with commas");
             p.SetupHelp("help");
 
             var args = a.Verb == "connect"
@@ -240,17 +242,16 @@ namespace Sandbox.Console
             connection.StateChanged += Connection_OnStateChanged;
             connection.Headers["App-Handshake"] = handshakeJson;
 
-            //// Subscriptions
-            //_hubEventProxy = connection.CreateHubProxy("EventHub");
-            //var onEventSub = _hubEventProxy.Subscribe("onEvent");
-            //onEventSub.Received += OnEventSubOnReceived;
-            //System.Console.WriteLine("Subscribing to EventHub:onEvent");
-
-            //var hubChatProxy = connection.CreateHubProxy("ChatHub");
-            //var onChatSub = hubChatProxy.Subscribe("addNewMessageToPage");
-            //onChatSub.Received += OnEventSubOnReceived;
-            //System.Console.WriteLine("Subscribing to ChatHub:addNewMessageToPage");
-
+            // Hubs
+            if (arguments.Hubs != null)
+            {
+                foreach (var hubName in arguments.Hubs)
+                {
+                    System.Console.WriteLine($"Initializing hub proxy for '{hubName}'");
+                    var hub = connection.CreateHubProxy(hubName);
+                    _hubProxies[hubName] = hub;
+                }
+            }
 
             System.Console.WriteLine("Connecting to SignalR server...");
             var connectTimeout = _reconnectArgs?.ConnectTimeout ?? TimeSpan.FromSeconds(30);
@@ -478,9 +479,15 @@ namespace Sandbox.Console
 
             var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
                 ? _hubProxies[arguments.HubName]
-                : _connection.CreateHubProxy(arguments.HubName);
-            var subscription = hubProxy.Subscribe(arguments.EventName);
-            subscription.Received += OnEventSubOnReceived;
+                : null;
+            if (hubProxy != null)
+            {
+                var subscription = hubProxy.Subscribe(arguments.EventName);
+                if (subscription != null)
+                {
+                    subscription.Received += OnHubReceive;
+                }
+            }
         }
         
 
@@ -531,21 +538,24 @@ namespace Sandbox.Console
             var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
                 ? _hubProxies[arguments.HubName]
                 : null;
-            var subscription = hubProxy?.Subscribe(arguments.EventName);
-            if (subscription != null)
+            if (hubProxy != null)
             {
-                subscription.Received -= OnEventSubOnReceived;
+                var subscription = hubProxy.Subscribe(arguments.EventName);
+                if (subscription != null)
+                {
+                    subscription.Received -= OnHubReceive;
+                }
             }
         }
 
 
 
-        private static void OnEventSubOnReceived(IList<JToken> list)
+        private static void OnHubReceive(IList<JToken> list)
         {
-            System.Console.WriteLine("OnEventSubOnReceived");
+            System.Console.WriteLine("::OnHubReceive::");
             foreach (var tkn in list)
             {
-                System.Console.WriteLine("OnEventSub: " + tkn);
+                System.Console.WriteLine("OnHubReceive tkn: " + tkn);
                 if (tkn?.ToString() == "ping")
                 {
                     //_hubEventProxy.Invoke("Send", new[] {list[0], "respond", "pong!"});

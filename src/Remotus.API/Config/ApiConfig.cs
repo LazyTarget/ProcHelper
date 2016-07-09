@@ -20,6 +20,7 @@ namespace Remotus.API
         public Uri ClientApiAddress { get; set; }
         public List<string> Urls { get; set; }
         public List<ClientEndpointConfig> Clients { get; set; }
+        public bool EnableHubServer { get; set; }
 
         public override void Configure(XElement element)
         {
@@ -44,6 +45,13 @@ namespace Remotus.API
             {
                 var str = elem.GetAttributeValue("value") ?? elem.Value;
                 ServerApiAddress = converter.Convert<Uri>(str);
+            }
+
+            elem = element.Elements("property").FirstOrDefault(x => x.GetAttributeValue("name") == nameof(EnableHubServer));
+            if (elem != null)
+            {
+                var str = elem.GetAttributeValue("value") ?? elem.Value;
+                EnableHubServer = converter.Convert<bool>(str);
             }
 
             elem = element.Elements("urls").FirstOrDefault();

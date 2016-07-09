@@ -11,19 +11,19 @@ namespace Remotus.API.Hubs
     {
         public override Task OnConnected()
         {
-            HubServer.Instance.ConnectionManager.OnConnected(Context);
+            HubServer.Instance.ConnectionManager.OnConnected(this);
             return base.OnConnected();
         }
 
         public override Task OnReconnected()
         {
-            HubServer.Instance.ConnectionManager.OnReconnected(Context);
+            HubServer.Instance.ConnectionManager.OnReconnected(this);
             return base.OnReconnected();
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            HubServer.Instance.ConnectionManager.OnDisconnected(Context, stopCalled);
+            HubServer.Instance.ConnectionManager.OnDisconnected(this, stopCalled);
             return base.OnDisconnected(stopCalled);
         }
     }

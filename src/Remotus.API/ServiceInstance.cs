@@ -36,7 +36,7 @@ namespace Remotus.API
         public IClientInfo ClientInfo { get { return _clientInfo; } }
 
 
-        protected virtual ApiConfig LoadApiConfig()
+        internal static ApiConfig LoadApiConfig()
         {
             var descriptorFactory = new AppConfigDescriptorFactory();
             var descriptor = descriptorFactory.CreateDescriptor<ApiConfig>();

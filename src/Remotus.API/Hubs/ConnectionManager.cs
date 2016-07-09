@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
 namespace Remotus.API.Hubs
@@ -15,35 +16,27 @@ namespace Remotus.API.Hubs
         }
 
 
-        public void OnConnected(HubCallerContext context)
+        public void OnConnected(Hub hub)
         {
             lock (_locker)
             {
-                var client = _clientManager.GetClient(context.ConnectionId);
-                if (client == null)
-                {
-                    _clientManager.RegisterClient(context);
-                }
+                _clientManager.RegisterHub(hub);
             }
         }
 
-        public void OnReconnected(HubCallerContext context)
+        public void OnReconnected(Hub hub)
         {
             lock (_locker)
             {
-                var client = _clientManager.GetClient(context.ConnectionId);
-                if (client == null)
-                {
-                    _clientManager.RegisterClient(context);
-                }
+                _clientManager.RegisterHub(hub);
             }
         }
 
-        public void OnDisconnected(HubCallerContext context, bool stopCalled)
+        public void OnDisconnected(Hub hub, bool stopCalled)
         {
             lock (_locker)
             {
-                _clientManager.UnregisterClient(context);
+                _clientManager.UnregisterHub(hub);
             }
         }
 

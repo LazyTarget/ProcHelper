@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
 namespace Remotus.API.Hubs
@@ -26,21 +27,38 @@ namespace Remotus.API.Hubs
             return client;
         }
 
-        public void RegisterClient(HubCallerContext context)
-        {
-            var handshake = context.Request.GetHandshake();
 
-            var client = new Client();
-            client.ConnectionId = context.ConnectionId;
+        public void RegisterHub(Hub hub)
+        {
+            var handshake = hub.Context.Request.GetHandshake();
+
+            var client = GetClient(hub.Context.ConnectionId);
+            if (client == null)
+            {
+                client = new Client();
+                client.Handshake = handshake;
+                client.ConnectionId = hub.Context.ConnectionId;
+            }
             client.Connected = true;
-            client.Handshake = handshake;
-            _clients[context.ConnectionId] = client;
+            var hubName = hub.GetType().Name;
+            var added = client.Hubs.Add(hubName);
+            _clients[hub.Context.ConnectionId] = client;
         }
 
-        public void UnregisterClient(HubCallerContext context)
+
+        public void UnregisterHub(Hub hub)
         {
-            Client client;
-            var removed = _clients.TryRemove(context.ConnectionId, out client);
+            var client = GetClient(hub.Context.ConnectionId);
+            if (client != null)
+            {
+                var hubName = hub.GetType().Name;
+                var removed = client.Hubs.Remove(hubName);
+                if (!client.Hubs.Any())
+                {
+                    removed = _clients.TryRemove(hub.Context.ConnectionId, out client);
+                }
+            }
         }
+
     }
 }

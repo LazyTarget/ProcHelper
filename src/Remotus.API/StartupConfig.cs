@@ -21,6 +21,8 @@ namespace Remotus.API
 
         public void ConfigureWebApi(IAppBuilder app)
         {
+            var apiConfig = ServiceInstance.LoadApiConfig();
+
             var config = new HttpConfiguration();
             config.Properties["InstanceID"] = Program.Service?.ClientInfo?.ClientID;
 
@@ -61,32 +63,34 @@ namespace Remotus.API
             app.UseWebApi(config);
 
 
-
-            app.Map("/signalr", map =>
+            if (apiConfig.EnableHubServer)
             {
-                // Setup the CORS middleware to run before SignalR.
-                // By default this will allow all origins. You can 
-                // configure the set of origins and/or http verbs by
-                // providing a cors options with a different policy.
-                //map.UseCors(CorsOptions.AllowAll);
+                app.Map("/signalr", map =>
+                {
+                    // Setup the CORS middleware to run before SignalR.
+                    // By default this will allow all origins. You can 
+                    // configure the set of origins and/or http verbs by
+                    // providing a cors options with a different policy.
+                    //map.UseCors(CorsOptions.AllowAll);
 
-                var signalrConf = new HubConfiguration();
-                signalrConf.EnableDetailedErrors = true;        // only for debug
-                signalrConf.EnableJavaScriptProxies = true;     // todo: remove
+                    var signalrConf = new HubConfiguration();
+                    signalrConf.EnableDetailedErrors = true;        // only for debug
+                    signalrConf.EnableJavaScriptProxies = true;     // todo: remove
                 
-                // You can enable JSONP by uncommenting line below.
-                // JSONP requests are insecure but some older browsers (and some
-                // versions of IE) require JSONP to work cross domain
-                //signalrConf.EnableJSONP = true;
+                    // You can enable JSONP by uncommenting line below.
+                    // JSONP requests are insecure but some older browsers (and some
+                    // versions of IE) require JSONP to work cross domain
+                    //signalrConf.EnableJSONP = true;
 
-                var authorizer = new CustomHubAuthorizeAttribute();
-                var module = new AuthorizeModule(authorizer, authorizer);
-                GlobalHost.HubPipeline.AddModule(module);
+                    var authorizer = new CustomHubAuthorizeAttribute();
+                    var module = new AuthorizeModule(authorizer, authorizer);
+                    GlobalHost.HubPipeline.AddModule(module);
 
-                map.RunSignalR(signalrConf);
-            });
+                    map.RunSignalR(signalrConf);
+                });
 
-            //app.MapSignalR("/signalr", signalrConf);
+                //app.MapSignalR("/signalr", signalrConf);
+            }
 
             _Configuration = config;
         }

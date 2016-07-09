@@ -58,6 +58,7 @@ namespace Remotus.API.Hubs
 
             
             _connections.Add(Context.ConnectionId);
+            HubServer.Instance.ConnectionManager.OnConnected(this);
             Debug.WriteLine("EventHub::OnConnected() Instance count: {0}", _connections.Count);
 
             Clients.Others.onEvent(Context.ConnectionId, "onConnected", "Client has connected");
@@ -68,6 +69,7 @@ namespace Remotus.API.Hubs
         public override Task OnReconnected()
         {
             _connections.Add(Context.ConnectionId);
+            HubServer.Instance.ConnectionManager.OnReconnected(this);
             Debug.WriteLine("EventHub::OnReconnected() Instance count: {0}", _connections.Count);
 
             Clients.Others.onEvent(Context.ConnectionId, "onReconnected", "Client has reconnected");
@@ -77,6 +79,7 @@ namespace Remotus.API.Hubs
         public override Task OnDisconnected(bool stopCalled)
         {
             _connections.Remove(Context.ConnectionId);
+            HubServer.Instance.ConnectionManager.OnDisconnected(this, stopCalled);
             Debug.WriteLine("EventHub::OnDisconnected() Instance count: {0}", _connections.Count);
 
             if (_connections.Count <= 0 && _loop.Executing)

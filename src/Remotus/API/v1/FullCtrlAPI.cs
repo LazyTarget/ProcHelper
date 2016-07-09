@@ -7,7 +7,7 @@ namespace Remotus.API.v1
     {
         public FullCtrlAPI()
         {
-            BaseUri = new Uri("http://localhost:9001/api/v1/");
+            BaseUri = new Uri("http://localhost:9000/api/v1/");
         }
 
     }
