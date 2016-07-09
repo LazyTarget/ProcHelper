@@ -82,10 +82,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandArguments.cs" />
-    <Compile Include="DisconnectArguments.cs" />
-    <Compile Include="ReconnectArguments.cs" />
-    <Compile Include="ConnectArguments.cs" />
+    <Compile Include="Arguments\CommandArguments.cs" />
+    <Compile Include="Arguments\DisconnectArguments.cs" />
+    <Compile Include="Arguments\ReconnectArguments.cs" />
+    <Compile Include="Arguments\ConnectArguments.cs" />
+    <Compile Include="Arguments\UnsubscribeArguments.cs" />
+    <Compile Include="Arguments\SubscribeArguments.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -126,11 +126,11 @@ namespace Sandbox.Console
             }
             else if (verb == "subscribe")
             {
-
+                //VerbSubscribeHub(a);
             }
             else if (verb == "unsubscribe")
             {
-
+                //VerbUnscribeHub(a);
             }
             else if (verb == "send")
             {
