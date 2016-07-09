@@ -23,11 +23,17 @@ namespace Sandbox.Console
         private static IHubProxy _hubEventProxy;
         private static readonly Timer _reconnectTimer;
         private static ReconnectArguments _reconnectArgs;
+        private static Dictionary<string, IHubProxy> _hubProxies;
+        private static readonly object _connectLock;
 
 
         static Program()
         {
+            _connectLock = new object();
+            _hubProxies = new Dictionary<string, IHubProxy>();
+
             _reconnectArgs = new ReconnectArguments();
+            _reconnectTimer = new Timer();
             _reconnectTimer.AutoReset = true;
             _reconnectTimer.Enabled = true;
             _reconnectTimer.Interval = _reconnectArgs.ReconnectInterval.TotalMilliseconds;
@@ -126,11 +132,11 @@ namespace Sandbox.Console
             }
             else if (verb == "subscribe")
             {
-                //VerbSubscribeHub(a);
+                VerbSubscribeHub(a);
             }
             else if (verb == "unsubscribe")
             {
-                //VerbUnscribeHub(a);
+                VerbUnsubscribeHub(a);
             }
             else if (verb == "send")
             {
@@ -296,17 +302,6 @@ namespace Sandbox.Console
 
         private static void ReconnectHub(ReconnectArguments arguments = null)
         {
-            if (_connection == null)
-            {
-                _reconnectTimer.Stop();
-                System.Console.WriteLine("No server to reconnect to...");
-                return;
-            }
-            if (_connection.State == ConnectionState.Connected)
-            {
-                _reconnectTimer.Stop();
-                return;
-            }
             if (_connection.State != ConnectionState.Disconnected)
                 return;
 
@@ -403,6 +398,18 @@ namespace Sandbox.Console
         {
             try
             {
+                if (_connection == null)
+                {
+                    _reconnectTimer.Stop();
+                    //System.Console.WriteLine("No server to reconnect to...");
+                    return;
+                }
+                if (_connection.State == ConnectionState.Connected)
+                {
+                    _reconnectTimer.Stop();
+                    return;
+                }
+
                 var arguments = new ReconnectArguments();
                 if (_reconnectArgs != null)
                 {
@@ -425,6 +432,113 @@ namespace Sandbox.Console
             }
         }
         
+
+        
+        private static void VerbSubscribeHub(CommandArguments a)
+        {
+            var p = new FluentCommandLineParser<SubscribeArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.HubName)
+                .As('h', "hub")
+                .WithDescription("Hub name");
+            p.Setup(x => x.EventName)
+                .As('e', "event")
+                .WithDescription("Event name");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "subscribe"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                SubscribeHub(p.Object);
+            }
+        }
+        
+
+        private static void SubscribeHub(SubscribeArguments arguments)
+        {
+            if (_connection == null)
+            {
+                System.Console.WriteLine("No server initialized...");
+                return;
+            }
+
+            if (arguments == null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
+                ? _hubProxies[arguments.HubName]
+                : _connection.CreateHubProxy(arguments.HubName);
+            var subscription = hubProxy.Subscribe(arguments.EventName);
+            subscription.Received += OnEventSubOnReceived;
+        }
+        
+
+
+        
+        private static void VerbUnsubscribeHub(CommandArguments a)
+        {
+            var p = new FluentCommandLineParser<UnsubscribeArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.HubName)
+                .As('h', "hub")
+                .WithDescription("Hub name");
+            p.Setup(x => x.EventName)
+                .As('e', "event")
+                .WithDescription("Event name");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "unsubscribe"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                UnsubscribeHub(p.Object);
+            }
+        }
+        
+
+        private static void UnsubscribeHub(UnsubscribeArguments arguments)
+        {
+            if (_connection == null)
+            {
+                System.Console.WriteLine("No server initialized...");
+                return;
+            }
+
+            if (arguments == null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
+                ? _hubProxies[arguments.HubName]
+                : null;
+            var subscription = hubProxy?.Subscribe(arguments.EventName);
+            if (subscription != null)
+            {
+                subscription.Received -= OnEventSubOnReceived;
+            }
+        }
+
+
 
         private static void OnEventSubOnReceived(IList<JToken> list)
         {
