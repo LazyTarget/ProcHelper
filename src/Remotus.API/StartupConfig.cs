@@ -29,6 +29,8 @@ namespace Remotus.API
             // Formatters
             var settings = new CustomJsonSerializerSettings();
             config.Formatters.JsonFormatter.SerializerSettings = settings;
+            var jsonSerializer = config.Formatters.JsonFormatter.CreateJsonSerializer();
+            app.Properties["app.jsonSerializer"] = jsonSerializer;
 
             // Services
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
@@ -85,6 +87,12 @@ namespace Remotus.API
                     var authorizer = new CustomHubAuthorizeAttribute();
                     var module = new AuthorizeModule(authorizer, authorizer);
                     GlobalHost.HubPipeline.AddModule(module);
+                    //GlobalHost.Configuration.ConnectionTimeout = 
+
+
+                    //GlobalHost.DependencyResolver.Register(typeof(IJsonSerializer), jsonSerializer);
+                    GlobalHost.DependencyResolver.Register(typeof(IUserIdProvider), () => new CustomUserIdProvider());
+
 
                     map.RunSignalR(signalrConf);
                 });

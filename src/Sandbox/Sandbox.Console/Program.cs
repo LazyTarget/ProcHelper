@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Timers;
+using System.Web;
 using Fclp;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
@@ -219,17 +221,6 @@ namespace Sandbox.Console
             }
 
 
-            if (_autoReconnectService != null)
-            {
-                _autoReconnectService.Unregister(_clientHubManager);
-                _autoReconnectService = null;
-            }
-            if (_clientHubManager?.Connection != null)
-            {
-                _clientHubManager.Connection.StateChanged -= Connection_OnStateChanged;
-            }
-
-
             var customJsonSerializerSettings = new CustomJsonSerializerSettings();
             var jsonSerializerSettings = customJsonSerializerSettings.Settings;
             var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
@@ -262,6 +253,21 @@ namespace Sandbox.Console
             connection.JsonSerializer = jsonSerializer;
             connection.StateChanged += Connection_OnStateChanged;
             connection.Headers["App-Handshake"] = handshakeJson;
+            connection.CookieContainer = connection.CookieContainer ?? new CookieContainer();
+
+            var authObj = new
+            {
+                UserId = "fjskDhsucC",
+                UserName = Environment.UserName,
+            };
+            stringBuilder = new StringBuilder();
+            stringWriter = new StringWriter(stringBuilder);
+            jsonSerializer.Serialize(stringWriter, authObj);
+            var authJson = stringBuilder.ToString();
+            authJson = HttpUtility.UrlEncode(authJson);
+
+            var authCookie = new Cookie("auth", authJson, "/", arguments.Host);
+            connection.CookieContainer.Add(authCookie);
 
             var clientHubManager = new ClientHubManager(connection);
 

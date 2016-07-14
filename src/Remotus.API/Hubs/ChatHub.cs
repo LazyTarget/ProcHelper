@@ -23,6 +23,10 @@ namespace Remotus.API.Hubs
 
         public void Send(string name, string message)
         {
+            var customId = new CustomUserIdProvider();
+            var self = customId.GetUserId(Context.Request);
+            Clients.User(self).addNewMessageToPage("SYSTEM", "Your message was sent...");
+
             Clients.All.addNewMessageToPage(name, message);
 
             if (name == "Time")
