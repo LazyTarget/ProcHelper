@@ -9,8 +9,6 @@
         static Worker()
         {
             LocalApi = new SpotifyAPI.Local.SpotifyLocalAPI();
-            LocalApi.ListenForEvents = false;        // todo: Implement as IServicePlugin, and expose event hooks
-            //LocalApi.OnTrackChange += 
 
             WebApi = new SpotifyAPI.Web.SpotifyWebAPI();
             WebApi.UseAuth = false;

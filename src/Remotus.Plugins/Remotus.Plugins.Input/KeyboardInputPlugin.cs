@@ -36,5 +36,10 @@ namespace Remotus.Plugins.Input
             };
             return res;
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

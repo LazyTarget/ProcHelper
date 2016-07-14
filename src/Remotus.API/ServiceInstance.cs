@@ -178,11 +178,24 @@ namespace Remotus.API
 
             lock (_plugins)
             {
+                IExecutionContext context = new ExecutionContext
+                {
+                    ClientInfo = _clientInfo,
+                    Logger = new TraceLogger(),
+                    Remotus = new Remotus.API.v1.FullCtrlAPI(),
+                    //SignalR =  // todo: !
+                };
+
                 var servicePlugins = _plugins.Values.OfType<IServicePlugin>().ToList();
                 foreach (var servicePlugin in servicePlugins)
                 {
+                    // todo: Make plugin initialization async (load multiple plugins at the same time)
+
                     try
                     {
+                        if (servicePlugin.Status != ServiceStatus.Initializing)
+                            servicePlugin.Init(context);
+
                         if (servicePlugin.Status != ServiceStatus.Running)
                             servicePlugin.Start();
                     }

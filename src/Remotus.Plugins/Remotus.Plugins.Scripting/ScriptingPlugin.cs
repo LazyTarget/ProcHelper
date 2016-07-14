@@ -19,5 +19,10 @@ namespace Remotus.Plugins.Scripting
             var descriptors = scripts?.Select(ScriptFunctionDescriptor.FromScript);
             return descriptors;
         }
+
+        public void Dispose()
+        {
+            //_dataStore.Dispose();
+        }
     }
 }

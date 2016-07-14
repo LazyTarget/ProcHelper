@@ -14,6 +14,11 @@ namespace Remotus.API.v1
         public string Version { get; set; }
         public ServiceStatus Status { get; set; }
 
+        public void Init(IExecutionContext context)
+        {
+            throw new System.NotSupportedException();
+        }
+
         public void Start()
         {
             throw new System.NotSupportedException();

@@ -17,5 +17,10 @@ namespace Remotus.Plugins.Process
             yield return new StartProcessFunction.Descriptor();
             yield return new KillProcessFunction.Descriptor();
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

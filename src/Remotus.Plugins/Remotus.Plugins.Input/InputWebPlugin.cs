@@ -23,5 +23,10 @@ namespace Remotus.Plugins.Input
             //    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             //);
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }
