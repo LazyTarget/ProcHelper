@@ -77,11 +77,14 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\API\IRemotusAPI.cs" />
+    <Compile Include="Interfaces\Hub\IHubAgentFactory.cs" />
+    <Compile Include="Interfaces\Hub\IHubAgent.cs" />
     <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IComponentInstantiator.cs" />
     <Compile Include="Interfaces\IDescriptor.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
+    <Compile Include="Interfaces\IQueueEx.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Interfaces\IServerInfo.cs" />
     <Compile Include="Interfaces\IService.cs" />
@@ -117,6 +120,8 @@
     <Compile Include="Models\DefaultResponseBase.cs" />
     <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Models\FunctionArguments.cs" />
+    <Compile Include="Models\Hub\HubMessage.cs" />
+    <Compile Include="Models\Hub\HubRequest.cs" />
     <Compile Include="Models\Parameter.cs" />
     <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />

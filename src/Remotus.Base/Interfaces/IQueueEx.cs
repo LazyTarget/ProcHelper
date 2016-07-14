@@ -1,4 +1,4 @@
-﻿namespace Remotus.API.Data
+﻿namespace Remotus.Base
 {
     public interface IQueueEx<T>
     {

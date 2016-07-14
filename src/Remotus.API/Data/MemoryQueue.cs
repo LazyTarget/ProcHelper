@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
+using Remotus.Base;
 
 namespace Remotus.API.Data
 {
-    public class MemoryQueueEx<T> : IQueueEx<T>
+    public class MemoryQueue<T> : IQueueEx<T>
     {
         private readonly ConcurrentQueue<T> _queue;
 
-        public MemoryQueueEx()
+        public MemoryQueue()
         {
             _queue = new ConcurrentQueue<T>();
         }

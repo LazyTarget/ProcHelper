@@ -1,11 +1,12 @@
 ﻿using System;
+using Remotus.Base;
 
 namespace Remotus.API.Data
 {
     [Obsolete("Not yet implemented")]
-    public class DatabaseQueueEx<T> : IQueueEx<T>
+    public class DatabaseQueue<T> : IQueueEx<T>
     {
-        public DatabaseQueueEx()
+        public DatabaseQueue()
         {
 
         }

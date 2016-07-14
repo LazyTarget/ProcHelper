@@ -5,6 +5,7 @@ using Lux.Config.Xml;
 using Lux.Extensions;
 using Microsoft.Owin.Hosting;
 using Remotus.API.Data;
+using Remotus.API.Hubs.Client;
 using Remotus.Base;
 
 namespace Remotus.API
@@ -97,7 +98,7 @@ namespace Remotus.API
             _clients[clientInfo.ClientID] = clientInfo;
             return 1;
         }
-
+        
 
         protected virtual StartOptions GetStartOptions(ApiConfig config)
         {
@@ -184,6 +185,7 @@ namespace Remotus.API
                     Logger = new TraceLogger(),
                     Remotus = new Remotus.API.v1.FullCtrlAPI(),
                     //SignalR =  // todo: !
+                    HubAgentFactory = new HubAgentFactory()
                 };
 
                 var servicePlugins = _plugins.Values.OfType<IServicePlugin>().ToList();

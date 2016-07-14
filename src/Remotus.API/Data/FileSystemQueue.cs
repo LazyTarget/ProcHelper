@@ -1,10 +1,12 @@
 ﻿using System;
+using Remotus.Base;
 
 namespace Remotus.API.Data
 {
-    public class FileSystemQueueEx<T> : IQueueEx<T>
+    [Obsolete("Not yet implemented")]
+    public class FileSystemQueue<T> : IQueueEx<T>
     {
-        public FileSystemQueueEx(string directory)
+        public FileSystemQueue(string directory)
         {
             Directory = directory;
         }

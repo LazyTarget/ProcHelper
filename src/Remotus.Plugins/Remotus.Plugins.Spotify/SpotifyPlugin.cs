@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Remotus.API.Hubs.Client;
 using Remotus.Base;
 using SpotifyAPI.Local;
 
@@ -7,6 +8,9 @@ namespace Remotus.Plugins.Spotify
 {
     public class SpotifyPlugin : IFunctionPlugin, IServicePlugin
     {
+        private ClientHubManager _pluginHub;
+
+
         public string ID        => "79A54741-590C-464D-B1E9-0CC606771493";
         public string Name      => "Spotify";
         public string Version   => "1.0.0.0";
@@ -28,7 +32,16 @@ namespace Remotus.Plugins.Spotify
 
         public void Init(IExecutionContext context)
         {
+            if (Status != ServiceStatus.None &&
+                Status != ServiceStatus.Stopped)
+            {
+                // Already initialized
+                return;
+            }
+
             Status = ServiceStatus.Initializing;
+            
+            _pluginHub = new ClientHubManager(connection);
 
 
             Status = ServiceStatus.Initialized;

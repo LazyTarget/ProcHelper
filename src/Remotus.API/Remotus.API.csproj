@@ -123,14 +123,14 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
-    <Compile Include="Data\DatabaseQueueEx.cs" />
-    <Compile Include="Data\FileSystemQueueEx.cs" />
-    <Compile Include="Data\MemoryQueueEx.cs" />
-    <Compile Include="Data\IQueueEx.cs" />
+    <Compile Include="Data\DatabaseQueue.cs" />
+    <Compile Include="Data\FileSystemQueue.cs" />
+    <Compile Include="Data\MemoryQueue.cs" />
     <Compile Include="Hubs\Client\AutoReconnectService.cs" />
+    <Compile Include="Hubs\Client\HubAgentFactory.cs" />
+    <Compile Include="Hubs\Client\HubClientBuilder.cs" />
     <Compile Include="Hubs\Client\IClientHubManagerService.cs" />
     <Compile Include="Hubs\Client\ClientHubManager.cs" />
-    <Compile Include="Hubs\Client\HubRequest.cs" />
     <Compile Include="Hubs\CustomHubAuthorizeAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ClientEndpointConfig.cs" />
@@ -145,12 +145,12 @@
     <Compile Include="Hubs\ClientManager.cs" />
     <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\CustomUserIdProvider.cs" />
+    <Compile Include="Hubs\PluginHub.cs" />
     <Compile Include="Hubs\TimeHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Hubs\HubExtensions.cs" />
     <Compile Include="Hubs\HubServer.cs" />
     <Compile Include="Hubs\ExternalHub.cs" />
-    <Compile Include="Hubs\Client\HubMessage.cs" />
     <Compile Include="Hubs\MainHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />
@@ -227,10 +227,6 @@
     <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
       <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
       <Name>Remotus.Plugins.Sound</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Spotify\Remotus.Plugins.Spotify.csproj">
-      <Project>{42be24e3-f30d-468d-a304-b3214e46779f}</Project>
-      <Name>Remotus.Plugins.Spotify</Name>
     </ProjectReference>
     <ProjectReference Include="..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>

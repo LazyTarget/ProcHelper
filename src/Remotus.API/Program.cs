@@ -9,7 +9,7 @@ namespace Remotus.API
 {
     public static class Program
     {
-        internal static ServiceInstance Service;
+        internal static ServiceInstance Service { get; private set; }
 
 
         public static void Main(string[] args)

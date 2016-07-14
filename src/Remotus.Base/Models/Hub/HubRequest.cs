@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Remotus.API.Hubs.Client
+namespace Remotus.Base.Models.Hub
 {
     public class HubRequest
     {
