@@ -3,9 +3,9 @@ using Remotus.API.Models;
 
 namespace Remotus.API.Hubs
 {
-    public class Client
+    public class ConnectedClient
     {
-        public Client()
+        public ConnectedClient()
         {
             Hubs = new HashSet<string>();
         }

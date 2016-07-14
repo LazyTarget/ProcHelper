@@ -53,6 +53,10 @@
       <HintPath>..\packages\Lux.1.0.2\lib\net45\Lux.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
@@ -118,6 +122,8 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
+    <Compile Include="Hubs\Client\ClientHubManager.cs" />
+    <Compile Include="Hubs\Client\HubRequest.cs" />
     <Compile Include="Hubs\CustomHubAuthorizeAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ClientEndpointConfig.cs" />
@@ -128,13 +134,14 @@
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
-    <Compile Include="Hubs\Client.cs" />
+    <Compile Include="Hubs\ConnectedClient.cs" />
     <Compile Include="Hubs\ClientManager.cs" />
     <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Hubs\HubExtensions.cs" />
     <Compile Include="Hubs\HubServer.cs" />
     <Compile Include="Hubs\ExternalHub.cs" />
+    <Compile Include="Hubs\Client\HubMessage.cs" />
     <Compile Include="Hubs\MainHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />

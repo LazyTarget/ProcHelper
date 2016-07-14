@@ -11,15 +11,15 @@ namespace Remotus.API.Hubs
 {
     public class ClientManager
     {
-        private readonly ConcurrentDictionary<string, Client> _clients;
+        private readonly ConcurrentDictionary<string, ConnectedClient> _clients;
 
         public ClientManager()
         {
-            _clients = new ConcurrentDictionary<string, Client>();
+            _clients = new ConcurrentDictionary<string, ConnectedClient>();
         }
 
 
-        public Client GetClient(string connectionId)
+        public ConnectedClient GetClient(string connectionId)
         {
             var client = _clients.ContainsKey(connectionId)
                              ? _clients[connectionId]
@@ -35,7 +35,7 @@ namespace Remotus.API.Hubs
             var client = GetClient(hub.Context.ConnectionId);
             if (client == null)
             {
-                client = new Client();
+                client = new ConnectedClient();
                 client.Handshake = handshake;
                 client.ConnectionId = hub.Context.ConnectionId;
             }
