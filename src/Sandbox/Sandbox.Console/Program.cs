@@ -310,10 +310,10 @@ namespace Sandbox.Console
                 .As('a', "auto")
                 .SetDefault(false)
                 .WithDescription("Whether to automatically reconnect");
-            p.Setup(x => x.ReconnectInterval)
-                .As('t')
-                .SetDefault(TimeSpan.FromSeconds(3))
-                .WithDescription("The duration between reconnect tries");
+            //p.Setup(x => x.ReconnectInterval)
+            //    .As('t')
+            //    .SetDefault(TimeSpan.FromSeconds(3))
+            //    .WithDescription("The duration between reconnect tries");
             p.SetupHelp("help");
 
             var args = a.Verb == "reconnect"

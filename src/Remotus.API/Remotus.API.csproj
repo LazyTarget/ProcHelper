@@ -122,6 +122,10 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
+    <Compile Include="Data\DatabaseQueueEx.cs" />
+    <Compile Include="Data\FileSystemQueueEx.cs" />
+    <Compile Include="Data\MemoryQueueEx.cs" />
+    <Compile Include="Data\IQueueEx.cs" />
     <Compile Include="Hubs\Client\AutoReconnectService.cs" />
     <Compile Include="Hubs\Client\IClientHubManagerService.cs" />
     <Compile Include="Hubs\Client\ClientHubManager.cs" />

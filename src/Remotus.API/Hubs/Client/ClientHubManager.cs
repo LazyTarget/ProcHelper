@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Client.Hubs;
+using Remotus.API.Data;
 
 namespace Remotus.API.Hubs.Client
 {
@@ -13,13 +14,13 @@ namespace Remotus.API.Hubs.Client
     {
         private readonly IDictionary<string, IHubProxy> _hubProxies;
         private readonly HubConnection _connection;
-        private readonly ConcurrentQueue<HubRequest> _messageQueue;
+        private readonly IQueueEx<HubRequest> _messageQueue;
         private bool _enableQueueing;
 
         public ClientHubManager(HubConnection connection)
         {
             _hubProxies = new Dictionary<string, IHubProxy>();
-            _messageQueue = new ConcurrentQueue<HubRequest>();
+            _messageQueue = new MemoryQueueEx<HubRequest>();
             _enableQueueing = true;
             _connection = connection;
             _connection.StateChanged += Connection_OnStateChanged;
@@ -153,7 +154,8 @@ namespace Remotus.API.Hubs.Client
                 return;
             }
 
-            var messageCount = _messageQueue.Count;
+            //var messageCount = _messageQueue.Count;   // todo?
+            var messageCount = 1;
             if (messageCount > 0)
             {
                 //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
