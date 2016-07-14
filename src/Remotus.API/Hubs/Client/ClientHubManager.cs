@@ -9,7 +9,7 @@ using Microsoft.AspNet.SignalR.Client.Hubs;
 
 namespace Remotus.API.Hubs.Client
 {
-    public class ClientHubManager
+    public class ClientHubManager : IDisposable
     {
         private readonly IDictionary<string, IHubProxy> _hubProxies;
         private readonly HubConnection _connection;
@@ -25,12 +25,29 @@ namespace Remotus.API.Hubs.Client
             _connection.StateChanged += Connection_OnStateChanged;
         }
 
+        public HubConnection Connection
+        {
+            get { return _connection; }
+        }
 
         public bool Connected
         {
-            get { return _connection.State == ConnectionState.Connected; }
+            get { return _connection?.State == ConnectionState.Connected; }
         }
 
+
+        public virtual IHubProxy InitHubProxy(string hubName)
+        {
+            IHubProxy hubProxy;
+            if (_hubProxies.ContainsKey(hubName))
+                hubProxy = _hubProxies[hubName];
+            else
+            {
+                hubProxy = _connection.CreateHubProxy(hubName);
+                _hubProxies[hubName] = hubProxy;
+            }
+            return hubProxy;
+        }
 
         public virtual IHubProxy GetHubProxy(string hubName)
         {
@@ -44,7 +61,7 @@ namespace Remotus.API.Hubs.Client
         }
 
 
-        protected virtual Subscription Subscribe(string hubName, string eventName)
+        public virtual Subscription Subscribe(string hubName, string eventName)
         {
             if (string.IsNullOrWhiteSpace(hubName))
                 throw new ArgumentNullException(nameof(hubName));
@@ -200,5 +217,9 @@ namespace Remotus.API.Hubs.Client
             }
         }
 
+        public void Dispose()
+        {
+
+        }
     }
 }

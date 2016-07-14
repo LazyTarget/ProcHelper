@@ -122,6 +122,8 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
+    <Compile Include="Hubs\Client\AutoReconnectService.cs" />
+    <Compile Include="Hubs\Client\IClientHubManagerService.cs" />
     <Compile Include="Hubs\Client\ClientHubManager.cs" />
     <Compile Include="Hubs\Client\HubRequest.cs" />
     <Compile Include="Hubs\CustomHubAuthorizeAttribute.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Hubs\ConnectedClient.cs" />
     <Compile Include="Hubs\ClientManager.cs" />
     <Compile Include="Hubs\ConnectionManager.cs" />
+    <Compile Include="Hubs\TimeHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Hubs\HubExtensions.cs" />
     <Compile Include="Hubs\HubServer.cs" />
