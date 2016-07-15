@@ -32,7 +32,7 @@ namespace Remotus.API.Hubs
         protected virtual bool ValidateHandshake(HubHandshake handshake)
         {
             bool result = false;
-            if (!string.IsNullOrEmpty(handshake?.ClientKey))
+            if (!string.IsNullOrEmpty(handshake?.AgentId))
             {
                 result = true;
             }

@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace Remotus.Base
 {
     public interface IHubAgentFactory
     {
-        IHubAgent Create(string hubName, ICredentials credentials);
+        IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null);
+        IHubAgentManager Create(IEnumerable<string> hubNames, ICredentials credentials, IDictionary<string, string> queryString = null);
     }
 }

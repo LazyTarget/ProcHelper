@@ -1,5 +1,6 @@
 ﻿using System;
 using Remotus.Base;
+using Remotus.Base.Models.Hub;
 
 namespace Remotus.API.Data
 {
@@ -14,14 +15,14 @@ namespace Remotus.API.Data
         public string Directory { get; private set; }
 
 
-        public void Enqueue(IHubMessage item)
+        public void Enqueue(HubRequest item)
         {
             // todo: serialize to file...
 
             throw new NotImplementedException();
         }
 
-        public bool TryDequeue(out IHubMessage item)
+        public bool TryDequeue(out HubRequest item)
         {
             // todo: deserialize file, also removing it...
 

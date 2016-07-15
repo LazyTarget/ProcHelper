@@ -14,13 +14,15 @@ using Newtonsoft.Json.Linq;
 using Remotus;
 using Remotus.API.Hubs.Client;
 using Remotus.API.Models;
+using Remotus.Base;
+using Remotus.Base.Models.Hub;
 
 namespace Sandbox.Console
 {
     static class Program
     {
-        private static ClientHubManager _clientHubManager;
-        private static AutoReconnectService _autoReconnectService;
+        private static IHubAgentFactory _hubAgentFactory = new HubAgentFactory();
+        private static readonly IDictionary<string, IHubAgent> _hubs = new Dictionary<string, IHubAgent>();
         private static ReconnectArguments _reconnectArgs;
         private static ZeroconfService.NetServiceBrowser _zeroconfBrowser;
 
@@ -55,8 +57,15 @@ namespace Sandbox.Console
                     }
                     else if (input == "exit")
                     {
-                        if (_clientHubManager?.Connection != null)
-                            DisconnectHub();
+                        for (var i = 0; i < _hubs.Count; i++)
+                        {
+                            var pair = _hubs.ElementAt(i);
+                            var hub = pair.Value;
+                            hub?.Dispose();
+                            var r = _hubs.Remove(pair);
+
+                            i--;
+                        }
                         break;
                     }
 
@@ -163,15 +172,16 @@ namespace Sandbox.Console
             p.IsCaseSensitive = false;
             p.Setup(x => x.Host)
                 .As('h', "host")
-                .SetDefault("localhost")
+                //.SetDefault("localhost")
                 .WithDescription("Enter the host address to the SignalR server");
             p.Setup(x => x.Port)
                 .As('p', "port")
-                .SetDefault(9000)
+                //.SetDefault(9000)
                 .WithDescription("Enter the port to the SignalR server");
             p.Setup(x => x.Hubs)
                 .As("hubs")
-                .WithDescription("Enter the hubs to connect to. Seperate with commas");
+                .Required()
+                .WithDescription("Enter the hubs to connect to. Seperate with commas or spaces");
             p.SetupHelp("help");
 
             var args = a.Verb == "connect" ||
@@ -197,20 +207,22 @@ namespace Sandbox.Console
         private static void ConnectHub(ConnectArguments arguments = null)
         {
             arguments = arguments ?? new ConnectArguments();
+            if (arguments.Hubs == null)
+                throw new ArgumentNullException(nameof(arguments.Hubs));
 
             var url = $"http://{arguments.Host}:{arguments.Port}/signalr";
 
-            if (_clientHubManager?.Connection != null)
+            if (_hubs?.Connection != null)
             {
-                if (_clientHubManager.Connection?.Url == url)
+                if (_hubs.Connection?.Url == url)
                 {
-                    if (_clientHubManager.Connection.State == ConnectionState.Disconnected)
+                    if (_hubs.Connection.State == ConnectionState.Disconnected)
                     {
                         System.Console.WriteLine("State is Disconnected. Will try to reconnect...");
                         ReconnectHub();
                     }
                     else
-                        System.Console.WriteLine($"Already connected to specified server... ({_clientHubManager.Connection.State})");
+                        System.Console.WriteLine($"Already connected to specified server... ({_hubs.Connection.State})");
                     return;
                 }
                 else
@@ -220,67 +232,14 @@ namespace Sandbox.Console
                 }
             }
 
+            ICredentials credentials;
+            credentials = CredentialCache.DefaultNetworkCredentials;
+            credentials = CredentialCache.DefaultCredentials;
+            credentials = new NetworkCredential("Sandbox", "asdkljWuzux2", Environment.UserDomainName);
 
-            var customJsonSerializerSettings = new CustomJsonSerializerSettings();
-            var jsonSerializerSettings = customJsonSerializerSettings.Settings;
-            var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
-            jsonSerializer.Formatting = Formatting.None;
-
-
-            var handshake = new HubHandshake();
-            handshake.MachineName = Environment.MachineName;
-            handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            handshake.UserName = Environment.UserName;
-            handshake.UserDomainName = Environment.UserDomainName;
-            handshake.ClientVersion = "1.0";
-            handshake.ClientKey = "qSdhjkZ672zzz";
-            handshake.Address = new Uri("http://localhost:9000");
-
-            // Hub context
-            var queryString = new Dictionary<string, string>();
-            queryString["hub-version"] = "1.0";
-            queryString["machine-name"] = Environment.MachineName;
-            queryString["username"] = Environment.UserName;
-            queryString["UserDomainName"] = Environment.UserDomainName;
-
-            var stringBuilder = new StringBuilder();
-            var stringWriter = new StringWriter(stringBuilder);
-            jsonSerializer.Serialize(stringWriter, handshake);
-            var handshakeJson = stringBuilder.ToString();
-
-            // Instantiate
-            var connection = new HubConnection(url, queryString);
-            connection.JsonSerializer = jsonSerializer;
-            connection.StateChanged += Connection_OnStateChanged;
-            connection.Headers["App-Handshake"] = handshakeJson;
-            connection.CookieContainer = connection.CookieContainer ?? new CookieContainer();
-
-            var authObj = new
-            {
-                UserId = "fjskDhsucC",
-                UserName = Environment.UserName,
-            };
-            stringBuilder = new StringBuilder();
-            stringWriter = new StringWriter(stringBuilder);
-            jsonSerializer.Serialize(stringWriter, authObj);
-            var authJson = stringBuilder.ToString();
-            authJson = HttpUtility.UrlEncode(authJson);
-
-            var authCookie = new Cookie("auth", authJson, "/", arguments.Host);
-            connection.CookieContainer.Add(authCookie);
-
-            var clientHubManager = new ClientHubManager(connection);
-
-            // Hubs
-            if (arguments.Hubs != null)
-            {
-                var hubs = arguments.Hubs.SelectMany(x => x.Split(','));
-                foreach (var hubName in hubs)
-                {
-                    System.Console.WriteLine($"Initializing hub proxy for '{hubName}'");
-                    clientHubManager.InitHubProxy(hubName);
-                }
-            }
+            var hubNames = arguments.Hubs.SelectMany(x => x.Split(',')).ToArray();
+            var hubs = _hubAgentFactory.Create(hubNames, credentials);
+            
 
             System.Console.WriteLine("Connecting to SignalR server...");
             var timeout = arguments.Timeout;
@@ -293,7 +252,7 @@ namespace Sandbox.Console
                 System.Console.WriteLine("Token: " + connection.ConnectionToken);
             }
 
-            _clientHubManager = clientHubManager;
+            _hubs = clientHubManager;
 
             var autoReconnectService = new AutoReconnectService();
             if (_reconnectArgs != null)
@@ -356,7 +315,7 @@ namespace Sandbox.Console
             {
                 System.Console.WriteLine("Re-connecting to hubs...");
                 var timeout = arguments.Timeout;
-                var task = _clientHubManager.Connection.Start();
+                var task = _hubs.Connection.Start();
                 task.Wait(timeout);
             }
         }
@@ -398,7 +357,7 @@ namespace Sandbox.Console
 
         private static void DisconnectHub(DisconnectArguments arguments = null)
         {
-            if (_clientHubManager?.Connection == null)
+            if (_hubs?.Connection == null)
             {
                 System.Console.WriteLine("No server connected...");
                 return;
@@ -409,23 +368,23 @@ namespace Sandbox.Console
             {
                 var msg = arguments.ForceMessage;
                 var error = new OperationCanceledException(msg);
-                _clientHubManager?.Connection.Stop(error);
+                _hubs?.Connection.Stop(error);
             }
             else
             {
-                _clientHubManager?.Connection.Stop();
+                _hubs?.Connection.Stop();
             }
 
 
             if (_autoReconnectService != null)
             {
-                if (_clientHubManager != null)
-                    _autoReconnectService.Unregister(_clientHubManager);
+                if (_hubs != null)
+                    _autoReconnectService.Unregister(_hubs);
                 _autoReconnectService = null;
             }
-            _clientHubManager?.Connection.Dispose();
-            _clientHubManager?.Dispose();
-            _clientHubManager = null;
+            _hubs?.Connection.Dispose();
+            _hubs?.Dispose();
+            _hubs = null;
         }
 
 
@@ -470,7 +429,7 @@ namespace Sandbox.Console
 
         private static void SubscribeHub(SubscribeArguments arguments)
         {
-            if (_clientHubManager?.Connection == null)
+            if (_hubs?.Connection == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
@@ -478,7 +437,7 @@ namespace Sandbox.Console
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            var subscription = _clientHubManager.Subscribe(arguments.HubName, arguments.EventName);
+            var subscription = _hubs.Subscribe(arguments.HubName, arguments.EventName);
             if (subscription != null)
             {
                 subscription.Received -= OnHubReceive;
@@ -522,7 +481,7 @@ namespace Sandbox.Console
 
         private static void UnsubscribeHub(UnsubscribeArguments arguments)
         {
-            if (_clientHubManager?.Connection == null)
+            if (_hubs?.Connection == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
@@ -530,7 +489,7 @@ namespace Sandbox.Console
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
             
-            var subscription = _clientHubManager.Subscribe(arguments.HubName, arguments.EventName);
+            var subscription = _hubs.Subscribe(arguments.HubName, arguments.EventName);
             if (subscription != null)
             {
                 subscription.Received -= OnHubReceive;
@@ -580,7 +539,7 @@ namespace Sandbox.Console
 
         private static void SendToHub(SendToHubArguments arguments)
         {
-            if (_clientHubManager?.Connection == null)
+            if (_hubs?.Connection == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
@@ -602,7 +561,7 @@ namespace Sandbox.Console
                 Queuable = arguments.Queuable,
             };
             var timeout = arguments.Timeout;
-            var task = _clientHubManager.Invoke(message);
+            var task = _hubs.Invoke(message);
             task.Wait(timeout);
         }
 

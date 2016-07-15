@@ -1,5 +1,6 @@
 ﻿using System;
 using Remotus.Base;
+using Remotus.Base.Models.Hub;
 
 namespace Remotus.API.Data
 {
@@ -12,14 +13,14 @@ namespace Remotus.API.Data
         }
 
 
-        public void Enqueue(IHubMessage item)
+        public void Enqueue(HubRequest item)
         {
             // todo: serialize and store in some database...
 
             throw new NotImplementedException();
         }
 
-        public bool TryDequeue(out IHubMessage item)
+        public bool TryDequeue(out HubRequest item)
         {
             // todo: read, deserialize and remove from database...
 

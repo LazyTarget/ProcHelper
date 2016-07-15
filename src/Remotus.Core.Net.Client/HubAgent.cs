@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
+using Remotus.Base.Models.Hub;
 
 namespace Remotus.Core.Net.Client
 {
@@ -14,7 +15,8 @@ namespace Remotus.Core.Net.Client
         private readonly HubConnection _hubConnection;
         private readonly IMessageCache _messageCache;
         private readonly IHubProxy _hubProxy;
-        
+        private bool _isDisposing;
+
         public HubAgent(string hubName, HubConnection hubConnection, IMessageCache messageCache)
         {
             if (string.IsNullOrWhiteSpace(hubName))
@@ -30,7 +32,7 @@ namespace Remotus.Core.Net.Client
         }
 
 
-        public string HubName { get; private set; }
+        public string HubName { get; }
 
         public bool Connected => _hubConnection?.State == ConnectionState.Connected;
 
@@ -41,7 +43,16 @@ namespace Remotus.Core.Net.Client
             if (!Connected)
             {
                 if (_messageCache != null && message.Queuable)
-                    _messageCache.Enqueue(message);
+                {
+                    var request = new HubRequest
+                    {
+                        HubName = HubName,
+                        ConnectionId = _hubConnection?.ConnectionId,
+                        //AgentId = _hubConnection.GetAgentId(),
+                        Message = message,
+                    };
+                    _messageCache.Enqueue(request);
+                }
 
                 task = Task.Factory.StartNew((msg) =>
                 {
@@ -78,19 +89,31 @@ namespace Remotus.Core.Net.Client
         }
 
 
+        public async Task Connect()
+        {
+            var connection = _hubConnection;
+            if (connection != null)
+            {
+                await connection.Start();
+            }
+        }
+
+        public void Disconnect()
+        {
+            var error = new Exception("My custom exc. Closing hub connection...");
+            _hubConnection?.Stop(error);
+        }
+
+
         private void HubConnection_OnStateChanged(StateChange stateChange)
         {
+            if (_isDisposing)
+                return;
+
             if (stateChange.NewState == ConnectionState.Connected)
             {
                 // Re-gained connection
                 ThreadPool.QueueUserWorkItem(ProcessSendQueue);
-            }
-            else if (stateChange.NewState == ConnectionState.Disconnected)
-            {
-                // Got disconnected
-                // todo: check if Disconnect() was called explicitly
-
-                var r = _hubConnection.EnsureReconnecting();
             }
         }
 
@@ -98,11 +121,15 @@ namespace Remotus.Core.Net.Client
         private void ProcessSendQueue(object state)
         {
             var sendCount = 0;
-            var failed = new List<IHubMessage>();
+            var failed = new List<HubRequest>();
             
             if (!Connected)
             {
                 //StartReconnectionTimer();
+                return;
+            }
+            if (_isDisposing)
+            {
                 return;
             }
 
@@ -112,12 +139,18 @@ namespace Remotus.Core.Net.Client
             {
                 //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
 
-                IHubMessage msg;
-                while (_messageCache.TryDequeue(out msg))
+                HubRequest req;
+                while (_messageCache.TryDequeue(out req))
                 {
                     try
                     {
-                        var task = Invoke(msg);
+                        if (req.HubName != HubName)
+                        {
+                            // todo: Dequeued, will never run?
+                            continue;
+                        }
+
+                        var task = Invoke(req.Message);
                         task.Wait();
 
                         sendCount++;
@@ -128,7 +161,7 @@ namespace Remotus.Core.Net.Client
                         //LogException(ex);
 
                         if (!(ex is NotImplementedException || ex is NotSupportedException))
-                            failed.Add(msg);
+                            failed.Add(req);
                     }
                     finally
                     {
@@ -139,7 +172,7 @@ namespace Remotus.Core.Net.Client
                 if (failed.Any())
                 {
                     //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
-                    failed.ForEach(_messageCache.Enqueue);
+                    failed.ForEach(item => _messageCache.Enqueue(item));
 
                     // todo: timer to retry?
                 }
@@ -165,7 +198,7 @@ namespace Remotus.Core.Net.Client
 
         public void Dispose()
         {
-            
+            _isDisposing = true;
         }
     }
 }

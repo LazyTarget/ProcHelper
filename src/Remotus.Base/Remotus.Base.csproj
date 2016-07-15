@@ -79,6 +79,7 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\API\IRemotusAPI.cs" />
     <Compile Include="Interfaces\Net\HubSubscription.cs" />
+    <Compile Include="Interfaces\Net\IHubAgentManager.cs" />
     <Compile Include="Interfaces\Net\IHubSubscription.cs" />
     <Compile Include="Interfaces\Net\IHubMessage.cs" />
     <Compile Include="Interfaces\Net\IHubAgentFactory.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Interfaces\IFunctionDescriptor.cs" />
     <Compile Include="Interfaces\IFunctionPlugin.cs" />
     <Compile Include="Interfaces\IFunctionResult.cs" />
+    <Compile Include="Interfaces\Net\Payloads\AuthCredentials.cs" />
     <Compile Include="Interfaces\Workers\IInputHelper.cs" />
     <Compile Include="Interfaces\ILink.cs" />
     <Compile Include="Interfaces\IParameter.cs" />
