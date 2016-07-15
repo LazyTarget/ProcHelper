@@ -1,13 +1,25 @@
-﻿namespace Remotus.Base.Models.Hub
+﻿using System;
+using System.Collections.Generic;
+
+namespace Remotus.Base.Models.Hub
 {
-    public class HubMessage
+    public class HubMessage : IHubMessage
     {
-        public string Hub { get; set; }
+        //public string Hub { get; set; }
 
         public string Method { get; set; }
 
         public object[] Args { get; set; }
 
         public bool Queuable { get; set; }
+        
+
+        IReadOnlyList<object> IHubMessage.Args
+        {
+            get
+            {
+                return new ArraySegment<object>(Args);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Remotus.API.Hubs.Client;
+using System.Threading.Tasks;
 using Remotus.Base;
 using SpotifyAPI.Local;
 
@@ -8,7 +8,8 @@ namespace Remotus.Plugins.Spotify
 {
     public class SpotifyPlugin : IFunctionPlugin, IServicePlugin
     {
-        private ClientHubManager _pluginHub;
+        private ServiceStatus _status;
+        //private ClientHubManager _pluginHub;
 
 
         public string ID        => "79A54741-590C-464D-B1E9-0CC606771493";
@@ -27,10 +28,25 @@ namespace Remotus.Plugins.Spotify
             yield return new GetProfileFunction.Descriptor();
         }
 
-        public ServiceStatus Status { get; private set; }
+        public ServiceStatus Status
+        {
+            get { return _status; }
+            private set
+            {
+                var old = _status;
+                if (old != value)
+                {
+                    _status = value;
+                    var e = new ServiceStatusChangedEventArgs(old, value);
+                    InvokeOnStatusChanged(e);
+                }
+            }
+        }
+
+        public event EventHandler<ServiceStatusChangedEventArgs> OnStatusChanged;
 
 
-        public void Init(IExecutionContext context)
+        public async Task Init(IExecutionContext context)
         {
             if (Status != ServiceStatus.None &&
                 Status != ServiceStatus.Stopped)
@@ -40,15 +56,17 @@ namespace Remotus.Plugins.Spotify
             }
 
             Status = ServiceStatus.Initializing;
-            
-            _pluginHub = new ClientHubManager(connection);
+
+
+            //var agent = context.HubAgentFactory.Create("Spotify");
+            //_pluginHub = new ClientHubManager(connection);
 
 
             Status = ServiceStatus.Initialized;
         }
 
 
-        public void Start()
+        public async Task Start()
         {
             Status = ServiceStatus.Starting;
 
@@ -63,7 +81,7 @@ namespace Remotus.Plugins.Spotify
         }
 
 
-        public void Stop()
+        public async Task Stop()
         {
             Status = ServiceStatus.Stopping;
 
@@ -99,10 +117,24 @@ namespace Remotus.Plugins.Spotify
         }
 
 
-        public void Dispose()
+
+        protected virtual void InvokeOnStatusChanged(ServiceStatusChangedEventArgs e)
         {
-            
+            try
+            {
+                // todo: Run in seperate thread?
+                OnStatusChanged?.Invoke(this, e);
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
+
+        public void Dispose()
+        {
+
+        }
     }
 }

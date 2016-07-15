@@ -12,19 +12,20 @@ using Remotus.Base.Models.Hub;
 
 namespace Remotus.API.Hubs.Client
 {
+    [Obsolete("Use IHubAgent")]
     public class ClientHubManager : IDisposable
     {
         private readonly IDictionary<string, IHubProxy> _hubProxies;
         private readonly HubConnection _connection;
-        private readonly IQueueEx<HubRequest> _messageQueue;
+        private readonly IMessageCache<HubRequest> _messageQueue;
         private bool _enableQueueing;
 
         public ClientHubManager(HubConnection connection)
-            : this(connection, new MemoryQueue<HubRequest>())
+            : this(connection, new MessageMemoryCache<HubRequest>())
         {
         }
 
-        public ClientHubManager(HubConnection connection, IQueueEx<HubRequest> messageQueue)
+        public ClientHubManager(HubConnection connection, IMessageCache<HubRequest> messageQueue)
         {
             _hubProxies = new Dictionary<string, IHubProxy>();
             _messageQueue = messageQueue;

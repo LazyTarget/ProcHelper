@@ -4,22 +4,22 @@ using Remotus.Base;
 namespace Remotus.API.Data
 {
     [Obsolete("Not yet implemented")]
-    public class DatabaseQueue<T> : IQueueEx<T>
+    public class MessageDatabaseCache : IMessageCache
     {
-        public DatabaseQueue()
+        public MessageDatabaseCache()
         {
 
         }
 
 
-        public void Enqueue(T item)
+        public void Enqueue(IHubMessage item)
         {
             // todo: serialize and store in some database...
 
             throw new NotImplementedException();
         }
 
-        public bool TryDequeue(out T item)
+        public bool TryDequeue(out IHubMessage item)
         {
             // todo: read, deserialize and remove from database...
 

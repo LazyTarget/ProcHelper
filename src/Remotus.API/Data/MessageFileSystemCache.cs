@@ -4,9 +4,9 @@ using Remotus.Base;
 namespace Remotus.API.Data
 {
     [Obsolete("Not yet implemented")]
-    public class FileSystemQueue<T> : IQueueEx<T>
+    public class MessageFileSystemCache : IMessageCache
     {
-        public FileSystemQueue(string directory)
+        public MessageFileSystemCache(string directory)
         {
             Directory = directory;
         }
@@ -14,14 +14,14 @@ namespace Remotus.API.Data
         public string Directory { get; private set; }
 
 
-        public void Enqueue(T item)
+        public void Enqueue(IHubMessage item)
         {
             // todo: serialize to file...
 
             throw new NotImplementedException();
         }
 
-        public bool TryDequeue(out T item)
+        public bool TryDequeue(out IHubMessage item)
         {
             // todo: deserialize file, also removing it...
 
