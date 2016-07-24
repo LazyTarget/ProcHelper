@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Lux.Config.Xml;
 using Lux.Extensions;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using Remotus.API.Data;
+using Remotus.API.Hubs;
 using Remotus.API.Hubs.Client;
+using Remotus.API.v1;
 using Remotus.Base;
+using Remotus.Base.Models.Payloads;
 
 namespace Remotus.API
 {
@@ -60,6 +64,12 @@ namespace Remotus.API
                     {
                         foreach (var plugin in plugs)
                         {
+                            var servicePlugin = plugin as IServicePlugin;
+                            if (servicePlugin != null)
+                            {
+                                servicePlugin.OnStatusChanged -= ServicePlugin_OnStatusChanged;
+                                servicePlugin.OnStatusChanged += ServicePlugin_OnStatusChanged;
+                            }
                             _plugins[plugin.Name] = plugin;
                         }
                     }
@@ -261,6 +271,21 @@ namespace Remotus.API
 
 
             _clients.Clear();
+        }
+
+
+        private void ServicePlugin_OnStatusChanged(object sender, ServiceStatusChangedEventArgs args)
+        {
+            var hub = GlobalHost.ConnectionManager.GetHubContext<AgentHub>();
+
+            var plugin = sender as IServicePlugin;
+            var agentId = Program.Service?.ClientInfo?.ClientID;
+            var componentDesc = new ComponentDescriptor(plugin);
+            var model = new PluginStatusChanged(agentId, componentDesc, args.OldStatus, args.NewStatus);
+
+
+            System.Console.WriteLine("Plugin '{0}' state changed: {1} => {2}", model.Plugin?.Name, model.OldStatus, model.NewStatus);
+            hub.Clients.All.OnPluginStateChanged(model);
         }
 
 

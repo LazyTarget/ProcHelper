@@ -1,4 +1,6 @@
-﻿using Remotus.Base;
+﻿using System;
+using System.Threading.Tasks;
+using Remotus.Base;
 
 namespace Remotus.API.v1
 {
@@ -14,17 +16,19 @@ namespace Remotus.API.v1
         public string Version { get; set; }
         public ServiceStatus Status { get; set; }
 
-        public void Init(IExecutionContext context)
+        public event EventHandler<ServiceStatusChangedEventArgs> OnStatusChanged;
+
+        public Task Init(IExecutionContext context)
         {
             throw new System.NotSupportedException();
         }
 
-        public void Start()
+        public Task Start()
         {
             throw new System.NotSupportedException();
         }
 
-        public void Stop()
+        public Task Stop()
         {
             throw new System.NotSupportedException();
         }

@@ -21,8 +21,12 @@ namespace Remotus.API.Hubs.Client
         public HubAgentFactory()
         {
             _apiConfig = ServiceInstance.LoadApiConfig();
+            Host = _apiConfig.ServerApiAddress.Host;
+            Port = _apiConfig.ServerApiAddress.Port;
         }
 
+        public string Host { get; set; }
+        public int Port { get; set; }
 
         
         public IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
@@ -53,8 +57,10 @@ namespace Remotus.API.Hubs.Client
         {
             _apiConfig = _apiConfig ?? ServiceInstance.LoadApiConfig();
 
-            var host = _apiConfig.ServerApiAddress.Host;
-            var port = _apiConfig.ServerApiAddress.Port;
+            //var host = _apiConfig.ServerApiAddress.Host;
+            //var port = _apiConfig.ServerApiAddress.Port;
+            var host = Host;
+            var port = Port;
             var url = $"http://{host}:{port}/signalr";
             var uri = new Uri(url);
 

@@ -144,6 +144,7 @@
     <Compile Include="Hubs\ClientManager.cs" />
     <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\CustomUserIdProvider.cs" />
+    <Compile Include="Hubs\AgentHub.cs" />
     <Compile Include="Hubs\PluginHub.cs" />
     <Compile Include="Hubs\TimeHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
@@ -214,6 +215,10 @@
     <ProjectReference Include="..\Remotus.Core.Net.Client\Remotus.Core.Net.Client.csproj">
       <Project>{dc9f7067-0058-46b6-bb5b-32fb5e4f9a4e}</Project>
       <Name>Remotus.Core.Net.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Input\Remotus.Plugins.Input.csproj">
+      <Project>{89ef6d13-e726-466f-a99a-e43c3665ed49}</Project>
+      <Name>Remotus.Plugins.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Process\Remotus.Plugins.Process.csproj">
       <Project>{1a5291c5-bbb7-4924-bc67-8ee3d6fc5bf4}</Project>
