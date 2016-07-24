@@ -13,8 +13,15 @@ namespace Remotus.API.Hubs
             // todo: more security!
             // todo: decode/decrypt, etc.
 
-            var cookie = request.Cookies["auth"];
-            var json = cookie.Value;
+            var cookie = request.Cookies.ContainsKey("auth")
+                ? request.Cookies["auth"]
+                : null;
+            var json = cookie?.Value;
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
+
             json = HttpUtility.UrlDecode(json);
 
             JsonSerializer serializer = request.Environment.ContainsKey("app.serializer")

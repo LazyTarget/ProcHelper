@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Remotus.Base;
+using Remotus.Base.Models.Hub;
+using Remotus.Base.Models.Payloads;
 using SpotifyAPI.Local;
 
 namespace Remotus.Plugins.Spotify
@@ -60,6 +64,37 @@ namespace Remotus.Plugins.Spotify
 
             //var agent = context.HubAgentFactory.Create("Spotify");
             //_pluginHub = new ClientHubManager(connection);
+
+
+            Action act = async () =>
+            {
+                var diagHub = context.HubAgentFactory.Create("DiagnosticsHub", null);
+                await diagHub.Connect();
+
+                while (true)
+                {
+                    var m1 = new DebugMessage("null", null, "Mesg1", 1);
+                    var m2 = new DebugMessage("null", null, "Mesg2", 2);
+                    var m3 = new DebugMessage("null", null, "Mesg2", 3);
+                    var m4 = new DebugMessage("null", null, "Mesg2", 4);
+                    var msg = new HubMessage();
+                    msg.Method = "Write";
+                    msg.Args = new[] { JToken.FromObject(m1) };
+                    await diagHub.Invoke(msg);
+                    msg.Args = new[] { JToken.FromObject(m2.Message) };
+                    await diagHub.Invoke(msg);
+                    msg.Args = new[] { m3.Message };
+                    await diagHub.Invoke(msg);
+                    msg.Args = new[] { m4.Message };
+                    await diagHub.Invoke(msg);
+
+                    Thread.Sleep(1500);
+                }
+            };
+
+#if DEBUG
+            ThreadPool.QueueUserWorkItem(state => act());
+#endif
 
 
             Status = ServiceStatus.Initialized;

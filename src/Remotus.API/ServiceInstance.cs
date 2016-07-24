@@ -276,7 +276,7 @@ namespace Remotus.API
 
         private void ServicePlugin_OnStatusChanged(object sender, ServiceStatusChangedEventArgs args)
         {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<AgentHub>();
+            var agentHub = GlobalHost.ConnectionManager.GetHubContext<AgentHub>();
 
             var plugin = sender as IServicePlugin;
             var agentId = Program.Service?.ClientInfo?.ClientID;
@@ -284,8 +284,14 @@ namespace Remotus.API
             var model = new PluginStatusChanged(agentId, componentDesc, args.OldStatus, args.NewStatus);
 
 
-            System.Console.WriteLine("Plugin '{0}' state changed: {1} => {2}", model.Plugin?.Name, model.OldStatus, model.NewStatus);
-            hub.Clients.All.OnPluginStateChanged(model);
+            var msg = string.Format("Plugin '{0}' status changed: {1} => {2}", model.Plugin?.Name, model.OldStatus, model.NewStatus);
+            System.Console.WriteLine(msg);
+            agentHub.Clients.All.OnPluginStatusChanged(model);
+
+
+            var msgModel = new DebugMessage(agentId, null, msg, 2);
+            var diagHub = GlobalHost.ConnectionManager.GetHubContext<DiagnosticsHub>();
+            diagHub.Clients.Group("ListenTo_" + agentId).OnDebugMessage(msgModel);
         }
 
 

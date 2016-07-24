@@ -127,6 +127,7 @@
     <Compile Include="Data\MessageFileSystemCache.cs" />
     <Compile Include="Data\MessageMemoryCache.cs" />
     <Content Include="Hubs\Client\AutoReconnectService.cs" />
+    <Compile Include="Hubs\DiagnosticsHub.cs" />
     <Compile Include="Hubs\Client\HubAgentFactory.cs" />
     <Content Include="Hubs\Client\HubClientBuilder.cs" />
     <Content Include="Hubs\Client\ClientHubManager.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\CustomUserIdProvider.cs" />
     <Compile Include="Hubs\AgentHub.cs" />
+    <Compile Include="Hubs\HubBase.cs" />
     <Compile Include="Hubs\PluginHub.cs" />
     <Compile Include="Hubs\TimeHub.cs" />
     <Compile Include="Hubs\EventHub.cs" />
