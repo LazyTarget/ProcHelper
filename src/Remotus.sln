@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus", "Remotus\Remotus.csproj", "{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}"
 EndProject
@@ -45,6 +45,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Core.Net", "Remotus.Core.Net\Remotus.Core.Net.csproj", "{7B56D1B6-A348-46EC-BE4A-3F223BD23CE4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Core.Net.Client", "Remotus.Core.Net.Client\Remotus.Core.Net.Client.csproj", "{DC9F7067-0058-46B6-BB5B-32FB5E4F9A4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remotus.Plugins.Steam", "Remotus.Plugins\Remotus.Plugins.Steam\Remotus.Plugins.Steam.csproj", "{3C6403D9-5347-4196-8006-2ACCC1AEA31E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +114,10 @@ Global
 		{DC9F7067-0058-46B6-BB5B-32FB5E4F9A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC9F7067-0058-46B6-BB5B-32FB5E4F9A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC9F7067-0058-46B6-BB5B-32FB5E4F9A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C6403D9-5347-4196-8006-2ACCC1AEA31E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C6403D9-5347-4196-8006-2ACCC1AEA31E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C6403D9-5347-4196-8006-2ACCC1AEA31E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C6403D9-5347-4196-8006-2ACCC1AEA31E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +130,6 @@ Global
 		{48863CE1-8C66-4CB5-8D3C-C52693DF51B8} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{89EF6D13-E726-466F-A99A-E43C3665ED49} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 		{0044ED99-0FA5-47DE-8128-ACA2E83FFCCC} = {8EE73D22-CC6E-497D-AE2D-86CEB037DA12}
+		{3C6403D9-5347-4196-8006-2ACCC1AEA31E} = {6F1B1276-0FF8-4870-A526-1F9934A177F4}
 	EndGlobalSection
 EndGlobal

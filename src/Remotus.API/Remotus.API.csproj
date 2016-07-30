@@ -190,7 +190,9 @@
     <Compile Include="ServiceInstance.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="App_Data\Scripts\AudioDevice_Headset.remotus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -241,6 +243,10 @@
     <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Spotify\Remotus.Plugins.Spotify.csproj">
       <Project>{42be24e3-f30d-468d-a304-b3214e46779f}</Project>
       <Name>Remotus.Plugins.Spotify</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Steam\Remotus.Plugins.Steam.csproj">
+      <Project>{3c6403d9-5347-4196-8006-2accc1aea31e}</Project>
+      <Name>Remotus.Plugins.Steam</Name>
     </ProjectReference>
     <ProjectReference Include="..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
