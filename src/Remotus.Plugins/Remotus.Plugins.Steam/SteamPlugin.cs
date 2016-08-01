@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LiteDB;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
 using Remotus.Base.Models.Hub;
@@ -15,7 +16,7 @@ namespace Remotus.Plugins.Steam
     {
         private PollingEngine.Core.ProgramManager _programManager;
         private PollingEngine.Core.PollingContext _pollingContext;
-        private SteamPoller.SteamActivityPoller _activityPoller;
+        private SteamActivityPoller _activityPoller;
         private ServiceStatus _status;
 
 
@@ -53,8 +54,9 @@ namespace Remotus.Plugins.Steam
             Status = ServiceStatus.Initializing;
 
 
+
             var interval = TimeSpan.FromSeconds(30);
-            _activityPoller = new SteamPoller.SteamActivityPoller();
+            _activityPoller = new SteamActivityPoller();
             _pollingContext = new PollingEngine.Core.PollingContext(_activityPoller, interval);
 
             _programManager = new PollingEngine.Core.ProgramManager();
@@ -84,8 +86,6 @@ namespace Remotus.Plugins.Steam
 
             Status = ServiceStatus.Stopped;
         }
-        
-
 
         protected virtual void InvokeOnStatusChanged(ServiceStatusChangedEventArgs e)
         {
