@@ -16,6 +16,7 @@ namespace Remotus.Core.Net.Client
         private readonly IMessageCache _messageCache;
         private readonly IHubProxy _hubProxy;
         private bool _isDisposing;
+        private readonly object _processQueueLock = new object();
 
         public HubAgent(string hubName, HubConnection hubConnection, IMessageCache messageCache)
         {
@@ -133,58 +134,61 @@ namespace Remotus.Core.Net.Client
                 return;
             }
 
-            //var messageCount = _messageQueue.Count;   // todo?
-            var messageCount = 1;
-            if (messageCount > 0)
+            lock (_processQueueLock)
             {
-                //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
-
-                HubRequest req;
-                while (_messageCache.TryDequeue(out req))
+                //var messageCount = _messageQueue.Count;   // todo?
+                var messageCount = 1;
+                if (messageCount > 0)
                 {
-                    try
+                    //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
+
+                    HubRequest req;
+                    while (Connected && _messageCache.TryDequeue(out req))
                     {
-                        if (req.HubName != HubName)
+                        try
                         {
-                            // todo: Dequeued, will never run?
-                            continue;
+                            if (req.HubName != HubName)
+                            {
+                                // todo: Dequeued, will never run?
+                                continue;
+                            }
+
+                            var task = Invoke(req.Message);
+                            task.Wait();
+
+                            sendCount++;
                         }
+                        catch (Exception ex)
+                        {
+                            //LogMessage(LogLevel.Error, "Error sending message data to hub. Error: {0}", ex.Message);
+                            //LogException(ex);
 
-                        var task = Invoke(req.Message);
-                        task.Wait();
+                            if (!(ex is NotImplementedException || ex is NotSupportedException))
+                                failed.Add(req);
+                        }
+                        finally
+                        {
 
-                        sendCount++;
+                        }
                     }
-                    catch (Exception ex)
+
+                    if (failed.Any())
                     {
-                        //LogMessage(LogLevel.Error, "Error sending message data to hub. Error: {0}", ex.Message);
-                        //LogException(ex);
+                        //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
+                        failed.ForEach(item => _messageCache.Enqueue(item));
 
-                        if (!(ex is NotImplementedException || ex is NotSupportedException))
-                            failed.Add(req);
+                        // todo: timer to retry?
                     }
-                    finally
+                    else
                     {
+                        //LogMessage(LogLevel.Verbose, "Successfully sent all messages (count: {0})", messageCount);
 
                     }
-                }
-
-                if (failed.Any())
-                {
-                    //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
-                    failed.ForEach(item => _messageCache.Enqueue(item));
-
-                    // todo: timer to retry?
                 }
                 else
                 {
-                    //LogMessage(LogLevel.Verbose, "Successfully sent all messages (count: {0})", messageCount);
 
                 }
-            }
-            else
-            {
-
             }
 
             //if (sentMessages > 0)

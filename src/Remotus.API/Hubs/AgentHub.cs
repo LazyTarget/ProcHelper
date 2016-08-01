@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
+using Remotus.Base.Models.Payloads;
 
 namespace Remotus.API.Hubs
 {
@@ -11,6 +12,12 @@ namespace Remotus.API.Hubs
     {
         // Events:
         // OnPluginStatusChanged(PluginStatusChanged model)
-        
+
+
+        public void OnPluginStatusChanged(PluginStatusChanged model)
+        {
+            Clients.All.OnPluginStatusChanged(model);
+        }
+
     }
 }

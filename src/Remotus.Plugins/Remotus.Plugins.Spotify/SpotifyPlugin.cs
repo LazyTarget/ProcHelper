@@ -15,7 +15,11 @@ namespace Remotus.Plugins.Spotify
         private ServiceStatus _status;
         //private ClientHubManager _pluginHub;
 
-
+        public SpotifyPlugin()
+        {
+            
+        }
+        
         public string ID        => "79A54741-590C-464D-B1E9-0CC606771493";
         public string Name      => "Spotify";
         public string Version   => "1.0.0.0";

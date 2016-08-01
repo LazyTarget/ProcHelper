@@ -16,7 +16,8 @@ namespace Remotus.API
         {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
-            
+            LogManager.InitializeWith<DebugLogger>();
+
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager

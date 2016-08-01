@@ -92,6 +92,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -123,11 +127,12 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
-    <Compile Include="Components\LoadedPlugin.cs" />
+    <Compile Include="Components\AgentPlugin.cs" />
     <Compile Include="Data\MessageDatabaseCache.cs" />
     <Compile Include="Data\MessageFileSystemCache.cs" />
     <Compile Include="Data\MessageMemoryCache.cs" />
     <Content Include="Hubs\Client\AutoReconnectService.cs" />
+    <Compile Include="Data\PluginLauncher.cs" />
     <Compile Include="Hubs\DiagnosticsHub.cs" />
     <Compile Include="Hubs\Client\HubAgentFactory.cs" />
     <Content Include="Hubs\Client\HubClientBuilder.cs" />
@@ -147,6 +152,7 @@
     <Compile Include="Hubs\ConnectionManager.cs" />
     <Compile Include="Hubs\CustomUserIdProvider.cs" />
     <Compile Include="Hubs\AgentHub.cs" />
+    <Compile Include="Hubs\ServerHub.cs" />
     <Compile Include="Hubs\HubBase.cs" />
     <Compile Include="Hubs\PluginHub.cs" />
     <Compile Include="Hubs\TimeHub.cs" />
@@ -249,6 +255,13 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

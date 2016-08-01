@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using BrendanGrant.Helpers.FileAssociation;
 using Lux.Extensions;
 using Lux.IO;
+using Remotus.API;
+using Remotus.API.Hubs.Client;
 using Remotus.Base;
 using Remotus.Base.Scripting;
 using ExecutionContext = Remotus.API.ExecutionContext;
@@ -16,10 +18,14 @@ namespace Remotus.Launcher
 {
     class Program
     {
-        private static IFileSystem _fileSystem = new FileSystem();
+        private static readonly IFileSystem _fileSystem = new FileSystem();
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+
 
         static void Main(string[] args)
         {
+            LogManager.InitializeWith<TraceLogger>();
+
             System.Diagnostics.Trace.WriteLine($"Remotus launcher!!! " +
                                                $"UserInteractive: {Environment.UserInteractive}. " +
                                                $"Command line: {Environment.CommandLine} " +
@@ -37,7 +43,13 @@ namespace Remotus.Launcher
                 var action = args?.Length > 0 ? args[0] : null;
                 if (string.IsNullOrWhiteSpace(action))
                 {
-                    
+
+                }
+                else if (string.Equals(action, "plugin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    System.Threading.Thread.Sleep(15 * 1000);
+                    var path = args[1];
+                    StartPlugin(path);
                 }
                 else if (string.Equals(action, "associate", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -56,7 +68,7 @@ namespace Remotus.Launcher
             }
             System.Diagnostics.Trace.WriteLine($"Remotus launcher, exit code: {Environment.ExitCode}");
         }
-
+        
 
         private static void InstallFileAssociations()
         {
@@ -107,7 +119,9 @@ namespace Remotus.Launcher
             var executor = new ScriptExecutor();
             executor.Context = new ExecutionContext
             {
+                Logger = new TraceLogger(),
                 Remotus = new Remotus.API.v1.FullCtrlAPI(),
+                HubAgentFactory = new HubAgentFactory(),
             };
 
             var parameterCollection = new ParameterCollection();
@@ -117,5 +131,36 @@ namespace Remotus.Launcher
             var response = executor.Execute(script, parameterCollection).WaitForResult();
             System.Diagnostics.Trace.WriteLine($"Script executed: {response?.ResultType} | {response?.Result}");
         }
+
+
+        private static void StartPlugin(string filePath)
+        {
+            try
+            {
+                _log.Info(() => $"Starting plugin @{filePath}");
+                PluginManager pluginManager;
+                using (pluginManager = new PluginManager(_fileSystem))
+                {
+                    var task = pluginManager.Run(filePath);
+                    var source = new CancellationTokenSource();
+                    CancellationToken cancellationToken = source.Token;
+
+                    AppDomain.CurrentDomain.DomainUnload += delegate (object sender, EventArgs args)
+                    {
+                        source.Cancel(true);
+                        pluginManager?.Dispose();
+                    };
+                    task.Wait(cancellationToken);
+                }
+                pluginManager = null;
+
+                _log.Info(() => $"Plugin exited @{filePath}");
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
+
     }
 }

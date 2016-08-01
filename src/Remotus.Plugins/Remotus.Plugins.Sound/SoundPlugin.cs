@@ -13,6 +13,12 @@ namespace Remotus.Plugins.Sound
         internal static readonly CoreAudioController AudioController = _audioController?.Value;
 
 
+        public SoundPlugin()
+        {
+            
+        }
+
+
         public string ID        => "ABA6417A-65A2-4761-9B01-AA9DFFC074C0";
         public string Name      => "Sound";
         public string Version   => "1.0.0.0";

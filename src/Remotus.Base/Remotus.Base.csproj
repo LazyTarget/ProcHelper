@@ -72,6 +72,7 @@
     <Compile Include="Diagnostics\LogExtensions.cs" />
     <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Loggers\NullLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\DebugLogger.cs" />
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Enums.cs" />

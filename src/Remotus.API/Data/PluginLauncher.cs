@@ -9,7 +9,7 @@ using Remotus.Base;
 
 namespace Remotus.API.Data
 {
-    public class PluginLoader : IPluginStore
+    public class PluginLauncher : IPluginStore
     {
         private readonly IList<AgentPlugin> _plugins = new List<AgentPlugin>();
         private bool _loaded;
@@ -19,7 +19,7 @@ namespace Remotus.API.Data
         public string Directory { get; set; }
 
 
-        public PluginLoader()
+        public PluginLauncher()
         {
             FileSystem = new FileSystem();
             Directory = AppDomain.CurrentDomain.BaseDirectory;
@@ -52,35 +52,17 @@ namespace Remotus.API.Data
                 {
                     foreach (var filePath in paths)
                     {
-                        // todo: load via web.config?
-
-                        try
+                        var plugin = new LoadedPlugin
                         {
-                            var assembly = Assembly.LoadFile(filePath);
-                            var pluginTypes =
-                                assembly.ExportedTypes.Where(x => typeof(IPlugin).IsAssignableFrom(x)).ToList();
-
-                            foreach (var pluginType in pluginTypes)
-                            {
-                                var obj = instantiator.Instantiate(pluginType);
-                                var instance = (IPlugin)obj;
-                                var plugin = new LoadedPlugin
-                                {
-                                    ID = instance.ID,
-                                    Name = instance.Name,
-                                    Version = instance.Version,
-                                    Loaded = true,
-                                    Instance = instance,
-                                    PluginFile = filePath,
-                                    PluginInstanceType = pluginType,
-                                };
-                                _plugins.Add(plugin);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
+                            //ID = instance.ID,
+                            Name = filePath,
+                            //Version = instance.Version,
+                            Loaded = false,
+                            //Instance = instance,
+                            PluginFile = filePath,
+                            //PluginInstanceType = pluginType,
+                        };
+                        _plugins.Add(plugin);
                     }
                 }
                 else
