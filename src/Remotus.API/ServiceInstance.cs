@@ -29,12 +29,12 @@ namespace Remotus.API
         // Client
         private IClientInfo _clientInfo;
         private readonly IPluginStore _pluginStore;
-        private readonly IDictionary<string, IPlugin> _plugins;
+        private readonly IDictionary<string, LoadedPlugin> _plugins;
 
         public ServiceInstance()
         {
             _clients = new Dictionary<string, IClientInfo>();
-            _plugins = new Dictionary<string, IPlugin>();
+            _plugins = new Dictionary<string, LoadedPlugin>();
             _pluginStore = new PluginLoader();
         }
 
@@ -64,13 +64,18 @@ namespace Remotus.API
                     {
                         foreach (var plugin in plugs)
                         {
-                            var servicePlugin = plugin as IServicePlugin;
+                            if (plugin == null || plugin.Instance == null)
+                                continue;
+                            if (string.IsNullOrWhiteSpace(plugin.Instance.Name))
+                                continue;
+
+                            var servicePlugin = plugin.Instance as IServicePlugin;
                             if (servicePlugin != null)
                             {
                                 servicePlugin.OnStatusChanged -= ServicePlugin_OnStatusChanged;
                                 servicePlugin.OnStatusChanged += ServicePlugin_OnStatusChanged;
                             }
-                            _plugins[plugin.Name] = plugin;
+                            _plugins[plugin.Instance.Name] = plugin;
                         }
                     }
                 }
@@ -87,7 +92,8 @@ namespace Remotus.API
             IList<IPlugin> result;
             lock (_plugins)
             {
-                result = _plugins.Values.ToList();
+                //result = _plugins.Values.ToList();
+                result = _plugins.Values.Select(x => x.Instance).ToList();
             }
             return result;
         }

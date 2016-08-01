@@ -6,6 +6,6 @@ namespace Remotus.API.Data
 {
     public interface IPluginStore
     {
-        Task<IEnumerable<IPlugin>> GetPlugins();
+        Task<IEnumerable<LoadedPlugin>> GetPlugins();
     }
 }

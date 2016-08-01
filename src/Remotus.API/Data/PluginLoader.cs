@@ -11,6 +11,9 @@ namespace Remotus.API.Data
 {
     public class PluginLoader : IPluginStore
     {
+        private readonly IList<LoadedPlugin> _plugins = new List<LoadedPlugin>();
+        private bool _loaded;
+
         public IFileSystem FileSystem { get; set; }
 
         public string Directory { get; set; }
@@ -22,53 +25,70 @@ namespace Remotus.API.Data
             Directory = AppDomain.CurrentDomain.BaseDirectory;
         }
 
-
-        public async Task<IEnumerable<IPlugin>> GetPlugins()
+        private async Task LoadPlugins()
         {
-            var plugins = new List<IPlugin>();
-            var instantiator = new Lux.TypeInstantiator();
+            if (_loaded)
+                return;
+            lock (_plugins)
+            {
+                if (_loaded)
+                    return;
+                
+                _plugins.Clear();
 
-            var helper = new FileSystemHelper(FileSystem);
-            var filePatterns = new string[]
-            {
-                "*Plugin*.dll",
-                "*Plugins*.dll",
-                "*plugin*.dll",
-                "*.Plugin",
-                "*.plugin"
-            };
-            var pattern = Directory.Trim().Trim('/', '\\') + string.Join("|", filePatterns);
-            var paths = helper.FindFilesWildcard(pattern)?.ToList();
-            if (paths != null && paths.Any())
-            {
-                foreach (var filePath in paths)
+                var instantiator = new Lux.TypeInstantiator();
+                var helper = new FileSystemHelper(FileSystem);
+                var filePatterns = new string[]
                 {
-                    // todo: load via web.config?
-
-                    try
+                    "*Plugin*.dll",
+                    "*Plugins*.dll",
+                    "*plugin*.dll",
+                    "*.Plugin",
+                    "*.plugin"
+                };
+                var pattern = Directory.Trim().Trim('/', '\\') + string.Join("|", filePatterns);
+                var paths = helper.FindFilesWildcard(pattern)?.ToList();
+                if (paths != null && paths.Any())
+                {
+                    foreach (var filePath in paths)
                     {
-                        var assembly = Assembly.LoadFile(filePath);
-                        var pluginTypes =
-                            assembly.ExportedTypes.Where(x => typeof (IPlugin).IsAssignableFrom(x)).ToList();
+                        // todo: load via web.config?
 
-                        foreach (var pluginType in pluginTypes)
+                        try
                         {
-                            var obj = instantiator.Instantiate(pluginType);
-                            var instance = (IPlugin) obj;
-                            plugins.Add(instance);
+                            var assembly = Assembly.LoadFile(filePath);
+                            var pluginTypes =
+                                assembly.ExportedTypes.Where(x => typeof(IPlugin).IsAssignableFrom(x)).ToList();
+
+                            foreach (var pluginType in pluginTypes)
+                            {
+                                var obj = instantiator.Instantiate(pluginType);
+                                var instance = (IPlugin)obj;
+                                var plugin = new LoadedPlugin
+                                {
+                                    Instance = instance,
+                                };
+                                _plugins.Add(plugin);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
                         }
                     }
-                    catch (Exception ex)
-                    {
-
-                    }
                 }
+                else
+                {
+
+                }
+                _loaded = true;
             }
-            else
-            {
-                
-            }
-            return plugins;
+        }
+
+        public async Task<IEnumerable<LoadedPlugin>> GetPlugins()
+        {
+            await LoadPlugins();
+            return _plugins.AsEnumerable();
         }
     }
 }
