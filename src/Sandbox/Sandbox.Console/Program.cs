@@ -302,6 +302,7 @@ namespace Sandbox.Console
 
             System.Console.WriteLine("Connecting to SignalR server...");
             Task task = null;
+            Exception exception = null;
             try
             {
                 var timeout = arguments.Timeout;
@@ -310,25 +311,23 @@ namespace Sandbox.Console
             }
             catch (Exception ex)
             {
-                
+                exception = ex;
             }
             finally
             {
-                if (task == null || task.IsFaulted || task.Exception != null)
+                if (exception != null || task == null || task.IsFaulted || task.Exception != null)
                 {
                     System.Console.WriteLine("Error connecting to SignalR server...");
-                    var ex = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException();
-                    if (ex != null)
-                        System.Console.WriteLine(ex.Message);
+                    exception = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException() ?? exception;
+                    if (exception != null)
+                        System.Console.WriteLine(exception.Message);
                 }
                 else
                 {
-                    //if (connection.State == ConnectionState.Connected)
-                    //{
-                    //    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
-                    //    System.Console.WriteLine("Token: " + connection.ConnectionToken);
-                    //}
-                    System.Console.WriteLine("Connected...");
+                    if (hubAgentManager.Connector.Connected)
+                    {
+                        System.Console.WriteLine($"Connected! #{hubAgentManager.Connector.ConnectionId}");
+                    }
                 }
             }
 
@@ -392,24 +391,34 @@ namespace Sandbox.Console
             {
                 System.Console.WriteLine("Re-connecting to hubs (manual)...");
 
-                var timeout = arguments.Timeout;
-                var task = _hubAgentManager.Connector.Connect();
-                task.Wait(timeout);
-                if (task.IsFaulted || task.Exception != null)
+                Task task = null;
+                Exception exception = null;
+                try
                 {
-                    System.Console.WriteLine("Error connecting to SignalR server...");
-                    var ex = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException();
-                    if (ex != null)
-                        System.Console.WriteLine(ex.Message);
+                    var timeout = arguments.Timeout;
+                    task = _hubAgentManager.Connector.Connect();
+                    task.Wait(timeout);
                 }
-                else
+                catch (Exception ex)
                 {
-                    //if (connection.State == ConnectionState.Connected)
-                    //{
-                    //    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
-                    //    System.Console.WriteLine("Token: " + connection.ConnectionToken);
-                    //}
-                    System.Console.WriteLine("Connected...");
+                    exception = ex;
+                }
+                finally
+                {
+                    if (exception != null || task == null || task.IsFaulted || task.Exception != null)
+                    {
+                        System.Console.WriteLine("Error re-connecting to SignalR server...");
+                        exception = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException() ?? exception;
+                        if (exception != null)
+                            System.Console.WriteLine(exception.Message);
+                    }
+                    else
+                    {
+                        if (_hubAgentManager.Connector.Connected)
+                        {
+                            System.Console.WriteLine($"Connected! #{_hubAgentManager.Connector.ConnectionId}");
+                        }
+                    }
                 }
             }
         }

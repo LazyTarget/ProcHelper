@@ -12,6 +12,8 @@ namespace Remotus.Core.Net.Client
         private readonly HubConnection _hubConnection;
         private bool _isDisposing;
         private bool _ensureReconnect;
+        private bool _isReconnecting;
+        private readonly object _reconnectLock = new object();
 
         public HubConnector(HubConnection hubConnection)
         {
@@ -27,7 +29,18 @@ namespace Remotus.Core.Net.Client
 
         public string ConnectionId              => _hubConnection?.ConnectionId;
         public bool Connected                   => _hubConnection?.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected;
-        public Base.Net.ConnectionState State   => (Base.Net.ConnectionState)(int)(_hubConnection?.State ?? Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected);
+        public Base.Net.ConnectionState State
+        {
+            get
+            {
+                Base.Net.ConnectionState state;
+                //if (_isReconnecting)
+                //    state = Base.Net.ConnectionState.Reconnecting;
+                //else
+                    state = (Base.Net.ConnectionState)(int)(_hubConnection?.State ?? Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected);
+                return state;
+            }
+        }
 
 
         public async Task Connect()
@@ -61,27 +74,35 @@ namespace Remotus.Core.Net.Client
                     {
                         ThreadPool.QueueUserWorkItem(delegate (object state)
                         {
-                            while (_hubConnection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+                            lock (_reconnectLock)
                             {
-                                if (_isDisposing)
-                                    return;
-                                if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
-                                    return;
-                                try
+                                while (!_isDisposing && _hubConnection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
                                 {
-                                    var task = Connect();
-                                    task.Wait();
-                                }
-                                catch (Exception ex)
-                                {
+                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+                                        return;
+                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting)
+                                        return;
+                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
+                                        return;
+                                    try
+                                    {
+                                        _isReconnecting = true;
+                                        var task = Connect();
+                                        task.Wait();
+                                    }
+                                    catch (Exception ex)
+                                    {
 
-                                }
-                                finally
-                                {
-                                }
+                                    }
+                                    finally
+                                    {
+
+                                    }
                                 
-                                var timeout = TimeSpan.FromSeconds(3);
-                                Thread.Sleep(timeout);
+                                    var timeout = TimeSpan.FromSeconds(3);
+                                    Thread.Sleep(timeout);
+                                }
+                                _isReconnecting = false;
                             }
                         });
                     }
