@@ -10,6 +10,7 @@ namespace Remotus.Base
         IHubAgent GetHub(string hubName);
 
         Task Connect();
+        bool EnsureReconnecting();
         void Disconnect();
     }
 }

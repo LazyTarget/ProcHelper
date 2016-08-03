@@ -29,7 +29,7 @@ namespace Remotus.API.Hubs.Client
         public int Port { get; set; }
 
         
-        public IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
+        public virtual IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials, queryString);
             var hubAgent = CreateHubAgent(hubName, connection);
@@ -37,7 +37,7 @@ namespace Remotus.API.Hubs.Client
         }
 
 
-        public IHubAgentManager Create(IEnumerable<string> hubNames, ICredentials credentials, IDictionary<string, string> queryString = null)
+        public virtual IHubAgentManager Create(IEnumerable<string> hubNames, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials);
 
@@ -52,8 +52,40 @@ namespace Remotus.API.Hubs.Client
         }
 
 
+        protected virtual HubHandshake CreateHandshake()
+        {
+            var handshake = new HubHandshake();
+            handshake.MachineName = Environment.MachineName;
+            //handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            handshake.UserName = Environment.UserName;
+            handshake.UserDomainName = Environment.UserDomainName;
+            handshake.AgentId = "qSdhjkZ672zzz";
+            handshake.Address = new Uri("http://localhost:9000");   //_apiConfig.ClientApiAddress;
+            return handshake;
+        }
 
-        private HubConnection CreateConnection(ICredentials credentials, IDictionary<string, string> queryString = null)
+
+        protected virtual Base.Payloads.AuthCredentials CreateAuthCredentials(ICredentials credentials)
+        {
+            var host = Host;
+            var port = Port;
+            var url = $"http://{host}:{port}/signalr";
+            var uri = new Uri(url);
+            var creds = credentials?.GetCredential(uri, "");
+
+            Base.Payloads.AuthCredentials authObj;
+            authObj = new Base.Payloads.AuthCredentials
+            {
+                //UserId = "fjskDhsucC",
+                UserName = Environment.UserName,
+                Domain = Environment.UserDomainName,
+            };
+            authObj = Base.Payloads.AuthCredentials.Create(creds);
+            return authObj;
+        }
+
+
+        protected virtual HubConnection CreateConnection(ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             _apiConfig = _apiConfig ?? ServiceInstance.LoadApiConfig();
 
@@ -82,33 +114,16 @@ namespace Remotus.API.Hubs.Client
 
 
             // Handshake
-            var handshake = new HubHandshake();
-            handshake.MachineName = Environment.MachineName;
-            //handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            handshake.UserName = Environment.UserName;
-            handshake.UserDomainName = Environment.UserDomainName;
-            handshake.AgentId = "qSdhjkZ672zzz";
-            handshake.Address = new Uri("http://localhost:9000");   //_apiConfig.ClientApiAddress;
-
+            var handshake = CreateHandshake();
             var stringBuilder = new StringBuilder();
             var stringWriter = new StringWriter(stringBuilder);
             jsonSerializer.Serialize(stringWriter, handshake);
             var handshakeJson = stringBuilder.ToString();
             connection.Headers["App-Handshake"] = handshakeJson;
-            connection.CookieContainer = connection.CookieContainer ?? new CookieContainer();
 
 
-            var creds = credentials?.GetCredential(uri, "");
-
-            Base.Payloads.AuthCredentials authObj;
-            authObj = new Base.Payloads.AuthCredentials
-            {
-                //UserId = "fjskDhsucC",
-                UserName = Environment.UserName,
-                Domain = Environment.UserDomainName,
-            };
-            authObj = Base.Payloads.AuthCredentials.Create(creds);
-
+            // Credentials
+            var authObj = CreateAuthCredentials(credentials);
             if (authObj != null)
             {
                 stringBuilder = new StringBuilder();
@@ -137,6 +152,7 @@ namespace Remotus.API.Hubs.Client
 
             return connection;
         }
+
 
         private IHubAgent CreateHubAgent(string hubName, HubConnection connection)
         {

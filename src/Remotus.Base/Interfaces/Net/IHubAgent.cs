@@ -10,6 +10,7 @@ namespace Remotus.Base
         IHubSubscription Subscribe(string eventName);
 
         Task Connect();
+        bool EnsureReconnecting();
         void Disconnect();
     }
 }

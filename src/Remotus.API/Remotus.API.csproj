@@ -133,6 +133,7 @@
     <Compile Include="Data\MessageMemoryCache.cs" />
     <Content Include="Hubs\Client\AutoReconnectService.cs" />
     <Compile Include="Data\PluginLauncher.cs" />
+    <Compile Include="Hubs\Client\LauncherHubAgentFactory.cs" />
     <Compile Include="Hubs\DiagnosticsHub.cs" />
     <Compile Include="Hubs\Client\HubAgentFactory.cs" />
     <Content Include="Hubs\Client\HubClientBuilder.cs" />

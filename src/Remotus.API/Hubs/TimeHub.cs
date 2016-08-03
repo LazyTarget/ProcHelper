@@ -17,12 +17,7 @@ namespace Remotus.API.Hubs
             
         }
 
-
-        public void Send(string channelName, string eventName, string json)
-        {
-            Clients.All.onEvent(channelName, eventName, json, DateTime.UtcNow);
-        }
-
+        
         private void StartLoop()
         {
             ThreadPool.QueueUserWorkItem((sender) =>
@@ -125,8 +120,8 @@ namespace Remotus.API.Hubs
                         }
 
                         Debug.WriteLine("ExecuteLoop::" + loopCount);
-                        hub.Send("-- "+ hub.Context.ConnectionId + "--", "Tick...", "{ machine: '" + Environment.MachineName + "', time: '" + DateTime.Now.ToString("s") + "' }");
-                        Debug.WriteLine("Sending message...");
+                        //hub.Clients.All.onTick(DateTime.UtcNow);
+                        GlobalHost.ConnectionManager.GetHubContext<TimeHub>().Clients.All.onTick(DateTime.UtcNow);
 
 
                         Thread.Sleep(TimeSpan.FromSeconds(1));

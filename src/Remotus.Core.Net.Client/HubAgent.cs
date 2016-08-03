@@ -65,7 +65,7 @@ namespace Remotus.Core.Net.Client
                 return task;
             }
 
-            task = _hubProxy.Invoke(message.Method, message.Args);
+            task = _hubProxy.Invoke(message.Method, args: message.Args.ToArray());
             return task;
         }
 
@@ -95,14 +95,43 @@ namespace Remotus.Core.Net.Client
             var connection = _hubConnection;
             if (connection != null)
             {
-                await connection.Start();
+                try
+                {
+                    await connection.Start();
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
+        }
+
+        public bool EnsureReconnecting()
+        {
+            var result = false;
+            try
+            {
+                if (_hubConnection != null)
+                    result = _hubConnection.EnsureReconnecting();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return result;
         }
 
         public void Disconnect()
         {
             var error = new Exception("My custom exc. Closing hub connection...");
-            _hubConnection?.Stop(error);
+            try
+            {
+                _hubConnection?.Stop(error);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
 

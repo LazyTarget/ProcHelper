@@ -31,7 +31,7 @@ namespace Remotus.Launcher
 
         public PluginManager(IFileSystem fileSystem)
         {
-            _hubAgentFactory = new HubAgentFactory();
+            _hubAgentFactory = new LauncherHubAgentFactory();
             _fileSystem = fileSystem;
         }
 
@@ -59,7 +59,18 @@ namespace Remotus.Launcher
             var agentHub = _hubAgentManager.GetHub("AgentHub");
             var diagHub = _hubAgentManager.GetHub("DiagnosticsHub");
 
-            await _hubAgentManager.Connect();
+            try
+            {
+                await _hubAgentManager.Connect();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                var r = _hubAgentManager.EnsureReconnecting();
+#else
+                throw;
+#endif
+            }
         }
 
 
@@ -67,8 +78,7 @@ namespace Remotus.Launcher
         {
             if (!_fileSystem.FileExists(filePath))
                 throw new FileNotFoundException("Could not find plugin file", filePath);
-
-            var plugins = new List<AgentPlugin>();
+            
             var instantiator = new Lux.TypeInstantiator();
 
             var ext = Path.GetExtension(filePath);
@@ -107,7 +117,7 @@ namespace Remotus.Launcher
                             PluginInstanceType = pluginType,
                             PluginFile = filePath,
                         };
-                        plugins.Add(plugin);
+                        _plugins[plugin.Name] = plugin;
                     }
                 }
                 catch (Exception ex)

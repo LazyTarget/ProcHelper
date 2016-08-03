@@ -10,4 +10,14 @@
         Stopping,
         Stopped,
     }
+
+    public enum ServiceInstallState
+    {
+        None,
+        Installing,
+        Installed,
+        Updating,
+        Uninstalling,
+        Uninstalled,
+    }
 }

@@ -24,7 +24,15 @@ namespace Remotus.Launcher
 
         static void Main(string[] args)
         {
-            LogManager.InitializeWith<TraceLogger>();
+            if (Environment.UserInteractive)
+            {
+                LogManager.InitializeWith<ConsoleLogger>();
+            }
+            else
+            {
+                LogManager.InitializeWith<TraceLogger>();
+            }
+
 
             System.Diagnostics.Trace.WriteLine($"Remotus launcher!!! " +
                                                $"UserInteractive: {Environment.UserInteractive}. " +

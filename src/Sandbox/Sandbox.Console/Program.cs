@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Web;
 using Fclp;
@@ -42,6 +43,10 @@ namespace Sandbox.Console
 
         private static void RunAsConsole()
         {
+            System.Console.WriteLine("Remotus Sandbox v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            System.Console.WriteLine("For help enter \"help\"");
+            System.Console.Write("> ");
+
             while (true)
             {
                 var input = System.Console.ReadLine();
@@ -52,7 +57,7 @@ namespace Sandbox.Console
                     {
                         System.Console.Clear();
                     }
-                    else if (input == "help")
+                    else if (input == "help" || input == "-?")
                     {
                         PrintHelp();
                     }
@@ -120,7 +125,7 @@ namespace Sandbox.Console
             System.Console.WriteLine("* discover");
             System.Console.WriteLine("* zeroconf");
             System.Console.WriteLine("* connect");
-            //System.Console.WriteLine("* reconnect");
+            System.Console.WriteLine("* reconnect");
             System.Console.WriteLine("* disconnect");
             System.Console.WriteLine("* subscribe");
             System.Console.WriteLine("* unsubscribe");
@@ -149,10 +154,10 @@ namespace Sandbox.Console
             {
                 VerbConnectHub(a);
             }
-            //else if (verb == "reconnect")
-            //{
-            //    VerbReconnectHub(a);
-            //}
+            else if (verb == "reconnect")
+            {
+                VerbReconnectHub(a);
+            }
             else if (verb == "disconnect")
             {
                 VerbDisconnectHub(a);
@@ -257,16 +262,36 @@ namespace Sandbox.Console
             //hubAgentManager.OnConnectionChanged += Connection_OnStateChanged;
 
             System.Console.WriteLine("Connecting to SignalR server...");
-            var timeout = arguments.Timeout;
-            var task = hubAgentManager.Connect();
-            task.Wait(timeout);
-
-            //if (connection.State == ConnectionState.Connected)
-            //{
-            //    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
-            //    System.Console.WriteLine("Token: " + connection.ConnectionToken);
-            //}
-            System.Console.WriteLine("Connected...");
+            Task task = null;
+            try
+            {
+                var timeout = arguments.Timeout;
+                task = hubAgentManager.Connect();
+                task.Wait(timeout);
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            finally
+            {
+                if (task == null || task.IsFaulted || task.Exception != null)
+                {
+                    System.Console.WriteLine("Error connecting to SignalR server...");
+                    var ex = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException();
+                    if (ex != null)
+                        System.Console.WriteLine(ex.Message);
+                }
+                else
+                {
+                    //if (connection.State == ConnectionState.Connected)
+                    //{
+                    //    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
+                    //    System.Console.WriteLine("Token: " + connection.ConnectionToken);
+                    //}
+                    System.Console.WriteLine("Connected...");
+                }
+            }
 
             //_hubs = clientHubManager;
             _hubAgentManager = hubAgentManager;
@@ -274,58 +299,64 @@ namespace Sandbox.Console
 
 
 
-        //private static void VerbReconnectHub(CommandArguments a)
-        //{
-        //    var p = new FluentCommandLineParser<ReconnectArguments>();
-        //    p.IsCaseSensitive = false;
-        //    p.Setup(x => x.AutoReconnect)
-        //        .As('a', "auto")
-        //        .SetDefault(false)
-        //        .WithDescription("Whether to automatically reconnect");
-        //    //p.Setup(x => x.ReconnectInterval)
-        //    //    .As('t')
-        //    //    .SetDefault(TimeSpan.FromSeconds(3))
-        //    //    .WithDescription("The duration between reconnect tries");
-        //    p.SetupHelp("help");
+        private static void VerbReconnectHub(CommandArguments a)
+        {
+            if (_hubAgentManager == null)
+            {
+                System.Console.WriteLine("No server initialized...");
+                return;
+            }
 
-        //    var args = a.Verb == "reconnect"
-        //        ? a.Arguments
-        //        : new string[0];
-        //    var r = p.Parse(args);
-        //    if (r.HasErrors)
-        //    {
-        //        System.Console.WriteLine("Error: " + r.ErrorText);
-        //    }
-        //    else if (r.HelpCalled)
-        //    {
-        //        System.Console.WriteLine($"Help for {a.Verb} not implemented...");
-        //    }
-        //    else
-        //    {
-        //        _reconnectArgs = p.Object;
-        //        ReconnectHub(_reconnectArgs);
-        //    }
-        //}
+            var p = new FluentCommandLineParser<ReconnectArguments>();
+            p.IsCaseSensitive = false;
+            p.Setup(x => x.AutoReconnect)
+                .As('a', "auto")
+                .SetDefault(false)    //
+                .WithDescription("Whether to automatically reconnect");
+            //p.Setup(x => x.ReconnectInterval)
+            //    .As('t')
+            //    .SetDefault(TimeSpan.FromSeconds(3))
+            //    .WithDescription("The duration between reconnect tries");
+            p.SetupHelp("help");
+
+            var args = a.Verb == "reconnect"
+                ? a.Arguments
+                : new string[0];
+            var r = p.Parse(args);
+            if (r.HasErrors)
+            {
+                System.Console.WriteLine("Error: " + r.ErrorText);
+            }
+            else if (r.HelpCalled)
+            {
+                System.Console.WriteLine($"Help for {a.Verb} not implemented...");
+            }
+            else
+            {
+                _reconnectArgs = p.Object;
+                ReconnectHub(_reconnectArgs);
+            }
+        }
 
 
-        //private static void ReconnectHub(ReconnectArguments arguments = null)
-        //{
-        //    arguments = arguments ?? new ReconnectArguments();
-        //    if (_autoReconnectService != null)
-        //    {
-        //        _autoReconnectService.ReconnectInterval = arguments.ReconnectInterval;
-        //        _autoReconnectService.Timeout = arguments.Timeout;
-        //        _autoReconnectService.AutoReconnect = arguments.AutoReconnect;
-        //    }
+        private static void ReconnectHub(ReconnectArguments arguments = null)
+        {
+            arguments = arguments ?? new ReconnectArguments();
 
-        //    if (!arguments.AutoReconnect)
-        //    {
-        //        System.Console.WriteLine("Re-connecting to hubs...");
-        //        var timeout = arguments.Timeout;
-        //        var task = _hubs.Connection.Start();
-        //        task.Wait(timeout);
-        //    }
-        //}
+            if (arguments.AutoReconnect)
+            {
+                System.Console.WriteLine("Re-connecting to hubs (auto)...");
+                var r = _hubAgentManager.EnsureReconnecting();
+                System.Console.WriteLine("EnsureReconnecting: " + r);
+            }
+            else
+            {
+                System.Console.WriteLine("Re-connecting to hubs (manual)...");
+                var timeout = arguments.Timeout;
+                var task = _hubAgentManager.Connect();
+                task.Wait(timeout);
+            }
+        }
 
 
 
