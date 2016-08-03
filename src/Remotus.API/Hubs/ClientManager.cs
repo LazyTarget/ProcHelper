@@ -27,6 +27,12 @@ namespace Remotus.API.Hubs
             return client;
         }
 
+        public IEnumerable<ConnectedClient> GetClients()
+        {
+            var clients = _clients.Values;
+            return clients;
+        }
+
 
         public void RegisterHub(Hub hub)
         {

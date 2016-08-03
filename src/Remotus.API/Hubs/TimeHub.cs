@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
 namespace Remotus.API.Hubs
 {
-    public class TimeHub : Hub
+    public class TimeHub : HubBase
     {
-        private static readonly HashSet<string> _connections = new HashSet<string>();
         private static readonly ExecuteLoop _loop = new ExecuteLoop();
 
         public TimeHub()
@@ -20,17 +20,17 @@ namespace Remotus.API.Hubs
         
         private void StartLoop()
         {
+            if (_loop.Executing)
+                return;
             ThreadPool.QueueUserWorkItem((sender) =>
                     Debug.WriteLine($"EventHub::Loop exited: {_loop.Execute(this)}"));
         }
 
 
-        public override Task OnConnected()
+        public override async Task OnConnected()
         {
-            if (_connections.Count == 0)
-            {
-                StartLoop();
-            }
+            await base.OnConnected();
+
 
             var version = Context.QueryString["hub-version"];
             if (version != "1.0")
@@ -40,45 +40,49 @@ namespace Remotus.API.Hubs
 
                 // able to deny connection??
             }
-
             
-            _connections.Add(Context.ConnectionId);
-            HubServer.Instance.ConnectionManager.OnConnected(this);
-            Debug.WriteLine("EventHub::OnConnected() Instance count: {0}", _connections.Count);
+            Debug.WriteLine($"TimeHub::OnConnected(): {Context.ConnectionId}");
 
             Clients.Others.onEvent(Context.ConnectionId, "onConnected", "Client has connected");
 
-            return base.OnConnected();
+
+            if (HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")))
+            {
+                StartLoop();
+            }
         }
 
 
-        public override Task OnReconnected()
+        public override async Task OnReconnected()
         {
-            _connections.Add(Context.ConnectionId);
-            HubServer.Instance.ConnectionManager.OnReconnected(this);
-            Debug.WriteLine("EventHub::OnReconnected() Instance count: {0}", _connections.Count);
+            await base.OnReconnected();
+            
+            Debug.WriteLine($"TimeHub::OnReconnected(): {Context.ConnectionId}");
 
             Clients.Others.onEvent(Context.ConnectionId, "onReconnected", "Client has reconnected");
-            return base.OnReconnected();
+
+
+            if (HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")))
+            {
+                StartLoop();
+            }
         }
 
 
-        public override Task OnDisconnected(bool stopCalled)
+        public override async Task OnDisconnected(bool stopCalled)
         {
-            _connections.Remove(Context.ConnectionId);
-            HubServer.Instance.ConnectionManager.OnDisconnected(this, stopCalled);
-            Debug.WriteLine("EventHub::OnDisconnected() Instance count: {0}", _connections.Count);
+            await base.OnDisconnected(stopCalled);
+            
+            Debug.WriteLine($"TimeHub::OnDisconnected(): {Context.ConnectionId} ({stopCalled})");
 
-            if (_connections.Count <= 0 && _loop.Executing)
+            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected", "Client has disconnected");
+
+
+            if (!HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")) && _loop.Executing)
             {
                 if (!_loop.CancellationToken.IsCancellationRequested)
                     _loop.CancellationToken.Cancel();
             }
-
-
-            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected", "Client has disconnected");
-
-            return base.OnDisconnected(stopCalled);
         }
 
 
@@ -119,7 +123,7 @@ namespace Remotus.API.Hubs
                             return 1;
                         }
 
-                        Debug.WriteLine("ExecuteLoop::" + loopCount);
+                        Debug.WriteLine("ExecuteLoop(TimeHub)::" + loopCount);
                         //hub.Clients.All.onTick(DateTime.UtcNow);
                         GlobalHost.ConnectionManager.GetHubContext<TimeHub>().Clients.All.onTick(DateTime.UtcNow);
 
