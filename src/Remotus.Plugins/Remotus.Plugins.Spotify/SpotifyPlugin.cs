@@ -73,7 +73,7 @@ namespace Remotus.Plugins.Spotify
             Action act = async () =>
             {
                 var diagHub = context.HubAgentFactory.Create("DiagnosticsHub", null);
-                await diagHub.Connect();
+                await diagHub.Connector.Connect();
 
                 while (true)
                 {

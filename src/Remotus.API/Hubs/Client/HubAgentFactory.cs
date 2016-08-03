@@ -32,7 +32,9 @@ namespace Remotus.API.Hubs.Client
         public virtual IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials, queryString);
-            var hubAgent = CreateHubAgent(hubName, connection);
+            var connector = new HubConnector(connection);
+            var hubProxy = connection.CreateHubProxy(hubName);
+            var hubAgent = CreateHubAgent(hubName, hubProxy, connector);
             return hubAgent;
         }
 
@@ -40,14 +42,16 @@ namespace Remotus.API.Hubs.Client
         public virtual IHubAgentManager Create(IEnumerable<string> hubNames, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials);
+            var connector = new HubConnector(connection);
 
             var result = new List<IHubAgent>();
             foreach (var hubName in hubNames)
             {
-                var hubAgent = CreateHubAgent(hubName, connection);
+                var hubProxy = connection.CreateHubProxy(hubName);
+                var hubAgent = CreateHubAgent(hubName, hubProxy, connector);
                 result.Add(hubAgent);
             }
-            var manager = new HubAgentManager(connection, result);
+            var manager = new HubAgentManager(connector, result);
             return manager;
         }
 
@@ -154,10 +158,10 @@ namespace Remotus.API.Hubs.Client
         }
 
 
-        private IHubAgent CreateHubAgent(string hubName, HubConnection connection)
+        private IHubAgent CreateHubAgent(string hubName, IHubProxy hubProxy, IHubConnector connector)
         {
             var messageCache = new MessageMemoryCache();        // todo: use Dependency Resolver
-            var hubAgent = new HubAgent(hubName, connection, messageCache);
+            var hubAgent = new HubAgent(hubName, hubProxy, connector, messageCache);
             return hubAgent;
         }
 

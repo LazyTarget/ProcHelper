@@ -7,35 +7,54 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
 using Remotus.Base.Models.Hub;
+using Remotus.Base.Net;
 
 namespace Remotus.Core.Net.Client
 {
     public class HubAgent : IHubAgent
     {
-        private readonly HubConnection _hubConnection;
+        private readonly IHubConnector _hubConnector;
         private readonly IMessageCache _messageCache;
         private readonly IHubProxy _hubProxy;
         private bool _isDisposing;
         private readonly object _processQueueLock = new object();
 
-        public HubAgent(string hubName, HubConnection hubConnection, IMessageCache messageCache)
+
+        public HubAgent(string hubName, IHubProxy hubProxy, IHubConnector hubConnector, IMessageCache messageCache)
         {
             if (string.IsNullOrWhiteSpace(hubName))
                 throw new ArgumentNullException(nameof(hubName));
-            if (hubConnection == null)
-                throw new ArgumentNullException(nameof(hubConnection));
+            if (hubConnector == null)
+                throw new ArgumentNullException(nameof(hubConnector));
             HubName = hubName;
             _messageCache = messageCache;
-            _hubConnection = hubConnection;
-            _hubProxy = _hubConnection.CreateHubProxy(HubName);
-
-            _hubConnection.StateChanged += HubConnection_OnStateChanged;
+            _hubProxy = hubProxy;
+            
+            _hubConnector = hubConnector;
+            _hubConnector.StateChanged -= HubConnection_OnStateChanged;
+            _hubConnector.StateChanged += HubConnection_OnStateChanged;
         }
 
 
         public string HubName { get; }
 
-        public bool Connected => _hubConnection?.State == ConnectionState.Connected;
+        protected bool Connected        => _hubConnector.Connected;
+
+        public IHubConnector Connector  => _hubConnector;
+
+        
+        private void HubConnection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
+        {
+            if (_isDisposing)
+                return;
+
+            //if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            if (stateChange.NewState == Base.Net.ConnectionState.Connected)
+            {
+                // Re-gained connection
+                ThreadPool.QueueUserWorkItem(ProcessSendQueue);
+            }
+        }
 
 
         public Task Invoke(IHubMessage message)
@@ -48,7 +67,7 @@ namespace Remotus.Core.Net.Client
                     var request = new HubRequest
                     {
                         HubName = HubName,
-                        ConnectionId = _hubConnection?.ConnectionId,
+                        ConnectionId = _hubConnector?.ConnectionId,
                         //AgentId = _hubConnection.GetAgentId(),
                         Message = message,
                     };
@@ -87,64 +106,6 @@ namespace Remotus.Core.Net.Client
             // todo: able to unsubscribe via IDisposable
 
             return subscription;
-        }
-
-
-        public async Task Connect()
-        {
-            var connection = _hubConnection;
-            if (connection != null)
-            {
-                try
-                {
-                    await connection.Start();
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            }
-        }
-
-        public bool EnsureReconnecting()
-        {
-            var result = false;
-            try
-            {
-                if (_hubConnection != null)
-                    result = _hubConnection.EnsureReconnecting();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return result;
-        }
-
-        public void Disconnect()
-        {
-            var error = new Exception("My custom exc. Closing hub connection...");
-            try
-            {
-                _hubConnection?.Stop(error);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-
-        private void HubConnection_OnStateChanged(StateChange stateChange)
-        {
-            if (_isDisposing)
-                return;
-
-            if (stateChange.NewState == ConnectionState.Connected)
-            {
-                // Re-gained connection
-                ThreadPool.QueueUserWorkItem(ProcessSendQueue);
-            }
         }
 
 
@@ -231,6 +192,13 @@ namespace Remotus.Core.Net.Client
 
         public void Dispose()
         {
+            if (_hubConnector != null)
+            {
+                _hubConnector.StateChanged -= HubConnection_OnStateChanged;
+                //_hubConnector.Dispose();
+                //_hubConnector = null;
+            }
+
             _isDisposing = true;
         }
     }

@@ -8,9 +8,6 @@ namespace Remotus.Base
         string HubName { get; }
         Task Invoke(IHubMessage message);
         IHubSubscription Subscribe(string eventName);
-
-        Task Connect();
-        bool EnsureReconnecting();
-        void Disconnect();
+        IHubConnector Connector { get; }
     }
 }

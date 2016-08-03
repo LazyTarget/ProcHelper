@@ -79,7 +79,10 @@
     <Compile Include="Events\ServiceStatusChangedEventArgs.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\API\IRemotusAPI.cs" />
+    <Compile Include="Interfaces\Net\Enums.cs" />
+    <Compile Include="Interfaces\Net\HubConnectionStateChanged.cs" />
     <Compile Include="Interfaces\Net\HubSubscription.cs" />
+    <Compile Include="Interfaces\Net\IHubConnector.cs" />
     <Compile Include="Interfaces\Net\IHubAgentManager.cs" />
     <Compile Include="Interfaces\Net\IHubSubscription.cs" />
     <Compile Include="Interfaces\Net\IHubMessage.cs" />

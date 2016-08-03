@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HubConnector.cs" />
     <Compile Include="HubAgentManager.cs" />
     <Compile Include="HubAgent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

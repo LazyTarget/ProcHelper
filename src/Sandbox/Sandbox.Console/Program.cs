@@ -63,9 +63,10 @@ namespace Sandbox.Console
                     }
                     else if (input == "exit")
                     {
-                        if (_hubAgentManager != null)
+                        if (_hubAgentManager?.Connector != null)
                         {
-                            _hubAgentManager.Disconnect();
+                            _hubAgentManager.Connector.Disconnect();
+                            _hubAgentManager.Connector.Dispose();
                             _hubAgentManager.Dispose();
                             _hubAgentManager = null;
                         }
@@ -266,7 +267,7 @@ namespace Sandbox.Console
             try
             {
                 var timeout = arguments.Timeout;
-                task = hubAgentManager.Connect();
+                task = hubAgentManager.Connector.Connect();
                 task.Wait(timeout);
             }
             catch (Exception ex)
@@ -346,15 +347,32 @@ namespace Sandbox.Console
             if (arguments.AutoReconnect)
             {
                 System.Console.WriteLine("Re-connecting to hubs (auto)...");
-                var r = _hubAgentManager.EnsureReconnecting();
+                var r = _hubAgentManager.Connector.EnsureReconnecting();
                 System.Console.WriteLine("EnsureReconnecting: " + r);
             }
             else
             {
                 System.Console.WriteLine("Re-connecting to hubs (manual)...");
+
                 var timeout = arguments.Timeout;
-                var task = _hubAgentManager.Connect();
+                var task = _hubAgentManager.Connector.Connect();
                 task.Wait(timeout);
+                if (task.IsFaulted || task.Exception != null)
+                {
+                    System.Console.WriteLine("Error connecting to SignalR server...");
+                    var ex = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException();
+                    if (ex != null)
+                        System.Console.WriteLine(ex.Message);
+                }
+                else
+                {
+                    //if (connection.State == ConnectionState.Connected)
+                    //{
+                    //    System.Console.WriteLine("Connected as: " + connection.ConnectionId);
+                    //    System.Console.WriteLine("Token: " + connection.ConnectionToken);
+                    //}
+                    System.Console.WriteLine("Connected...");
+                }
             }
         }
 
@@ -406,12 +424,12 @@ namespace Sandbox.Console
             {
                 var msg = arguments.ForceMessage;
                 var error = new OperationCanceledException(msg);
-                _hubAgentManager.Disconnect();
+                _hubAgentManager.Connector.Disconnect();
                 //_hubAgentManager.Disconnect(error);
             }
             else
             {
-                _hubAgentManager.Disconnect();
+                _hubAgentManager.Connector.Disconnect();
             }
 
             _hubAgentManager.Dispose();

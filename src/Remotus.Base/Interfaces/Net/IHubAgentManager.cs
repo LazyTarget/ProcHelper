@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Remotus.Base
 {
@@ -8,9 +7,6 @@ namespace Remotus.Base
     {
         IReadOnlyDictionary<string, IHubAgent> GetHubs();
         IHubAgent GetHub(string hubName);
-
-        Task Connect();
-        bool EnsureReconnecting();
-        void Disconnect();
+        IHubConnector Connector { get; }
     }
 }

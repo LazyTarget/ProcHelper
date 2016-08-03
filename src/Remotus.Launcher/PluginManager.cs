@@ -61,15 +61,11 @@ namespace Remotus.Launcher
 
             try
             {
-                await _hubAgentManager.Connect();
+                await _hubAgentManager.Connector.Connect();
             }
             catch (Exception ex)
             {
-#if DEBUG
-                var r = _hubAgentManager.EnsureReconnecting();
-#else
-                throw;
-#endif
+                var r = _hubAgentManager.Connector.EnsureReconnecting();
             }
         }
 
@@ -261,9 +257,13 @@ namespace Remotus.Launcher
                 agentPlugin.Value?.Instance?.Dispose();
             }
 
-            _hubAgentManager?.Disconnect();
-            _hubAgentManager?.Dispose();
-            _hubAgentManager = null;
+            if (_hubAgentManager != null)
+            {
+                _hubAgentManager?.Connector.Disconnect();
+                _hubAgentManager?.Connector.Dispose();
+                _hubAgentManager?.Dispose();
+                _hubAgentManager = null;
+            }
         }
     }
 }
