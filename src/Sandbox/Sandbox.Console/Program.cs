@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Web;
 using Fclp;
-using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Remotus;
@@ -17,6 +16,7 @@ using Remotus.API.Hubs.Client;
 using Remotus.API.Models;
 using Remotus.Base;
 using Remotus.Base.Models.Hub;
+using Remotus.Base.Net;
 
 namespace Sandbox.Console
 {
@@ -37,104 +37,115 @@ namespace Sandbox.Console
 
         static void Main(string[] args)
         {
-            RunAsConsole();
-        }
+            RunAsConsole(args);
 
 
-        private static void RunAsConsole()
-        {
-            System.Console.WriteLine("Remotus Sandbox v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-            System.Console.WriteLine("For help enter \"help\"");
-            System.Console.Write("> ");
-
-            while (true)
+            if (_hubAgentManager?.Connector != null)
             {
-                var input = System.Console.ReadLine();
-                var verb = input;
-                try
-                {
-                    if (input == "cls")
-                    {
-                        System.Console.Clear();
-                    }
-                    else if (input == "help" || input == "-?")
-                    {
-                        PrintHelp();
-                    }
-                    else if (input == "exit")
-                    {
-                        if (_hubAgentManager?.Connector != null)
-                        {
-                            _hubAgentManager.Connector.Disconnect();
-                            _hubAgentManager.Connector.Dispose();
-                            _hubAgentManager.Dispose();
-                            _hubAgentManager = null;
-                        }
-
-                        //for (var i = 0; i < _hubs.Count; i++)
-                        //{
-                        //    var pair = _hubs.ElementAt(i);
-                        //    var hub = pair.Value;
-                        //    hub?.Dispose();
-                        //    var r = _hubs.Remove(pair);
-
-                        //    i--;
-                        //}
-                        break;
-                    }
-
-
-                    var args = new string[0];
-                    if (!string.IsNullOrWhiteSpace(input))
-                        args = input.Split(' ');
-                    var switchIndex = args.ToList().FindIndex(x => x.StartsWith("/"));
-                    if (switchIndex < 0)
-                        switchIndex = args.Length;
-                    verb = switchIndex > 0
-                        ? String.Join(" ", args.Take(switchIndex))
-                        : args.Length > 0 ? args[0] : null;
-                    args = switchIndex > 0
-                        ? args.Skip(switchIndex).ToArray()
-                        : args.Length > 1 ? args.Skip(1).ToArray() : args;
-
-                    var a = new CommandArguments
-                    {
-                        Verb = verb,
-                        Arguments = args,
-                    };
-                    ProcessInput(a);
-                }
-                catch (AggregateException ex)
-                {
-                    var msg = ex.GetBaseException().Message;
-                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
-                catch (Exception ex)
-                {
-                    var msg = ex.GetBaseException().Message;
-                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
+                _hubAgentManager.Connector.Disconnect();
+                _hubAgentManager.Connector.Dispose();
+            }
+            if (_hubAgentManager != null)
+            {
+                _hubAgentManager.Dispose();
+                _hubAgentManager = null;
             }
         }
 
 
-        private static void PrintHelp()
+        private static void RunAsConsole(string[] args)
         {
-            System.Console.WriteLine("Commands: ");
-            System.Console.WriteLine("* discover");
-            System.Console.WriteLine("* zeroconf");
-            System.Console.WriteLine("* connect");
-            System.Console.WriteLine("* reconnect");
-            System.Console.WriteLine("* disconnect");
-            System.Console.WriteLine("* subscribe");
-            System.Console.WriteLine("* unsubscribe");
-            System.Console.WriteLine("* send");
+            System.Console.WriteLine("Remotus Sandbox v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            System.Console.WriteLine("For help enter \"help\"");
+
+            Queue<string> buffer = null;
+            var firstArg = args.FirstOrDefault();
+            if (firstArg == "buffer")
+                buffer = new Queue<string>(args.Skip(1));
+            while (true)
+            {
+                string input = null;
+                if (buffer?.Count > 0)
+                    input = buffer.Dequeue() ?? "";
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    System.Console.Write("> ");
+                    input = System.Console.ReadLine();
+                }
+                else
+                    System.Console.WriteLine("> " + input);
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    System.Console.WriteLine("Invalid input!");
+                    continue;
+                }
+
+                if (input == "exit")
+                {
+                    break;
+                }
+                ProcessInput(input);
+            }
+        }
+        
+
+        private static void ProcessInput(string input)
+        {
+            var verb = input;
+            try
+            {
+                if (input == "cls")
+                {
+                    System.Console.Clear();
+                }
+                else if (input == "help" || input == "-?")
+                {
+                    PrintHelp();
+                }
+                else if (input == "exit")
+                {
+                    return;
+                }
+
+
+                var args = new string[0];
+                if (!string.IsNullOrWhiteSpace(input))
+                    args = input.Split(' ');
+                var switchIndex = args.ToList().FindIndex(x => x.StartsWith("/"));
+                if (switchIndex < 0)
+                    switchIndex = args.Length;
+                verb = switchIndex > 0
+                    ? String.Join(" ", args.Take(switchIndex))
+                    : args.Length > 0 ? args[0] : null;
+                args = switchIndex > 0
+                    ? args.Skip(switchIndex).ToArray()
+                    : args.Length > 1 ? args.Skip(1).ToArray() : args;
+
+                var a = new CommandArguments
+                {
+                    Verb = verb,
+                    Arguments = args,
+                };
+                ProcessCommand(a);
+            }
+            catch (AggregateException ex)
+            {
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine($"Error executing command '{verb}': {msg}");
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine($"Error executing command '{verb}': {msg}");
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
 
-        private static void ProcessInput(CommandArguments a)
+        private static void ProcessCommand(CommandArguments a)
         {
             var verb = a.Verb;
             if (verb == "discover")
@@ -175,9 +186,36 @@ namespace Sandbox.Console
             {
                 VerbSendToHub(a);
             }
+            else
+            {
+                CommandNotFound(a);
+            }
         }
 
 
+
+
+        private static void PrintHelp()
+        {
+            System.Console.WriteLine("Commands: ");
+            //System.Console.WriteLine("* discover");
+            System.Console.WriteLine("* zeroconf");
+            System.Console.WriteLine("* connect - Connect to hub server");
+            System.Console.WriteLine("* reconnect - Reconnect to hub server");
+            System.Console.WriteLine("* disconnect - Disconnnect from hub server");
+            System.Console.WriteLine("* subscribe - Subscribe to a hub event");
+            System.Console.WriteLine("* unsubscribe - Unsubscribe from a hub event");
+            System.Console.WriteLine("* send - Invoke a method on a hub");
+        }
+
+
+        private static void CommandNotFound(CommandArguments a)
+        {
+            if (a.Arguments?.Length > 0)
+                System.Console.WriteLine($"Command '{a.Verb}' was not found. Args: {string.Join(" ", a.Arguments)}");
+            else
+                System.Console.WriteLine($"Command '{a.Verb}' was not found.");
+        }
 
 
         private static void VerbConnectHub(CommandArguments a)
@@ -260,7 +298,7 @@ namespace Sandbox.Console
 
             var hubNames = arguments.Hubs.SelectMany(x => x.Split(',')).ToArray();
             var hubAgentManager = _hubAgentFactory.Create(hubNames, credentials);
-            //hubAgentManager.OnConnectionChanged += Connection_OnStateChanged;
+            hubAgentManager.Connector.StateChanged += Connection_OnStateChanged;
 
             System.Console.WriteLine("Connecting to SignalR server...");
             Task task = null;
@@ -423,22 +461,23 @@ namespace Sandbox.Console
             if (arguments.Force)
             {
                 var msg = arguments.ForceMessage;
-                var error = new OperationCanceledException(msg);
+                Exception error = new OperationCanceledException(msg);
                 _hubAgentManager.Connector.Disconnect();
-                //_hubAgentManager.Disconnect(error);
+                //_hubAgentManager.Connector.Disconnect(error);
             }
             else
             {
                 _hubAgentManager.Connector.Disconnect();
             }
 
+            _hubAgentManager.Connector.Dispose();
             _hubAgentManager.Dispose();
             _hubAgentManager = null;
         }
 
 
 
-        private static void Connection_OnStateChanged(StateChange stateChange)
+        private static void Connection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
         {
             System.Console.WriteLine("Connection changed: {0} => {1}", stateChange.OldState, stateChange.NewState);
         }
