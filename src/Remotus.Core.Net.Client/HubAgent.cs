@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
@@ -13,6 +14,8 @@ namespace Remotus.Core.Net.Client
 {
     public class HubAgent : IHubAgent
     {
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+
         private readonly IHubConnector _hubConnector;
         private readonly IMessageCache _messageCache;
         private readonly IHubProxy _hubProxy;
@@ -47,7 +50,7 @@ namespace Remotus.Core.Net.Client
         {
             if (_isDisposing)
                 return;
-
+            
             //if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
             if (stateChange.NewState == Base.Net.ConnectionState.Connected)
             {
@@ -64,6 +67,7 @@ namespace Remotus.Core.Net.Client
             {
                 if (_messageCache != null && message.Queuable)
                 {
+                    _log.Info($"HubAgent:Invoke() Not connected. Queuing message...");
                     var request = new HubRequest
                     {
                         HubName = HubName,
@@ -72,6 +76,13 @@ namespace Remotus.Core.Net.Client
                         Message = message,
                     };
                     _messageCache.Enqueue(request);
+                }
+                else
+                {
+                    if (message.Queuable)
+                        _log.Warn($"HubAgent:Invoke() Not connected. Message could not be queued to undefined messageQueue");
+                    else
+                        _log.Warn($"HubAgent:Invoke() Not connected. Message will not be queued");
                 }
 
                 task = Task.Factory.StartNew((msg) =>
@@ -84,7 +95,8 @@ namespace Remotus.Core.Net.Client
                 return task;
             }
 
-            task = _hubProxy.Invoke(message.Method, args: message.Args.ToArray());
+            object[] args = message.Args.ToArray();
+            task = _hubProxy.Invoke(message.Method, args: args);
             return task;
         }
 
@@ -162,12 +174,19 @@ namespace Remotus.Core.Net.Client
                         }
                     }
 
+                    _log.Info($"HubAgent:ProcessSendQueue() Success: {sendCount}");
+                    _log.Info($"HubAgent:ProcessSendQueue() Failed: {failed.Count}");
                     if (failed.Any())
                     {
                         //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
                         failed.ForEach(item => _messageCache.Enqueue(item));
 
-                        // todo: timer to retry?
+                        // Timer to retry fail queue
+                        ThreadPool.QueueUserWorkItem(delegate(object o)
+                        {
+                            Thread.Sleep(10 * 1000);
+                            ProcessSendQueue(state: "retry-failed");
+                        });
                     }
                     else
                     {

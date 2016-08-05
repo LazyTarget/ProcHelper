@@ -1,14 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
 namespace Remotus.API.Hubs
 {
-    public class ChatHub : Hub
+    public class ChatHub : HubBase
     {
         public ChatHub()
         {
-            
+
         }
+
+        public override string HubName => MethodBase.GetCurrentMethod().DeclaringType.Name;
+
 
         public void Hello()
         {
@@ -45,19 +49,16 @@ namespace Remotus.API.Hubs
 
         public override Task OnConnected()
         {
-            HubServer.Instance.ConnectionManager.OnConnected(this);
             return base.OnConnected();
         }
 
         public override Task OnReconnected()
         {
-            HubServer.Instance.ConnectionManager.OnReconnected(this);
             return base.OnReconnected();
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            HubServer.Instance.ConnectionManager.OnDisconnected(this, stopCalled);
             return base.OnDisconnected(stopCalled);
         }
     }

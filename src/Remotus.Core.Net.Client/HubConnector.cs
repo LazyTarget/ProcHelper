@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
@@ -9,6 +10,8 @@ namespace Remotus.Core.Net.Client
 {
     public class HubConnector : IHubConnector
     {
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+
         private readonly HubConnection _hubConnection;
         private bool _isDisposing;
         private bool _ensureReconnect;
@@ -69,9 +72,17 @@ namespace Remotus.Core.Net.Client
             {
                 if (_hubConnection != null)
                 {
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting)
+                        return false;
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+                        return false;
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
+                        return true;
+
                     result = _hubConnection.EnsureReconnecting();
                     if (!result)
                     {
+                        result = true;
                         ThreadPool.QueueUserWorkItem(delegate (object state)
                         {
                             lock (_reconnectLock)
@@ -98,8 +109,9 @@ namespace Remotus.Core.Net.Client
                                     {
 
                                     }
-                                
+                                    
                                     var timeout = TimeSpan.FromSeconds(3);
+                                    _log.Debug($"HubConnector:EnsureReconnecting() Waiting {timeout} before re-trying to reconnect...");
                                     Thread.Sleep(timeout);
                                 }
                                 _isReconnecting = false;
@@ -127,6 +139,7 @@ namespace Remotus.Core.Net.Client
             var error = new Exception("My custom exc. Closing hub connection...");
             try
             {
+                _log.Info($"HubConnector:Disconnect() Disconnecting...");
                 _hubConnection?.Stop(error);
             }
             catch (Exception ex)
@@ -138,10 +151,20 @@ namespace Remotus.Core.Net.Client
 
         private void HubConnection_OnStateChanged(StateChange stateChange)
         {
-            if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected)
+            _log.Debug($"HubConnector:OnStateChanged() OldState: {stateChange.OldState}");
+            _log.Info($"HubConnector:OnStateChanged() NewState: {stateChange.NewState}");
+            
+            if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            {
+                _log.Info($"HubConnector:OnStateChanged() Connected as: {ConnectionId}");
+            }
+            else if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected)
             {
                 if (_ensureReconnect)
+                {
+                    _log.Debug($"HubConnector:OnStateChanged() Was disconnected, ensure reconnect is set, reconnecting...");
                     EnsureReconnecting();
+                }
             }
 
             var oldState = (Base.Net.ConnectionState) (int) (stateChange.OldState);
@@ -154,6 +177,8 @@ namespace Remotus.Core.Net.Client
 
         public void Dispose()
         {
+            Disconnect();
+
             _hubConnection.StateChanged -= HubConnection_OnStateChanged;
             _isDisposing = true;
         }

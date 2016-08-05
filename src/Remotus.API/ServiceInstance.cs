@@ -363,7 +363,7 @@ namespace Remotus.API
 
             var plugin = sender as IServicePlugin;
             var agentId = Program.Service?.ClientInfo?.ClientID;
-            var componentDesc = new ComponentDescriptor(plugin);
+            var componentDesc = ComponentDescriptor.Create(plugin);
             var model = new PluginStatusChanged(agentId, componentDesc, args.OldStatus, args.NewStatus);
 
 

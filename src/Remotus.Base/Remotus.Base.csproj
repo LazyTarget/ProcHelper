@@ -148,6 +148,7 @@
     <Compile Include="Models\InputHelper\Point.cs" />
     <Compile Include="Models\InputHelper\WriteTextRequest.cs" />
     <Compile Include="Models\InputHelper\WriteTextResponse.cs" />
+    <Compile Include="Models\Payloads\HubEvent.cs" />
     <Compile Include="Models\Payloads\DebugMessage.cs" />
     <Compile Include="Models\Payloads\PluginStatusChanged.cs" />
     <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />

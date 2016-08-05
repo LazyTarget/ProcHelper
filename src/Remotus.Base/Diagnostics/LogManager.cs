@@ -7,16 +7,19 @@ namespace Remotus.Base
     /// </summary>
     public static class LogManager
     {
-        private static Type _logType;
+        private static Type _logType = typeof (NullLogger);
         private static ILog _testLogger;
 
         static LogManager()
         {
-#if DEBUG
-            _logType = typeof(TraceLogger);
-#else
-            _logType = typeof (NullLogger);
-#endif
+            if (Environment.UserInteractive)
+            {
+                _logType = typeof(ConsoleLogger);
+            }
+            else
+            {
+                _logType = typeof(TraceLogger);
+            }
         }
 
         /// <summary>

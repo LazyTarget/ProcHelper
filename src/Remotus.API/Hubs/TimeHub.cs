@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
@@ -14,10 +15,12 @@ namespace Remotus.API.Hubs
 
         public TimeHub()
         {
-            
+
         }
 
-        
+        public override string HubName => MethodBase.GetCurrentMethod().DeclaringType.Name;
+
+
         private void StartLoop()
         {
             if (_loop.Executing)
@@ -43,7 +46,7 @@ namespace Remotus.API.Hubs
             
             Debug.WriteLine($"TimeHub::OnConnected(): {Context.ConnectionId}");
 
-            Clients.Others.onEvent(Context.ConnectionId, "onConnected", "Client has connected");
+            Clients.Others.OnEvent(Context.ConnectionId, "onConnected", "Client has connected");
 
 
             if (HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")))
@@ -59,7 +62,7 @@ namespace Remotus.API.Hubs
             
             Debug.WriteLine($"TimeHub::OnReconnected(): {Context.ConnectionId}");
 
-            Clients.Others.onEvent(Context.ConnectionId, "onReconnected", "Client has reconnected");
+            Clients.Others.OnEvent(Context.ConnectionId, "onReconnected", "Client has reconnected");
 
 
             if (HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")))
@@ -75,7 +78,7 @@ namespace Remotus.API.Hubs
             
             Debug.WriteLine($"TimeHub::OnDisconnected(): {Context.ConnectionId} ({stopCalled})");
 
-            Clients.Others.onEvent(Context.ConnectionId, "onDisconnected", "Client has disconnected");
+            Clients.Others.OnEvent(Context.ConnectionId, "onDisconnected", "Client has disconnected");
 
 
             if (!HubServer.Instance.ClientManager.GetClients().Any(x => x.Hubs.Any(h => h == "TimeHub")) && _loop.Executing)
@@ -125,7 +128,7 @@ namespace Remotus.API.Hubs
 
                         Debug.WriteLine("ExecuteLoop(TimeHub)::" + loopCount);
                         //hub.Clients.All.onTick(DateTime.UtcNow);
-                        GlobalHost.ConnectionManager.GetHubContext<TimeHub>().Clients.All.onTick(DateTime.UtcNow);
+                        GlobalHost.ConnectionManager.GetHubContext<TimeHub>().Clients.All.OnTick(DateTime.UtcNow);
 
 
                         Thread.Sleep(TimeSpan.FromSeconds(1));

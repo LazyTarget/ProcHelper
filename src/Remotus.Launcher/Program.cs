@@ -19,26 +19,19 @@ namespace Remotus.Launcher
     class Program
     {
         private static readonly IFileSystem _fileSystem = new FileSystem();
-        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+        private static ILog _log;
 
 
         static void Main(string[] args)
         {
-            if (Environment.UserInteractive)
-            {
-                LogManager.InitializeWith<ConsoleLogger>();
-            }
-            else
-            {
-                LogManager.InitializeWith<TraceLogger>();
-            }
+            System.Threading.Thread.Sleep(15 * 1000);
 
-
-            System.Diagnostics.Trace.WriteLine($"Remotus launcher!!! " +
-                                               $"UserInteractive: {Environment.UserInteractive}. " +
-                                               $"Command line: {Environment.CommandLine} " +
-                                               $"Args: {String.Join(" ", args)}");
+            _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
             
+            _log.Info($"Remotus launcher!!! " +
+                      $"UserInteractive: {Environment.UserInteractive}. " +
+                      $"Args: {String.Join(" ", args)}");
+
             if (!System.Diagnostics.Debugger.IsAttached)
             {
                 bool attach;
@@ -55,7 +48,6 @@ namespace Remotus.Launcher
                 }
                 else if (string.Equals(action, "plugin", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    System.Threading.Thread.Sleep(15 * 1000);
                     var path = args[1];
                     StartPlugin(path);
                 }
@@ -155,6 +147,7 @@ namespace Remotus.Launcher
 
                     AppDomain.CurrentDomain.DomainUnload += delegate (object sender, EventArgs args)
                     {
+                        // Closed from outside. Then invoke Dispose() on pluginManager, running Stop() on plugins and the closing the connection
                         source.Cancel(true);
                         pluginManager?.Dispose();
                     };

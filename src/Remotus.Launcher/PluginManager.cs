@@ -22,6 +22,8 @@ namespace Remotus.Launcher
 {
     public class PluginManager : IDisposable
     {
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+
         private IHubAgentManager _hubAgentManager;
         private readonly IHubAgentFactory _hubAgentFactory;
         private readonly IFileSystem _fileSystem;
@@ -46,24 +48,31 @@ namespace Remotus.Launcher
 
         private async Task SetupHub()
         {
-            string[] hubNames = new [] { "AgentHub", "ServerHub", "DiagnosticsHub" };
+            string[] hubNames = new [] { "AgentHub", "ServerHub", "TimeHub" };
             ICredentials credentials = CredentialCache.DefaultCredentials;
             IDictionary<string, string> queryString = null;
             
             _hubAgentManager = _hubAgentFactory.Create(hubNames, credentials, queryString);
 
+            var agentHub = _hubAgentManager.GetHub("ServerHub");
+            agentHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
+            agentHub.Subscribe("StopPlugin").Received += HubEvent_OnStopPlugin;
+
             var serverHub = _hubAgentManager.GetHub("ServerHub");
-            serverHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
-            serverHub.Subscribe("StopPlugin").Received += HubEvent_OnStopPlugin;
+            var timeHub = _hubAgentManager.GetHub("TimeHub");
+            timeHub.Subscribe("OnTick").Received += HubEvent_OnTick;
 
-            var agentHub = _hubAgentManager.GetHub("AgentHub");
-            var diagHub = _hubAgentManager.GetHub("DiagnosticsHub");
-
+            Task task = null;
             try
             {
-                await _hubAgentManager.Connector.Connect();
+                task = _hubAgentManager.Connector.Connect();
+                await task;
             }
             catch (Exception ex)
+            {
+                
+            }
+            finally
             {
                 var r = _hubAgentManager.Connector.EnsureReconnecting();
             }
@@ -135,43 +144,47 @@ namespace Remotus.Launcher
         {
             if (_plugins == null || _plugins.Count <= 0)
                 return;
-
-            IClientInfo clientInfo = null;
-            IExecutionContext context = new ExecutionContext
-            {
-                ClientInfo = clientInfo,
-                Logger = new TraceLogger(),
-                Remotus = new Remotus.API.v1.FullCtrlAPI(),
-                //SignalR =  // todo: !
-                HubAgentFactory = _hubAgentFactory,
-            };
-
+            
             var servicePlugins = _plugins.Values.Select(x => x.Instance).OfType<IServicePlugin>().ToList();
-            foreach (var servicePlugin in servicePlugins)
-            {
-                // todo: Make plugin initialization async (load multiple plugins at the same time)
-
-                try
-                {
-                    if (servicePlugin.Status != ServiceStatus.Initializing)
-                    {
-                        await servicePlugin.Init(context);
-                    }
-
-                    if (servicePlugin.Status != ServiceStatus.Running)
-                    {
-                        await servicePlugin.Start();
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-
             if (servicePlugins.Any())
             {
+                IClientInfo clientInfo = null;
+                IExecutionContext context = new ExecutionContext
+                {
+                    ClientInfo = clientInfo,
+                    Logger = new TraceLogger(),
+                    Remotus = new Remotus.API.v1.FullCtrlAPI(),
+                    //SignalR =  // todo: !
+                    HubAgentFactory = _hubAgentFactory,
+                };
+
+                foreach (var servicePlugin in servicePlugins)
+                {
+                    // todo: Make plugin initialization async (load multiple plugins at the same time)
+
+                    try
+                    {
+                        if (servicePlugin.Status != ServiceStatus.Initializing)
+                        {
+                            await servicePlugin.Init(context);
+                        }
+
+                        if (servicePlugin.Status != ServiceStatus.Running)
+                        {
+                            await servicePlugin.Start();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+
                 _autoResetEvent.WaitOne();
+            }
+            else
+            {
+
             }
         }
         
@@ -201,17 +214,27 @@ namespace Remotus.Launcher
             _autoResetEvent.Set();
         }
 
-        private void HubEvent_OnStartPlugin(IList<JToken> obj)
+        private void HubEvent_OnStartPlugin(IList<JToken> list)
         {
             var task = Start();
             task.Wait();
         }
 
-        private void HubEvent_OnStopPlugin(IList<JToken> obj)
+        private void HubEvent_OnStopPlugin(IList<JToken> list)
         {
             var task = Stop();
             task.Wait();
         }
+
+        private void HubEvent_OnTick(IList<JToken> list)
+        {
+            System.Console.WriteLine("::TimeHub.OnTick()::");
+            foreach (var tkn in list)
+            {
+                System.Console.WriteLine("OnTick tkn: " + tkn);
+            }
+        }
+
 
         private void ServicePlugin_OnStatusChanged(object sender, ServiceStatusChangedEventArgs args)
         {
@@ -223,12 +246,13 @@ namespace Remotus.Launcher
             var plugin = sender as IServicePlugin;
             //var agentId = Program.Service?.ClientInfo?.ClientID;
             string agentId = null;
-            var componentDesc = new ComponentDescriptor(plugin);
+            var componentDesc = ComponentDescriptor.Create(plugin);
             var model = new PluginStatusChanged(agentId, componentDesc, args.OldStatus, args.NewStatus);
 
 
             var msg = string.Format("Plugin '{0}' status changed: {1} => {2}", model.Plugin?.Name, model.OldStatus, model.NewStatus);
             System.Console.WriteLine(msg);
+            _log.Info(msg);
             //agentHub.Clients.All.OnPluginStatusChanged(model);
 
             var message = new HubMessage

@@ -140,20 +140,6 @@ namespace Remotus.API.Hubs.Client
                 connection.CookieContainer.Add(authCookie);
             }
 
-
-
-
-            connection.StateChanged += (stateChange) =>
-            {
-                if (stateChange.NewState == ConnectionState.Disconnected)
-                {
-                    // Got disconnected
-                    // todo: check if Disconnect() was called explicitly
-
-                    var r = connection.EnsureReconnecting();
-                }
-            };
-
             return connection;
         }
 

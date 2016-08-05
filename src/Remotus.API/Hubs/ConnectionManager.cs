@@ -21,6 +21,12 @@ namespace Remotus.API.Hubs
             lock (_locker)
             {
                 _clientManager.RegisterHub(hub);
+
+                var client = _clientManager.GetClient(hub.Context.ConnectionId);
+                if (client != null)
+                {
+                    client.Connected = true;
+                }
             }
         }
 
@@ -29,6 +35,12 @@ namespace Remotus.API.Hubs
             lock (_locker)
             {
                 _clientManager.RegisterHub(hub);
+
+                var client = _clientManager.GetClient(hub.Context.ConnectionId);
+                if (client != null)
+                {
+                    client.Connected = true;
+                }
             }
         }
 
@@ -37,6 +49,12 @@ namespace Remotus.API.Hubs
             lock (_locker)
             {
                 _clientManager.UnregisterHub(hub);
+
+                var client = _clientManager.GetClient(hub.Context.ConnectionId);
+                if (client != null)
+                {
+                    client.Connected = false;
+                }
             }
         }
 
