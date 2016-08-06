@@ -83,6 +83,7 @@
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\ServiceStatusChangedEventArgs.cs" />
+    <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\API\IRemotusAPI.cs" />
     <Compile Include="Interfaces\Net\Enums.cs" />

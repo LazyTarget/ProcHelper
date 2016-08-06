@@ -2,20 +2,29 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using Remotus.Base;
 
 namespace Remotus.API.Hubs
 {
     public class ClientManager
     {
         private readonly ConcurrentDictionary<string, ConnectedClient> _clients;
+        private readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+
+        private TimeSpan _purgeMargin           = TimeSpan.FromMinutes(5);
+        private TimeSpan _purgeLoopInterval     = TimeSpan.FromMinutes(1);
+
 
         public ClientManager()
         {
             _clients = new ConcurrentDictionary<string, ConnectedClient>();
+            ThreadPool.QueueUserWorkItem(PurgeLoop);
         }
 
 
@@ -61,9 +70,31 @@ namespace Remotus.API.Hubs
                 var removed = client.Hubs.Remove(hubName);
                 if (!client.Hubs.Any())
                 {
-                    removed = _clients.TryRemove(hub.Context.ConnectionId, out client);
+                    //removed = _clients.TryRemove(hub.Context.ConnectionId, out client);
                 }
             }
+        }
+
+
+        private void PurgeLoop(object state)
+        {
+            var now = DateTime.UtcNow;
+            var margin = _purgeMargin;
+            var connectionIds = _clients
+                .Where(x => !x.Value.Connected && x.Value.TimeDisconnected.HasValue &&
+                            now.Subtract(margin) > x.Value.TimeDisconnected)
+                .Select(x => x.Key)
+                .ToArray();
+            foreach (var connectionId in connectionIds)
+            {
+                ConnectedClient client;
+                var removed = _clients.TryRemove(connectionId, out client);
+                _log.Debug(() => $"Client '{connectionId}' has been purged from memory");
+            }
+
+            Thread.Sleep(_purgeLoopInterval);
+            var count = (state as int?) + 1 ?? 1;
+            ThreadPool.QueueUserWorkItem(PurgeLoop, count);
         }
 
     }

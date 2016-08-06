@@ -74,16 +74,19 @@ namespace Remotus.API.Hubs
 
 
             var client = HubServer.Instance.ClientManager.GetClient(Context.ConnectionId);
-            var model = new HubEvent
+            if (client != null)
             {
-                HubName = HubName,
-                AgentId = client.Handshake.AgentId,
-                ConnectionId = Context.ConnectionId,
-                Connected = client.Connected,
-                EventName = "OnConnected",
-                Message = $"ConnectionId '{Context.ConnectionId}' connected to hub '{HubName}'",
-            };
-            Clients.Group("Events-Connections").OnEvent(model);
+                var model = new HubEvent
+                {
+                    HubName = HubName,
+                    AgentId = client.Handshake.AgentId,
+                    ConnectionId = Context.ConnectionId,
+                    Connected = client.Connected,
+                    EventName = "OnConnected",
+                    Message = $"ConnectionId '{Context.ConnectionId}' connected to hub '{HubName}'",
+                };
+                Clients.Group("Events-Connections").OnEvent(model);
+            }
 
 
 
@@ -98,16 +101,19 @@ namespace Remotus.API.Hubs
 
 
             var client = HubServer.Instance.ClientManager.GetClient(Context.ConnectionId);
-            var model = new HubEvent
+            if (client != null)
             {
-                HubName = HubName,
-                AgentId = client.Handshake.AgentId,
-                ConnectionId = Context.ConnectionId,
-                Connected = client.Connected,
-                EventName = "OnReconnected",
-                Message = $"ConnectionId '{Context.ConnectionId}' reconnected to hub '{HubName}'",
-            };
-            Clients.Group("Events-Connections").OnEvent(model);
+                var model = new HubEvent
+                {
+                    HubName = HubName,
+                    AgentId = client.Handshake.AgentId,
+                    ConnectionId = Context.ConnectionId,
+                    Connected = client.Connected,
+                    EventName = "OnReconnected",
+                    Message = $"ConnectionId '{Context.ConnectionId}' reconnected to hub '{HubName}'",
+                };
+                Clients.Group("Events-Connections").OnEvent(model);
+            }
 
 
             return base.OnReconnected();
@@ -120,16 +126,19 @@ namespace Remotus.API.Hubs
 
 
             var client = HubServer.Instance.ClientManager.GetClient(Context.ConnectionId);
-            var model = new HubEvent
+            if (client != null)
             {
-                HubName = HubName,
-                AgentId = client.Handshake.AgentId,
-                ConnectionId = Context.ConnectionId,
-                Connected = client.Connected,
-                EventName = "OnDisconnected",
-                Message = $"ConnectionId '{Context.ConnectionId}' disconnected from hub '{HubName}'",
-            };
-            Clients.Group("Events-Connections").OnEvent(model);
+                var model = new HubEvent
+                {
+                    HubName = HubName,
+                    AgentId = client.Handshake.AgentId,
+                    ConnectionId = Context.ConnectionId,
+                    Connected = client.Connected,
+                    EventName = "OnDisconnected",
+                    Message = $"ConnectionId '{Context.ConnectionId}' disconnected from hub '{HubName}'",
+                };
+                Clients.Group("Events-Connections").OnEvent(model);
+            }
 
 
             return base.OnDisconnected(stopCalled);

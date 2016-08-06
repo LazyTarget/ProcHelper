@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Remotus.API.Models;
 
 namespace Remotus.API.Hubs
@@ -12,6 +13,7 @@ namespace Remotus.API.Hubs
 
         public string ConnectionId { get; set; }
         public bool Connected { get; set; }
+        public DateTime? TimeDisconnected { get; set; }
         public HubHandshake Handshake { get; set; }
         public HashSet<string> Hubs { get; private set; } 
     }

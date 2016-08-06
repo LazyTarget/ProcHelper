@@ -4,6 +4,7 @@ using System.Web;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Remotus.Base;
 
 namespace Remotus.API.Hubs
 {
@@ -31,10 +32,10 @@ namespace Remotus.API.Hubs
                     ? request.Environment["app.serializer"] as JsonSerializer
                     : null;
                 serializer = serializer ?? new JsonSerializer();
-                var stringReader = new StringReader(json);
-                var reader = new JsonTextReader(stringReader);
-                var jObj = serializer.Deserialize<JObject>(reader);
-                var userId = jObj.Property("UserId")?.Value?.ToObject<string>();
+                var jObj = serializer.DeserializeJson<JObject>(json);
+                var model = serializer.DeserializeJson<Base.Payloads.AuthCredentials>(json);
+
+                var userId = model?.UserName ?? jObj.Property("UserId")?.Value?.ToObject<string>();
                 return userId;
             }
             catch (Exception ex)

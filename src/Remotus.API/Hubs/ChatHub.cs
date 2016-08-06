@@ -27,24 +27,16 @@ namespace Remotus.API.Hubs
 
         public void Send(string name, string message)
         {
-            var customId = new CustomUserIdProvider();
-            var self = customId.GetUserId(Context.Request);
-            Clients.User(self).addNewMessageToPage("SYSTEM", "Your message was sent...");
-
             Clients.All.addNewMessageToPage(name, message);
 
-            if (name == "Time")
+
+            var customId = new CustomUserIdProvider();
+            var self = customId.GetUserId(Context.Request);
+            if (!string.IsNullOrWhiteSpace(self))
             {
-                //while (true)
-                //{
-                //    object data = DateTime.Now.ToString();
-                //    string json = JsonConvert.SerializeObject(data);
-                //    EventHub.Instance?.Send("Time", "GetTime", json);
-
-                //    Thread.Sleep(500);
-                //}
+                Clients.User(self).addNewMessageToPage("SYSTEM", "Your message was sent... (user)");
             }
-
+            Clients.Client(Context.ConnectionId).addNewMessageToPage("SYSTEM", "Your message was sent... (client)");
         }
 
         public override Task OnConnected()
@@ -52,14 +44,5 @@ namespace Remotus.API.Hubs
             return base.OnConnected();
         }
 
-        public override Task OnReconnected()
-        {
-            return base.OnReconnected();
-        }
-
-        public override Task OnDisconnected(bool stopCalled)
-        {
-            return base.OnDisconnected(stopCalled);
-        }
     }
 }

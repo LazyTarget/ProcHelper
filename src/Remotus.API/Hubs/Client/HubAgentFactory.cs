@@ -119,10 +119,7 @@ namespace Remotus.API.Hubs.Client
 
             // Handshake
             var handshake = CreateHandshake();
-            var stringBuilder = new StringBuilder();
-            var stringWriter = new StringWriter(stringBuilder);
-            jsonSerializer.Serialize(stringWriter, handshake);
-            var handshakeJson = stringBuilder.ToString();
+            var handshakeJson = jsonSerializer.SerializeJson(handshake);
             connection.Headers["App-Handshake"] = handshakeJson;
 
 
@@ -130,10 +127,7 @@ namespace Remotus.API.Hubs.Client
             var authObj = CreateAuthCredentials(credentials);
             if (authObj != null)
             {
-                stringBuilder = new StringBuilder();
-                stringWriter = new StringWriter(stringBuilder);
-                jsonSerializer.Serialize(stringWriter, authObj);
-                var authJson = stringBuilder.ToString();
+                var authJson = jsonSerializer.SerializeJson(authObj);
                 authJson = HttpUtility.UrlEncode(authJson);
 
                 var authCookie = new Cookie("auth", authJson, "/", host);
