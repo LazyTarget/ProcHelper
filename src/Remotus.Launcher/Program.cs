@@ -24,7 +24,8 @@ namespace Remotus.Launcher
 
         static void Main(string[] args)
         {
-            System.Threading.Thread.Sleep(15 * 1000);
+            LogManager.ConfigureLog4Net();
+            LogManager.InitializeWith<Log4NetLogger>();
 
             _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
             
@@ -37,6 +38,8 @@ namespace Remotus.Launcher
                 bool attach;
                 if (bool.TryParse(System.Configuration.ConfigurationManager.AppSettings.Get("AttachDebugger"), out attach) && attach)
                     System.Diagnostics.Debugger.Launch();
+                else
+                    System.Threading.Thread.Sleep(15 * 1000);
             }
 
             try
@@ -159,7 +162,7 @@ namespace Remotus.Launcher
             }
             catch (Exception ex)
             {
-                
+                _log.Error(() => $"Error when running plugin @{filePath}", ex);
             }
         }
 
