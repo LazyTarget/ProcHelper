@@ -8,11 +8,11 @@ namespace Remotus.Base
     {
         public string HubName { get; set; }
         public string EventName { get; set; }
-        public event Action<IList<JToken>> Received;
+        public event Action<IHubSubscription, IList<JToken>> Received;
 
         public void Invoke(IList<JToken> obj)
         {
-            Received?.Invoke(obj);
+            Received?.Invoke(this, obj);
         }
 
         public void Dispose()

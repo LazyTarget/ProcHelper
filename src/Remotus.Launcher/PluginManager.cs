@@ -214,19 +214,19 @@ namespace Remotus.Launcher
             _autoResetEvent.Set();
         }
 
-        private void HubEvent_OnStartPlugin(IList<JToken> list)
+        private void HubEvent_OnStartPlugin(IHubSubscription subscription, IList<JToken> list)
         {
             var task = Start();
             task.Wait();
         }
 
-        private void HubEvent_OnStopPlugin(IList<JToken> list)
+        private void HubEvent_OnStopPlugin(IHubSubscription subscription, IList<JToken> list)
         {
             var task = Stop();
             task.Wait();
         }
 
-        private void HubEvent_OnTick(IList<JToken> list)
+        private void HubEvent_OnTick(IHubSubscription subscription, IList<JToken> list)
         {
             System.Console.WriteLine("::TimeHub.OnTick()::");
             foreach (var tkn in list)

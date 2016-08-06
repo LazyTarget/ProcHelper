@@ -31,6 +31,9 @@ namespace Sandbox.Console
 
         static Program()
         {
+            LogManager.ConfigureLog4Net();
+            LogManager.InitializeWith<Log4NetLogger>();
+
             _reconnectArgs = new ReconnectArguments();
         }
 
@@ -488,7 +491,7 @@ namespace Sandbox.Console
 
         private static void Connection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
         {
-            System.Console.WriteLine("Connection changed: {0} => {1}", stateChange.OldState, stateChange.NewState);
+            //System.Console.WriteLine("Connection changed: {0} => {1}", stateChange.OldState, stateChange.NewState);
         }
 
 
@@ -688,16 +691,12 @@ namespace Sandbox.Console
 
 
 
-        private static void OnHubReceive(IList<JToken> list)
+        private static void OnHubReceive(IHubSubscription subscription, IList<JToken> list)
         {
-            System.Console.WriteLine("::OnHubReceive::");
+            System.Console.WriteLine($"::{subscription.HubName}.{subscription.EventName}::");
             foreach (var tkn in list)
             {
-                System.Console.WriteLine("OnHubReceive tkn: " + tkn);
-                if (tkn?.ToString() == "ping")
-                {
-                    //_hubEventProxy.Invoke("Send", new[] {list[0], "respond", "pong!"});
-                }
+                System.Console.WriteLine($"{subscription.EventName} token: {tkn}");
             }
         }
 

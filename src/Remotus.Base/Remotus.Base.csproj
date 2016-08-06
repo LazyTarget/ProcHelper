@@ -34,6 +34,10 @@
     <Reference Include="CoreAudioApi">
       <HintPath>..\third party\CoreAudioApi.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Lux, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lux.1.0.2\lib\net45\Lux.dll</HintPath>
       <Private>True</Private>
@@ -73,7 +77,9 @@
     <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Loggers\NullLogger.cs" />
     <Compile Include="Diagnostics\Loggers\DebugLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\Log4NetLogger.cs" />
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
+    <Compile Include="Diagnostics\LogManager.log4net.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\ServiceStatusChangedEventArgs.cs" />

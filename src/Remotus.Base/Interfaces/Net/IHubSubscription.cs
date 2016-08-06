@@ -8,6 +8,6 @@ namespace Remotus.Base
     {
         string HubName { get; }
         string EventName { get; }
-        event Action<IList<JToken>> Received;
+        event Action<IHubSubscription, IList<JToken>> Received;
     }
 }
