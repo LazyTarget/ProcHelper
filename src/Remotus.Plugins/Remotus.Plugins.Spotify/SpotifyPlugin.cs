@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -12,8 +13,11 @@ namespace Remotus.Plugins.Spotify
 {
     public class SpotifyPlugin : IFunctionPlugin, IServicePlugin
     {
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+
         private ServiceStatus _status;
         //private ClientHubManager _pluginHub;
+        private IExecutionContext _executionContext;
 
         public SpotifyPlugin()
         {
@@ -64,6 +68,7 @@ namespace Remotus.Plugins.Spotify
             }
 
             Status = ServiceStatus.Initializing;
+            _executionContext = context;
 
 
             //var agent = context.HubAgentFactory.Create("Spotify");
@@ -97,7 +102,7 @@ namespace Remotus.Plugins.Spotify
             };
 
 #if DEBUG
-            ThreadPool.QueueUserWorkItem(state => act());
+            //ThreadPool.QueueUserWorkItem(state => act());
 #endif
 
 
@@ -107,6 +112,8 @@ namespace Remotus.Plugins.Spotify
 
         public async Task Start()
         {
+            _log.Info(() => $"Starting spotify plugin...");
+
             Status = ServiceStatus.Starting;
 
             Worker.ConnectLocalIfNotConnected();
@@ -122,6 +129,8 @@ namespace Remotus.Plugins.Spotify
 
         public async Task Stop()
         {
+            _log.Info(() => $"Stopping spotify plugin...");
+
             Status = ServiceStatus.Stopping;
 
             Worker.LocalApi.ListenForEvents = false;
@@ -134,25 +143,64 @@ namespace Remotus.Plugins.Spotify
         }
 
 
+        private Microsoft.AspNet.SignalR.IHubContext GetHubContext()
+        {
+            var hub = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SpotifyHub>();
+            return hub;
+        }
+
 
         private void LocalApi_OnPlayStateChange(object sender, PlayStateEventArgs args)
         {
-            
+            _log.Info(() => $"OnPlayStateChange() Playing: {args.Playing}");
+
+            var hub = GetHubContext();
+            hub.Clients.All.OnPlayStateChange(args);
         }
 
         private void LocalApi_OnTrackChange(object sender, TrackChangeEventArgs args)
         {
-
+            _log.Info(() => $"OnTrackChange() NewTrackName: {args.NewTrack?.TrackResource?.Name}");
         }
 
         private void LocalApi_OnTrackTimeChange(object sender, TrackTimeChangeEventArgs args)
         {
-
+            _log.Debug(() => $"OnTrackTimeChange() TrackTime: {args.TrackTime}");
         }
 
         private void LocalApi_OnVolumeChange(object sender, VolumeChangeEventArgs args)
         {
-            
+            _log.Info(() => $"OnVolumeChange() NewVolume: {args.NewVolume}");
+
+
+            var hubAgent = _executionContext?.HubAgentFactory?.Create("SpotifyHub", null, null);
+            Task task = null;
+            var timeout = TimeSpan.FromSeconds(20);
+            try
+            {
+                task = hubAgent?.Connector?.Connect();
+                task?.Wait(timeout);
+                hubAgent?.Connector?.EnsureReconnecting();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
+            try
+            {
+                task = hubAgent?.Invoke(new HubMessage
+                {
+                    Method = "OnVolumeChange",
+                    Args = new[] { args },
+                    Queuable = true,
+                });
+                task?.Wait(timeout);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
 

@@ -54,13 +54,16 @@ namespace Remotus.Launcher
             
             _hubAgentManager = _hubAgentFactory.Create(hubNames, credentials, queryString);
 
-            var agentHub = _hubAgentManager.GetHub("ServerHub");
-            agentHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
-            agentHub.Subscribe("StopPlugin").Received += HubEvent_OnStopPlugin;
+            var agentHub = _hubAgentManager.GetHub("AgentHub");
+            agentHub.Subscribe("StartPlugin").Received  += HubEvent_OnStartPlugin;
+            agentHub.Subscribe("StopPlugin").Received   += HubEvent_OnStopPlugin;
 
             var serverHub = _hubAgentManager.GetHub("ServerHub");
+            serverHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
+            serverHub.Subscribe("StopPlugin").Received  += HubEvent_OnStopPlugin;
+
             var timeHub = _hubAgentManager.GetHub("TimeHub");
-            timeHub.Subscribe("OnTick").Received += HubEvent_OnTick;
+            timeHub.Subscribe("OnTick").Received        += HubEvent_OnTick;
 
             Task task = null;
             try
@@ -110,6 +113,10 @@ namespace Remotus.Launcher
                             servicePlugin.OnStatusChanged -= ServicePlugin_OnStatusChanged;
                             servicePlugin.OnStatusChanged += ServicePlugin_OnStatusChanged;
                         }
+                        else
+                        {
+                            //continue;
+                        }
 
                         var plugin = new AgentPlugin
                         {
@@ -137,6 +144,10 @@ namespace Remotus.Launcher
                 // TODO: instantiate using manifest info
                 throw new NotImplementedException();
             }
+
+
+            _log.Debug(() => $"Plugins loaded: " + _plugins.Count);
+            _log.Debug(() => $"Service plugins found: " + _plugins.Count(x => x.Value.Instance is IServicePlugin));
         }
 
 
@@ -166,11 +177,13 @@ namespace Remotus.Launcher
                     {
                         if (servicePlugin.Status != ServiceStatus.Initializing)
                         {
+                            _log.Info(() => $"Service plugin '{servicePlugin.Name}', initializing...");
                             await servicePlugin.Init(context);
                         }
 
                         if (servicePlugin.Status != ServiceStatus.Running)
                         {
+                            _log.Info(() => $"Service plugin '{servicePlugin.Name}', starting...");
                             await servicePlugin.Start();
                         }
                     }
@@ -184,9 +197,10 @@ namespace Remotus.Launcher
             }
             else
             {
-
+                _log.Info(() => $"No service plugins found");
             }
         }
+
         
         private async Task Stop()
         {
@@ -201,6 +215,7 @@ namespace Remotus.Launcher
                     if (servicePlugin.Status != ServiceStatus.Stopping &&
                         servicePlugin.Status != ServiceStatus.Stopped)
                     {
+                        _log.Info(() => $"Service plugin '{servicePlugin.Name}', stopping...");
                         await servicePlugin.Stop();
                     }
                 }
@@ -255,15 +270,24 @@ namespace Remotus.Launcher
             _log.Info(msg);
             //agentHub.Clients.All.OnPluginStatusChanged(model);
 
-            var message = new HubMessage
+            Task task = null;
+            try
             {
-                Method = "OnPluginStatusChanged",
-                Args = new[] { model },
-                Queuable = true,
-            };
-            var agentHub = _hubAgentManager.GetHub("AgentHub");
-            var task = agentHub.Invoke(message);
-            task.Wait();
+                var message = new HubMessage
+                {
+                    Method = "OnPluginStatusChanged",
+                    Args = new[] { model },
+                    Queuable = true,
+                };
+                var timeout = TimeSpan.FromSeconds(30);
+                var agentHub = _hubAgentManager.GetHub("AgentHub");
+                task = agentHub.Invoke(message);
+                task.Wait(timeout);
+            }
+            catch (Exception ex)
+            {
+
+            }
 
 
             //var msgModel = new DebugMessage(agentId, null, msg, 2);

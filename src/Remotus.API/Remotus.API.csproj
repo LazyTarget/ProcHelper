@@ -249,10 +249,6 @@
       <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
       <Name>Remotus.Plugins.Sound</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Spotify\Remotus.Plugins.Spotify.csproj">
-      <Project>{42be24e3-f30d-468d-a304-b3214e46779f}</Project>
-      <Name>Remotus.Plugins.Spotify</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
       <Name>Remotus</Name>

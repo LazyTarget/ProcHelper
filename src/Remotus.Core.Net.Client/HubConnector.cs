@@ -72,6 +72,7 @@ namespace Remotus.Core.Net.Client
             {
                 if (_hubConnection != null)
                 {
+                    // Check if already connected/connecting...
                     if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting)
                         return false;
                     if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
@@ -79,44 +80,16 @@ namespace Remotus.Core.Net.Client
                     if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
                         return true;
 
-                    result = _hubConnection.EnsureReconnecting();
+                    // Trigger reconnection logic
+                    if (!result)
+                    {
+                        //result = _hubConnection.EnsureReconnecting();
+                    }
+
                     if (!result)
                     {
                         result = true;
-                        ThreadPool.QueueUserWorkItem(delegate (object state)
-                        {
-                            lock (_reconnectLock)
-                            {
-                                while (!_isDisposing && _hubConnection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
-                                {
-                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
-                                        return;
-                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting)
-                                        return;
-                                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
-                                        return;
-                                    try
-                                    {
-                                        _isReconnecting = true;
-                                        var task = Connect();
-                                        task.Wait();
-                                    }
-                                    catch (Exception ex)
-                                    {
-
-                                    }
-                                    finally
-                                    {
-
-                                    }
-                                    
-                                    var timeout = TimeSpan.FromSeconds(3);
-                                    _log.Debug($"HubConnector:EnsureReconnecting() Waiting {timeout} before re-trying to reconnect...");
-                                    Thread.Sleep(timeout);
-                                }
-                                _isReconnecting = false;
-                            }
-                        });
+                        ThreadPool.QueueUserWorkItem(Reconnect);
                     }
                 }
                 else
@@ -129,6 +102,42 @@ namespace Remotus.Core.Net.Client
                 throw;
             }
             return result;
+        }
+
+
+        private void Reconnect(object state)
+        {
+            lock (_reconnectLock)
+            {
+                while (!_isDisposing && _hubConnection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+                {
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+                        return;
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connecting)
+                        return;
+                    if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
+                        return;
+                    try
+                    {
+                        _isReconnecting = true;
+                        var task = Connect();
+                        task.Wait();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    finally
+                    {
+
+                    }
+                                    
+                    var timeout = TimeSpan.FromSeconds(3);
+                    _log.Debug($"HubConnector:Reconnect() Waiting {timeout} before trying to reconnect...");
+                    Thread.Sleep(timeout);
+                }
+                _isReconnecting = false;
+            }
         }
 
 

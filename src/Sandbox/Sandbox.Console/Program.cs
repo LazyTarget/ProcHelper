@@ -102,10 +102,12 @@ namespace Sandbox.Console
                 if (input == "cls")
                 {
                     System.Console.Clear();
+                    return;
                 }
                 else if (input == "help" || input == "-?")
                 {
                     PrintHelp();
+                    return;
                 }
                 else if (input == "exit")
                 {

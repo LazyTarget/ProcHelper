@@ -43,7 +43,7 @@ namespace Remotus.API.Hubs
         }
 
 
-        public void StopPlugin(string pluginName)
+        public void StopPlugin(string connectionId, string pluginName)
         {
             if (!string.IsNullOrWhiteSpace(pluginName))
             {
@@ -54,6 +54,8 @@ namespace Remotus.API.Hubs
                 {
                     Program.Service.StopPlugin();
                 }
+
+                Clients.Client(connectionId).StopPlugin(pluginName);
             }
         }
 
