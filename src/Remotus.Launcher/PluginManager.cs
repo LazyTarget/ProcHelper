@@ -66,20 +66,23 @@ namespace Remotus.Launcher
             var timeHub = _hubAgentManager.GetHub("TimeHub");
             timeHub.Subscribe("OnTick").Received        += HubEvent_OnTick;
 
-            Task task = null;
-            try
-            {
-                task = _hubAgentManager.Connector.Connect();
-                await task;
-            }
-            catch (Exception ex)
-            {
-                
-            }
-            finally
-            {
-                var r = _hubAgentManager.Connector.EnsureReconnecting();
-            }
+
+            _hubAgentManager.Connector.ConnectContinuous();
+
+            //Task task = null;
+            //try
+            //{
+            //    task = _hubAgentManager.Connector.Connect();
+            //    await task;
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+            //finally
+            //{
+            //    var r = _hubAgentManager.Connector.EnsureReconnecting();
+            //}
         }
 
 

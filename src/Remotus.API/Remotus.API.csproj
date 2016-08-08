@@ -240,10 +240,6 @@
       <Project>{63821537-6b6f-4412-ba4e-5799d51aef01}</Project>
       <Name>Remotus.Plugins.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
-      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
-      <Name>Remotus.Plugins.Sound</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
       <Name>Remotus</Name>

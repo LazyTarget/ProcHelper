@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Remotus.Base;
-using Remotus.Plugins.Sound;
+//using Remotus.Plugins.Sound;
 using RestSharp;
 
 namespace Remotus.API
@@ -65,35 +65,35 @@ namespace Remotus.API
 
 
 
-        public async Task<IResponseBase<IEnumerable<AudioSession>>> GetAudioSessions(string deviceID)
-        {
-            var uri = new Uri("audio/sessions", UriKind.Relative);
-            var request = BuildRequest(uri, Method.GET);
-            request.AddQueryParameter("deviceID", deviceID);
+        //public async Task<IResponseBase<IEnumerable<AudioSession>>> GetAudioSessions(string deviceID)
+        //{
+        //    var uri = new Uri("audio/sessions", UriKind.Relative);
+        //    var request = BuildRequest(uri, Method.GET);
+        //    request.AddQueryParameter("deviceID", deviceID);
 
-            var response = await GetResponse<IEnumerable<AudioSession>>(request);
-            return response;
-        }
+        //    var response = await GetResponse<IEnumerable<AudioSession>>(request);
+        //    return response;
+        //}
 
 
-        public async Task<IResponseBase<IEnumerable<AudioDevice>>> GetAudioDevices(AudioDeviceType? deviceType, AudioDeviceState? deviceState)
-        {
-            var uri = new Uri("audio/devices/list", UriKind.Relative);
-            var request = BuildRequest(uri, Method.GET);
-            if (deviceType.HasValue)
-            {
-                request.AddQueryParameter("deviceType", deviceType.ToString());
-                //request.Resource += "/" + deviceType;
-            }
-            if (deviceState.HasValue)
-            {
-                request.AddQueryParameter("deviceState", deviceState.ToString());
-                //request.Resource += "/" + deviceState;
-            }
+        //public async Task<IResponseBase<IEnumerable<AudioDevice>>> GetAudioDevices(AudioDeviceType? deviceType, AudioDeviceState? deviceState)
+        //{
+        //    var uri = new Uri("audio/devices/list", UriKind.Relative);
+        //    var request = BuildRequest(uri, Method.GET);
+        //    if (deviceType.HasValue)
+        //    {
+        //        request.AddQueryParameter("deviceType", deviceType.ToString());
+        //        //request.Resource += "/" + deviceType;
+        //    }
+        //    if (deviceState.HasValue)
+        //    {
+        //        request.AddQueryParameter("deviceState", deviceState.ToString());
+        //        //request.Resource += "/" + deviceState;
+        //    }
 
-            var response = await GetResponse<IEnumerable<AudioDevice>>(request);
-            return response;
-        }
+        //    var response = await GetResponse<IEnumerable<AudioDevice>>(request);
+        //    return response;
+        //}
 
 
         public async Task<IResponseBase<object>> SetDefaultDevice(string deviceID)

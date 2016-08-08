@@ -25,7 +25,7 @@ namespace Remotus.API.Data
                     return;
 
                 _plugins.Clear();
-                _plugins.Add(LoadPlugin(new Plugins.Sound.SoundPlugin()));
+                //_plugins.Add(LoadPlugin(new Plugins.Sound.SoundPlugin()));
                 _plugins.Add(LoadPlugin(new Plugins.Process.ProcessPlugin()));
                 _plugins.Add(LoadPlugin(new Plugins.Services.ServicesPlugin()));
                 //_plugins.Add(LoadPlugin(new Plugins.Spotify.SpotifyPlugin()));
