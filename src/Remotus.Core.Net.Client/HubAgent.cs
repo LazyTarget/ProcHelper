@@ -98,7 +98,17 @@ namespace Remotus.Core.Net.Client
             }
 
             object[] args = message.Args?.ToArray();
-            task = _hubProxy.Invoke(message.Method, args: args);
+            task = InvokeMethod(message.Method, args);
+            return task;
+        }
+
+
+        protected virtual Task InvokeMethod(string method, object[] args)
+        {
+            if (string.IsNullOrWhiteSpace(method))
+                throw new ArgumentNullException(nameof(method));
+
+            var task = _hubProxy.Invoke(method, args: args);
             return task;
         }
 

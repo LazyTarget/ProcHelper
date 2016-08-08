@@ -29,6 +29,7 @@ namespace Remotus.API.Hubs.Client
         public int Port { get; set; }
 
         
+
         public virtual IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials, queryString);
@@ -54,9 +55,17 @@ namespace Remotus.API.Hubs.Client
             var manager = new HubAgentManager(connector, result);
             return manager;
         }
+        
+
+        private IHubAgent CreateHubAgent(string hubName, IHubProxy hubProxy, IHubConnector connector)
+        {
+            var messageCache = new MessageMemoryCache();        // todo: use Dependency Resolver
+            var hubAgent = new HubAgent(hubName, hubProxy, connector, messageCache);
+            return hubAgent;
+        }
 
 
-        public IHubAgent CreateCustom(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
+        public ICustomHubAgent CreateCustom(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
         {
             var connection = CreateConnection(credentials, queryString);
             var connector = new HubConnector(connection);
@@ -67,6 +76,7 @@ namespace Remotus.API.Hubs.Client
             //var hubAgent = CreateHubAgent(hubName, hubProxy, connector);
             return hubAgent;
         }
+
 
 
         protected virtual HubHandshake CreateHandshake()
@@ -148,14 +158,6 @@ namespace Remotus.API.Hubs.Client
             }
 
             return connection;
-        }
-
-
-        private IHubAgent CreateHubAgent(string hubName, IHubProxy hubProxy, IHubConnector connector)
-        {
-            var messageCache = new MessageMemoryCache();        // todo: use Dependency Resolver
-            var hubAgent = new HubAgent(hubName, hubProxy, connector, messageCache);
-            return hubAgent;
         }
 
     }

@@ -6,12 +6,10 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
 using Remotus.Base.Models.Hub;
-using Remotus.Base.Models.Payloads;
-using Remotus.Base.Net;
 
 namespace Remotus.Core.Net.Client
 {
-    public class CustomHubAgent : HubAgent
+    public class CustomHubAgent : HubAgent, ICustomHubAgent
     {
         //private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
         
@@ -26,31 +24,28 @@ namespace Remotus.Core.Net.Client
         public override Task Invoke(IHubMessage message)
         {
             var msg = message;
-            if (!(msg is ExternalHubMessage))
-            {
-                var args = message?.Args?.Count > 0
-                    ? new object[] { message.Args.ToArray() }
-                    : new object[0];
+            var task = base.Invoke(msg);
+            return task;
+        }
 
-                var innerMsg = new ExternalHubMessage
-                {
-                    HubName = HubName,
-                    Method = "InvokeCustom",
-                    Args = args,
-                    Queuable = msg.Queuable,
-                    //AgentId = 
-                };
+        public Task InvokeCustom(IHubMessage message)
+        {
+            var args = message?.Args?.Count > 0
+                ? new object[] { message.Args.ToArray() }
+                : new object[0];
 
-                args = new object[] { innerMsg };
-                msg = new ExternalHubMessage
-                {
-                    HubName = HubName,
-                    Method = "InvokeCustom",
-                    Args = args,
-                    Queuable = msg.Queuable,
-                    //AgentId = 
-                };
-            }
+            var inner = new ExternalHubMessage();
+            inner.HubName = HubName;
+            inner.Method = message?.Method;
+            inner.Args = args;
+            inner.Queuable = message?.Queuable ?? false;
+
+            var msg = new ExternalHubMessage();
+            msg.HubName = "CustomHub";
+            msg.Method = "InvokeCustom";
+            //msg.Args = args;
+            msg.Args = new object[] { inner };
+            msg.Queuable = inner.Queuable;
 
             var task = base.Invoke(msg);
             return task;

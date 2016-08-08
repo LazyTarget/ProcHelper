@@ -8,6 +8,6 @@ namespace Remotus.Base
         IHubAgent Create(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null);
         IHubAgentManager Create(IEnumerable<string> hubNames, ICredentials credentials, IDictionary<string, string> queryString = null);
 
-        IHubAgent CreateCustom(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null);
+        ICustomHubAgent CreateCustom(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null);
     }
 }

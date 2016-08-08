@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
-using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.AspNet.SignalR.Hubs;
 using Remotus.Base.Models.Hub;
 
 namespace Remotus.API.Hubs
@@ -22,29 +21,19 @@ namespace Remotus.API.Hubs
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(message?.HubName))
+                    throw new ArgumentNullException(nameof(message.HubName));
+
                 var customHubIdentifier = $"CustomHub_{message.HubName}";
-                var g = Clients.Group(customHubIdentifier);
+                var group = Clients.Group(customHubIdentifier);
+                var gp = (IClientProxy) group;
 
-
-                var dyn1 = (DynamicObject)g;
-                var m = g.GetType()?.GetMethod(message.Method);
-                var res = m?.Invoke(g, message.Args);
-
-                var methodBinder = g;
-
-                object result;
-                var dyn = (DynamicObject)g;
-                var r = dyn.TryInvoke(methodBinder, message.Args, out result);
-
-                var r2 = dyn.TryInvokeMember(methodBinder, message.Args, out result);
-                //var param = new Type[] {typeof (ExternalHubMessage)};
-                var param = message.Args?.Select(x => x?.GetType()).ToArray() ?? new Type[0];
-                var d = new DynamicMethod(message.Method, null, param);
-                var s = d.Invoke(g, message.Args);
-            }
-            catch (RuntimeBinderException ex)
-            {
-
+                var args = message?.Args?.Length > 0
+                    ? new object[] { message.Args.ToArray() }
+                    : new object[0];
+                var timeout = TimeSpan.FromSeconds(15);
+                var task = gp.Invoke(message.Method, args);
+                task.Wait(timeout);
             }
             catch (Exception ex)
             {

@@ -5,8 +5,6 @@ namespace Remotus.Base.Models.Hub
 {
     public class HubMessage : IHubMessage
     {
-        //public string Hub { get; set; }
-
         public string Method { get; set; }
 
         public object[] Args { get; set; }
