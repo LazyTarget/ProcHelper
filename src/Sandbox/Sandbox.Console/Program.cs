@@ -12,10 +12,10 @@ using Fclp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Remotus;
-using Remotus.API.Hubs.Client;
 using Remotus.API.Models;
+using Remotus.API.Net.Client;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
 
 namespace Sandbox.Console

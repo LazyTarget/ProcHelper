@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
 
 namespace Remotus.Core.Net.Client
 {

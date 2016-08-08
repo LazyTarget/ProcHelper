@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-using Remotus.Base.Models.Payloads;
+using Remotus.Base.Payloads;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Hubs
 {
     public class DiagnosticsHub : HubBase
     {

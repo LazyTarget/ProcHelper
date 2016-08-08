@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
+using Remotus.API.Net.Security;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Hubs
 {
     public class ChatHub : HubBase
     {

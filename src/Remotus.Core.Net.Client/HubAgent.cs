@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
+using ConnectionState = Remotus.Base.Interfaces.Net.ConnectionState;
 
 namespace Remotus.Core.Net.Client
 {
@@ -52,7 +53,7 @@ namespace Remotus.Core.Net.Client
                 return;
             
             //if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
-            if (stateChange.NewState == Base.Net.ConnectionState.Connected)
+            if (stateChange.NewState == ConnectionState.Connected)
             {
                 // Re-gained connection
                 ThreadPool.QueueUserWorkItem(ProcessSendQueue);

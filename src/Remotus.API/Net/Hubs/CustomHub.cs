@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Net;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Hubs
 {
     public class CustomHub : HubBase
     {

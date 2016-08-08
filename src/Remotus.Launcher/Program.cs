@@ -9,7 +9,7 @@ using BrendanGrant.Helpers.FileAssociation;
 using Lux.Extensions;
 using Lux.IO;
 using Remotus.API;
-using Remotus.API.Hubs.Client;
+using Remotus.API.Net.Client;
 using Remotus.Base;
 using Remotus.Base.Scripting;
 using ExecutionContext = Remotus.API.ExecutionContext;

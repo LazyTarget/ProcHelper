@@ -1,4 +1,4 @@
-﻿using Remotus.Base.Models.Hub;
+﻿using Remotus.Base.Net;
 
 namespace Remotus.Base
 {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface ICustomHubAgent : IHubAgent
     {

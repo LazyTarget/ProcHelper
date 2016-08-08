@@ -1,11 +1,9 @@
-﻿using System.IO;
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using Newtonsoft.Json;
 using Remotus.API.Models;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Security
 {
     public class CustomHubAuthorizeAttribute : AuthorizeAttribute
     {

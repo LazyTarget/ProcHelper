@@ -5,7 +5,7 @@ using System.Web.Http.Routing;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Owin;
-using Remotus.API.Hubs;
+using Remotus.API.Net.Security;
 
 namespace Remotus.API
 {

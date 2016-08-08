@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Remotus.Base;
-using Remotus.Base.Net;
+using Remotus.Base.Interfaces.Net;
 
 namespace Remotus.Core.Net.Client
 {

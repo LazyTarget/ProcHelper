@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Remotus.Base.Net;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface IHubConnector : IDisposable
     {

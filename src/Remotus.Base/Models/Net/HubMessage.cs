@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Remotus.Base.Interfaces.Net;
 
-namespace Remotus.Base.Models.Hub
+namespace Remotus.Base.Net
 {
     public class HubMessage : IHubMessage
     {

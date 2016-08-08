@@ -7,11 +7,11 @@ using Lux.Extensions;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using Remotus.API.Data;
-using Remotus.API.Hubs;
-using Remotus.API.Hubs.Client;
+using Remotus.API.Net.Client;
+using Remotus.API.Net.Hubs;
 using Remotus.API.v1;
 using Remotus.Base;
-using Remotus.Base.Models.Payloads;
+using Remotus.Base.Payloads;
 
 namespace Remotus.API
 {

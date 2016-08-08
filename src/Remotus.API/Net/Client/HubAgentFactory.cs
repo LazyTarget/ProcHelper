@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Web;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Remotus.API.Data;
 using Remotus.API.Models;
 using Remotus.Base;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Interfaces.Net.Payloads;
 using Remotus.Core.Net.Client;
 
-namespace Remotus.API.Hubs.Client
+namespace Remotus.API.Net.Client
 {
     public class HubAgentFactory : IHubAgentFactory
     {
@@ -92,7 +91,7 @@ namespace Remotus.API.Hubs.Client
         }
 
 
-        protected virtual Base.Payloads.AuthCredentials CreateAuthCredentials(ICredentials credentials)
+        protected virtual AuthCredentials CreateAuthCredentials(ICredentials credentials)
         {
             var host = Host;
             var port = Port;
@@ -100,14 +99,14 @@ namespace Remotus.API.Hubs.Client
             var uri = new Uri(url);
             var creds = credentials?.GetCredential(uri, "");
 
-            Base.Payloads.AuthCredentials authObj;
-            authObj = new Base.Payloads.AuthCredentials
+            AuthCredentials authObj;
+            authObj = new AuthCredentials
             {
                 //UserId = "fjskDhsucC",
                 UserName = Environment.UserName,
                 Domain = Environment.UserDomainName,
             };
-            authObj = Base.Payloads.AuthCredentials.Create(creds);
+            authObj = AuthCredentials.Create(creds);
             return authObj;
         }
 

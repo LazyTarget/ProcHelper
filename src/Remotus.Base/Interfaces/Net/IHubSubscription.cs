@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface IHubSubscription : IDisposable
     {

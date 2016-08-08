@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface IHubAgentFactory
     {

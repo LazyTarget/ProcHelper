@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Hubs
 {
     public class EventHub : Hub
     {

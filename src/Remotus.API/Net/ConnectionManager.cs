@@ -3,7 +3,7 @@ using System.Reflection;
 using Microsoft.AspNet.SignalR;
 using Remotus.Base;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net
 {
     public class ConnectionManager
     {

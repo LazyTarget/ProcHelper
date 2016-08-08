@@ -140,8 +140,8 @@
     <Compile Include="Models\DefaultResponseBase.cs" />
     <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Models\FunctionArguments.cs" />
-    <Compile Include="Models\Hub\HubMessage.cs" />
-    <Compile Include="Models\Hub\HubRequest.cs" />
+    <Compile Include="Models\Net\HubMessage.cs" />
+    <Compile Include="Models\Net\HubRequest.cs" />
     <Compile Include="Models\Parameter.cs" />
     <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
@@ -158,7 +158,7 @@
     <Compile Include="Models\InputHelper\Point.cs" />
     <Compile Include="Models\InputHelper\WriteTextRequest.cs" />
     <Compile Include="Models\InputHelper\WriteTextResponse.cs" />
-    <Compile Include="Models\Hub\ExternalHubMessage.cs" />
+    <Compile Include="Models\Net\ExternalHubMessage.cs" />
     <Compile Include="Models\Payloads\HubEvent.cs" />
     <Compile Include="Models\Payloads\DebugMessage.cs" />
     <Compile Include="Models\Payloads\PluginStatusChanged.cs" />

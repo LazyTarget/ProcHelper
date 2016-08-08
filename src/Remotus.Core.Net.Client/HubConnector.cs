@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Remotus.Base;
-using Remotus.Base.Net;
+using Remotus.Base.Interfaces.Net;
+using ConnectionState = Remotus.Base.Interfaces.Net.ConnectionState;
 
 namespace Remotus.Core.Net.Client
 {
@@ -32,15 +33,15 @@ namespace Remotus.Core.Net.Client
 
         public string ConnectionId              => _hubConnection?.ConnectionId;
         public bool Connected                   => _hubConnection?.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected;
-        public Base.Net.ConnectionState State
+        public ConnectionState State
         {
             get
             {
-                Base.Net.ConnectionState state;
+                ConnectionState state;
                 //if (_isReconnecting)
                 //    state = Base.Net.ConnectionState.Reconnecting;
                 //else
-                    state = (Base.Net.ConnectionState)(int)(_hubConnection?.State ?? Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected);
+                    state = (ConnectionState)(int)(_hubConnection?.State ?? Microsoft.AspNet.SignalR.Client.ConnectionState.Disconnected);
                 return state;
             }
         }
@@ -176,8 +177,8 @@ namespace Remotus.Core.Net.Client
                 }
             }
 
-            var oldState = (Base.Net.ConnectionState) (int) (stateChange.OldState);
-            var newState = (Base.Net.ConnectionState) (int) (stateChange.NewState);
+            var oldState = (ConnectionState) (int) (stateChange.OldState);
+            var newState = (ConnectionState) (int) (stateChange.NewState);
             var args = new HubConnectionStateChange(oldState, newState);
             StateChanged?.Invoke(this, args);
         }

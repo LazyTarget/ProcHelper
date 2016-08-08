@@ -1,4 +1,4 @@
-﻿namespace Remotus.Base.Models.Payloads
+﻿namespace Remotus.Base.Payloads
 {
     public class DebugMessage
     {

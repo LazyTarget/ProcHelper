@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using Remotus.API.Hubs;
+using Remotus.API.Net.Hubs;
 
 namespace Remotus.Plugins.Spotify
 {

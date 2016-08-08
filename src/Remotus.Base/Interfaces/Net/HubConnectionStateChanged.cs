@@ -1,4 +1,4 @@
-﻿namespace Remotus.Base.Net
+﻿namespace Remotus.Base.Interfaces.Net
 {
     public class HubConnectionStateChange
     {

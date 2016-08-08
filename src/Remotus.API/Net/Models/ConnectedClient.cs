@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Remotus.API.Models;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net.Models
 {
     public class ConnectedClient
     {

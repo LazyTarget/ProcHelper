@@ -1,4 +1,4 @@
-﻿namespace Remotus.Base.Models.Hub
+﻿namespace Remotus.Base.Net
 {
     public class ExternalHubMessage : HubMessage
     {

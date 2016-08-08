@@ -3,14 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
+using Remotus.API.Net.Models;
 using Remotus.Base;
 
-namespace Remotus.API.Hubs
+namespace Remotus.API.Net
 {
     public class ClientManager
     {

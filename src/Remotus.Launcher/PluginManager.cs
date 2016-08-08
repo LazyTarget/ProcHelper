@@ -11,11 +11,12 @@ using System.Threading.Tasks;
 using Lux.IO;
 using Newtonsoft.Json.Linq;
 using Remotus.API;
-using Remotus.API.Hubs.Client;
+using Remotus.API.Net.Client;
 using Remotus.API.v1;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
-using Remotus.Base.Models.Payloads;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
+using Remotus.Base.Payloads;
 using ExecutionContext = Remotus.API.ExecutionContext;
 
 namespace Remotus.Launcher

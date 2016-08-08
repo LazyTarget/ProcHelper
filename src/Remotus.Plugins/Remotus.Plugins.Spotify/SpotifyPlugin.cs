@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
-using Remotus.Base.Models.Payloads;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
 using SpotifyAPI.Local;
 
 namespace Remotus.Plugins.Spotify

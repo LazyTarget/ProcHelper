@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using Microsoft.AspNet.SignalR.Client;
 
-namespace Remotus.API.Hubs.Client
+namespace Remotus.API.Net.Client
 {
     public class LauncherHubAgentFactory : HubAgentFactory
     {
