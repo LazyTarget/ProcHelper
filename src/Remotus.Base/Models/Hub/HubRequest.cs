@@ -8,6 +8,7 @@ namespace Remotus.Base.Models.Hub
         public string ConnectionId { get; set; }            // nessesary?
         public string HubName { get; set; }
         public IHubMessage Message { get; set; }
-        public Action<object> OnProgress { get; set; }      // nessesary?
+        public DateTime? TimeQueued { get; set; }
+        public DateTime? TimeSent { get; set; }
     }
 }

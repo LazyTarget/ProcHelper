@@ -13,6 +13,11 @@ namespace Remotus.API.Data
         }
 
 
+        public bool Any()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Enqueue(HubRequest item)
         {
             // todo: serialize and store in some database...

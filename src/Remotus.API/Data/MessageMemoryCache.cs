@@ -13,6 +13,12 @@ namespace Remotus.API.Data
             _queue = new ConcurrentQueue<HubRequest>();
         }
 
+        public bool Any()
+        {
+            var result = !_queue.IsEmpty;
+            return result;
+        }
+
         public void Enqueue(HubRequest item)
         {
             _queue.Enqueue(item);

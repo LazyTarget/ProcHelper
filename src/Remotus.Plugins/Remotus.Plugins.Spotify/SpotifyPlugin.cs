@@ -71,41 +71,7 @@ namespace Remotus.Plugins.Spotify
 
             Status = ServiceStatus.Initializing;
             _executionContext = context;
-
-
-            //var agent = context.HubAgentFactory.Create("Spotify");
-            //_pluginHub = new ClientHubManager(connection);
-
-
-            Action act = async () =>
-            {
-                var diagHub = context.HubAgentFactory.Create("DiagnosticsHub", null);
-                await diagHub.Connector.Connect();
-
-                while (true)
-                {
-                    var m1 = new DebugMessage("null", null, "Mesg1", 1);
-                    var m2 = new DebugMessage("null", null, "Mesg2", 2);
-                    var m3 = new DebugMessage("null", null, "Mesg2", 3);
-                    var m4 = new DebugMessage("null", null, "Mesg2", 4);
-                    var msg = new HubMessage();
-                    msg.Method = "Write";
-                    msg.Args = new[] { JToken.FromObject(m1) };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { JToken.FromObject(m2.Message) };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { m3.Message };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { m4.Message };
-                    await diagHub.Invoke(msg);
-
-                    Thread.Sleep(1500);
-                }
-            };
-
-#if DEBUG
-            //ThreadPool.QueueUserWorkItem(state => act());
-#endif
+            
 
             ICredentials credentials = null;
             IDictionary<string, string> queryString = null;
@@ -158,23 +124,15 @@ namespace Remotus.Plugins.Spotify
         {
             _log.Info(() => $"OnPlayStateChange() Playing: {args.Playing}");
 
-
-            Task task = null;
-            var timeout = TimeSpan.FromSeconds(20);
-            try
+            
+            var msg = new HubMessage
             {
-                task = _spotifyHub?.InvokeCustom(new HubMessage
-                {
-                    Method = "OnPlayStateChange",
-                    Args = new[] { args },
-                    Queuable = true,
-                });
-                task?.Wait(timeout);
-            }
-            catch (Exception ex)
-            {
-
-            }
+                Method = "OnPlayStateChange",
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnTrackChange(object sender, TrackChangeEventArgs args)
@@ -182,50 +140,44 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnTrackChange() NewTrackName: {args.NewTrack?.TrackResource?.Name}");
 
 
-            Task task = null;
-            var timeout = TimeSpan.FromSeconds(20);
-            try
+            var msg = new HubMessage
             {
-                task = _spotifyHub?.InvokeCustom(new HubMessage
-                {
-                    Method = "OnTrackChange",
-                    Args = new[] { args },
-                    Queuable = true,
-                });
-                task?.Wait(timeout);
-            }
-            catch (Exception ex)
-            {
-
-            }
+                Method = "OnTrackChange",
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnTrackTimeChange(object sender, TrackTimeChangeEventArgs args)
         {
             _log.Debug(() => $"OnTrackTimeChange() TrackTime: {args.TrackTime}");
+
+
+            var msg = new HubMessage
+            {
+                Method = "OnTrackTimeChange",
+                Args = new[] { args },
+                Queuable = false,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnVolumeChange(object sender, VolumeChangeEventArgs args)
         {
             _log.Info(() => $"OnVolumeChange() NewVolume: {args.NewVolume}");
-            
 
-            Task task = null;
-            var timeout = TimeSpan.FromSeconds(20);
-            try
-            {
-                task = _spotifyHub?.InvokeCustom(new HubMessage
-                {
-                    Method = "OnVolumeChange",
-                    Args = new[] {args},
-                    Queuable = true,
-                });
-                task?.Wait(timeout);
-            }
-            catch (Exception ex)
-            {
 
-            }
+            var msg = new HubMessage
+            {
+                Method = "OnVolumeChange",
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
 

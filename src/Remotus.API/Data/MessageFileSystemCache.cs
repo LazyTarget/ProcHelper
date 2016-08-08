@@ -15,6 +15,11 @@ namespace Remotus.API.Data
         public string Directory { get; private set; }
 
 
+        public bool Any()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Enqueue(HubRequest item)
         {
             // todo: serialize to file...

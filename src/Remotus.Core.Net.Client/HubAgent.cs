@@ -76,6 +76,8 @@ namespace Remotus.Core.Net.Client
                         ConnectionId = _hubConnector?.ConnectionId,
                         //AgentId = _hubConnection.GetAgentId(),
                         Message = message,
+                        TimeQueued = DateTime.UtcNow,
+                        TimeSent = null,
                     };
                     _messageCache.Enqueue(request);
                 }
@@ -151,7 +153,7 @@ namespace Remotus.Core.Net.Client
             lock (_processQueueLock)
             {
                 //var messageCount = _messageQueue.Count;   // todo?
-                var messageCount = 1;
+                var messageCount = _messageCache.Any() ? 1 : 0;
                 if (messageCount > 0)
                 {
                     //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
@@ -171,6 +173,7 @@ namespace Remotus.Core.Net.Client
                             task.Wait();
 
                             sendCount++;
+                            req.TimeSent = DateTime.UtcNow;
                         }
                         catch (Exception ex)
                         {

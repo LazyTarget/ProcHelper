@@ -131,13 +131,10 @@
     <Compile Include="Data\MessageDatabaseCache.cs" />
     <Compile Include="Data\MessageFileSystemCache.cs" />
     <Compile Include="Data\MessageMemoryCache.cs" />
-    <Content Include="Hubs\Client\AutoReconnectService.cs" />
     <Compile Include="Data\PluginLauncher.cs" />
     <Compile Include="Hubs\Client\LauncherHubAgentFactory.cs" />
     <Compile Include="Hubs\DiagnosticsHub.cs" />
     <Compile Include="Hubs\Client\HubAgentFactory.cs" />
-    <Content Include="Hubs\Client\HubClientBuilder.cs" />
-    <Content Include="Hubs\Client\ClientHubManager.cs" />
     <Compile Include="Hubs\CustomHubAuthorizeAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ClientEndpointConfig.cs" />

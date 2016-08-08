@@ -1,26 +1,42 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Remotus.Base
 {
     public static class JsonExtensions
     {
-        public static void ConnectContinuous(this IHubConnector connector)
+        public static string SerializeJson(this JsonSerializer serializer, object value)
         {
-            Task task = null;
-            var timeout = TimeSpan.FromSeconds(20);
             try
             {
-                task = connector?.Connect();
-                task?.Wait(timeout);
+                var stringBuilder = new StringBuilder();
+                var stringWriter = new StringWriter(stringBuilder);
+                serializer.Serialize(stringWriter, value);
+                var json = stringBuilder.ToString();
+                return json;
             }
             catch (Exception ex)
             {
-
+                throw;
             }
-
-            connector?.EnsureReconnecting();
         }
 
+
+        public static TResult DeserializeJson<TResult>(this JsonSerializer serializer, string json)
+        {
+            try
+            {
+                var stringReader = new StringReader(json);
+                var reader = new JsonTextReader(stringReader);
+                var result = serializer.Deserialize<TResult>(reader);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }
