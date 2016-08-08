@@ -56,6 +56,19 @@ namespace Remotus.API.Hubs.Client
         }
 
 
+        public IHubAgent CreateCustom(string hubName, ICredentials credentials, IDictionary<string, string> queryString = null)
+        {
+            var connection = CreateConnection(credentials, queryString);
+            var connector = new HubConnector(connection);
+            var proxyHubName = "CustomHub";
+            var hubProxy = connection.CreateHubProxy(proxyHubName);
+            var messageCache = new MessageMemoryCache();
+            var hubAgent = new CustomHubAgent(hubName, hubProxy, connector, messageCache);
+            //var hubAgent = CreateHubAgent(hubName, hubProxy, connector);
+            return hubAgent;
+        }
+
+
         protected virtual HubHandshake CreateHandshake()
         {
             var handshake = new HubHandshake();

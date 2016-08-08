@@ -141,21 +141,11 @@ namespace Remotus.Plugins.Spotify
 
             Status = ServiceStatus.Stopped;
         }
-
-
-        private Microsoft.AspNet.SignalR.IHubContext GetHubContext()
-        {
-            var hub = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SpotifyHub>();
-            return hub;
-        }
-
+        
 
         private void LocalApi_OnPlayStateChange(object sender, PlayStateEventArgs args)
         {
             _log.Info(() => $"OnPlayStateChange() Playing: {args.Playing}");
-
-            var hub = GetHubContext();
-            hub.Clients.All.OnPlayStateChange(args);
         }
 
         private void LocalApi_OnTrackChange(object sender, TrackChangeEventArgs args)
@@ -173,7 +163,7 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnVolumeChange() NewVolume: {args.NewVolume}");
 
 
-            var hubAgent = _executionContext?.HubAgentFactory?.Create("SpotifyHub", null, null);
+            var hubAgent = _executionContext?.HubAgentFactory?.CreateCustom("SpotifyHub", null, null);
             Task task = null;
             var timeout = TimeSpan.FromSeconds(20);
             try
@@ -192,7 +182,7 @@ namespace Remotus.Plugins.Spotify
                 task = hubAgent?.Invoke(new HubMessage
                 {
                     Method = "OnVolumeChange",
-                    Args = new[] { args },
+                    Args = new[] {args},
                     Queuable = true,
                 });
                 task?.Wait(timeout);
@@ -200,6 +190,12 @@ namespace Remotus.Plugins.Spotify
             catch (Exception ex)
             {
 
+            }
+            finally
+            {
+                hubAgent?.Connector?.Disconnect();
+                hubAgent?.Connector?.Dispose();
+                hubAgent?.Dispose();
             }
         }
 

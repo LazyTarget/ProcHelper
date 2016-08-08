@@ -160,7 +160,7 @@
     <Compile Include="Hubs\EventHub.cs" />
     <Compile Include="Hubs\HubExtensions.cs" />
     <Compile Include="Hubs\HubServer.cs" />
-    <Compile Include="Hubs\ExternalHub.cs" />
+    <Compile Include="Hubs\CustomHub.cs" />
     <Compile Include="Hubs\MainHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />

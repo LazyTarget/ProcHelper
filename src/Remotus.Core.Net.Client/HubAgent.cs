@@ -14,11 +14,11 @@ namespace Remotus.Core.Net.Client
 {
     public class HubAgent : IHubAgent
     {
-        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
+        protected static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
 
         private readonly IHubConnector _hubConnector;
         private readonly IMessageCache _messageCache;
-        private readonly IHubProxy _hubProxy;
+        protected readonly IHubProxy _hubProxy;
         private bool _isDisposing;
         private readonly object _processQueueLock = new object();
 
@@ -46,7 +46,7 @@ namespace Remotus.Core.Net.Client
         public IHubConnector Connector  => _hubConnector;
 
         
-        private void HubConnection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
+        protected virtual void HubConnection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
         {
             if (_isDisposing)
                 return;
@@ -60,8 +60,10 @@ namespace Remotus.Core.Net.Client
         }
 
 
-        public Task Invoke(IHubMessage message)
+        public virtual Task Invoke(IHubMessage message)
         {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
             Task task;
             if (!Connected)
             {
@@ -95,13 +97,13 @@ namespace Remotus.Core.Net.Client
                 return task;
             }
 
-            object[] args = message.Args.ToArray();
+            object[] args = message.Args?.ToArray();
             task = _hubProxy.Invoke(message.Method, args: args);
             return task;
         }
 
 
-        public IHubSubscription Subscribe(string eventName)
+        public virtual IHubSubscription Subscribe(string eventName)
         {
             var subscription = new HubSubscription();
             subscription.HubName = HubName;
