@@ -34,4 +34,16 @@ namespace Remotus.Plugins.Sound
         Monitor = 9,
         Unknown = 10
     }
+
+    public enum DeviceChangedType
+    {
+        DefaultChanged = 0,
+        DeviceAdded = 1,
+        DeviceRemoved = 2,
+        PropertyChanged = 3,
+        StateChanged = 4,
+        MuteChanged = 5,
+        VolumeChanged = 6,
+        PeakValueChanged = 7
+    }
 }

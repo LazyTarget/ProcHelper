@@ -32,7 +32,7 @@ namespace Remotus.Core.Net.Client
         public Task InvokeCustom(IHubMessage message)
         {
             var args = message?.Args?.Count > 0
-                ? new object[] { message.Args.ToArray() }
+                ? message.Args.ToArray()
                 : new object[0];
 
             var inner = new ExternalHubMessage();

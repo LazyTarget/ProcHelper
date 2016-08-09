@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using Remotus.Plugins.Sound.Payloads;
 
 namespace Remotus.Plugins.Sound
 {
@@ -27,7 +28,8 @@ namespace Remotus.Plugins.Sound
             return result;
         }
 
-        public virtual AudioDevice FromAudioDevice(AudioSwitcher.AudioApi.CoreAudio.CoreAudioDevice state)
+
+        public virtual AudioDevice FromAudioDevice(AudioSwitcher.AudioApi.IDevice state)
         {
             if (state == null)
                 return null;
@@ -51,6 +53,61 @@ namespace Remotus.Plugins.Sound
             return result;
         }
 
+
+        protected virtual DeviceChangedArgs ApplyToArgs(AudioSwitcher.AudioApi.DeviceChangedArgs args, DeviceChangedArgs result)
+        {
+            result = result ?? new DeviceChangedArgs();
+            result.ChangeType = (DeviceChangedType) Enum.Parse(typeof (DeviceChangedType), ((int) args.ChangedType).ToString());
+            result.Device = FromAudioDevice(args.Device);
+            return result;
+        }
+
+        public virtual DeviceChangedArgs FromArgs(AudioSwitcher.AudioApi.DeviceChangedArgs args)
+        {
+            var result = new DeviceChangedArgs();
+            ApplyToArgs(args, result);
+            return result;
+        }
+
+        public virtual DeviceVolumeChangedArgs FromArgs(AudioSwitcher.AudioApi.DeviceVolumeChangedArgs args)
+        {
+            var result = new DeviceVolumeChangedArgs();
+            ApplyToArgs(args, result);
+            result.Volume = args.Volume;
+            return result;
+        }
+
+        public virtual DevicePeakValueChangedArgs FromArgs(AudioSwitcher.AudioApi.DevicePeakValueChangedArgs args)
+        {
+            var result = new DevicePeakValueChangedArgs();
+            ApplyToArgs(args, result);
+            result.PeakValue = args.PeakValue;
+            return result;
+        }
+
+        public virtual DeviceMuteChangedArgs FromArgs(AudioSwitcher.AudioApi.DeviceMuteChangedArgs args)
+        {
+            var result = new DeviceMuteChangedArgs();
+            ApplyToArgs(args, result);
+            result.IsMuted = args.IsMuted;
+            return result;
+        }
+
+        public virtual DeviceStateChangedArgs FromArgs(AudioSwitcher.AudioApi.DeviceStateChangedArgs args)
+        {
+            var result = new DeviceStateChangedArgs();
+            ApplyToArgs(args, result);
+            result.State = (AudioDeviceState)Enum.Parse(typeof(AudioDeviceState), ((int)args.State).ToString());
+            return result;
+        }
+
+        public virtual DevicePropertyChangedArgs FromArgs(AudioSwitcher.AudioApi.DevicePropertyChangedArgs args)
+        {
+            var result = new DevicePropertyChangedArgs();
+            ApplyToArgs(args, result);
+            result.PropertyName = args.PropertyName;
+            return result;
+        }
 
 
 

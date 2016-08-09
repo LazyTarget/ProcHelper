@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using AudioSwitcher.AudioApi;
 using AudioSwitcher.AudioApi.CoreAudio;
 using AudioSwitcher.AudioApi.Observables;
 using Remotus.Base;
 using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
+using Remotus.Plugins.Sound.Payloads;
 
 namespace Remotus.Plugins.Sound
 {
@@ -25,8 +25,15 @@ namespace Remotus.Plugins.Sound
         private ServiceStatus _status;
         private IExecutionContext _executionContext;
         private ICustomHubAgent _soundHub;
-        private BroadcasterBase<DeviceChangedArgs> _audioDeviceChangedObserver;
-        private BroadcasterBase<DeviceChangedArgs> _playbackDeviceVolumeChangedObserver;
+        private readonly HashSet<string> _subscribedDevices = new HashSet<string>(); 
+        private readonly ModelConverter _modelConverter = new ModelConverter();
+
+        private BroadcasterBase<AudioSwitcher.AudioApi.DeviceChangedArgs> _audioDeviceChangedObserver;
+        private BroadcasterBase<AudioSwitcher.AudioApi.DeviceVolumeChangedArgs> _deviceVolumeChangedObserver;
+        private BroadcasterBase<AudioSwitcher.AudioApi.DevicePeakValueChangedArgs> _devicePeakValueChangedObserver;
+        private BroadcasterBase<AudioSwitcher.AudioApi.DeviceMuteChangedArgs> _deviceMuteChangedObserver;
+        private BroadcasterBase<AudioSwitcher.AudioApi.DeviceStateChangedArgs> _deviceStateChangedObserver;
+        private BroadcasterBase<AudioSwitcher.AudioApi.DevicePropertyChangedArgs> _devicePropertyChangedObserver;
 
 
         public SoundPlugin()
@@ -87,19 +94,93 @@ namespace Remotus.Plugins.Sound
             ICredentials credentials = null;
             IDictionary<string, string> queryString = null;
             _soundHub = _executionContext?.HubAgentFactory?.CreateCustom("SoundHub", credentials, queryString);
-            
-            _audioDeviceChangedObserver?.Dispose();
-            _audioDeviceChangedObserver = new AsyncBroadcaster<DeviceChangedArgs>();
-            _audioDeviceChangedObserver.Subscribe(OnAudioDeviceChanged_OnNext);
-            AudioController.AudioDeviceChanged.Subscribe(_audioDeviceChangedObserver);
 
-
-            _playbackDeviceVolumeChangedObserver?.Dispose();
-            _playbackDeviceVolumeChangedObserver = new AsyncBroadcaster<DeviceChangedArgs>();
-            _playbackDeviceVolumeChangedObserver.Subscribe(OnPlaybackDeviceVolumeChanged_OnNext);
-            AudioController.DefaultPlaybackDevice.VolumeChanged.Subscribe(_playbackDeviceVolumeChangedObserver);
+            InitObservers();
 
             Status = ServiceStatus.Initialized;
+        }
+
+
+        private void InitObservers()
+        {
+            ClearObservers();
+
+            // Init
+            _audioDeviceChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DeviceChangedArgs>();
+            _audioDeviceChangedObserver.Subscribe(OnAudioDeviceChanged_OnNext, OnDeviceChanged_OnError);
+
+            _deviceVolumeChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DeviceVolumeChangedArgs>();
+            _deviceVolumeChangedObserver.Subscribe(OnDeviceVolumeChanged_OnNext, OnDeviceChanged_OnError);
+            
+            _devicePeakValueChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DevicePeakValueChangedArgs>();
+            _devicePeakValueChangedObserver.Subscribe(OnDevicePeakValueChanged_OnNext, OnDeviceChanged_OnError);
+            
+            _deviceMuteChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DeviceMuteChangedArgs>();
+            _deviceMuteChangedObserver.Subscribe(OnDeviceMuteChanged_OnNext, OnDeviceChanged_OnError);
+            
+            _deviceStateChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DeviceStateChangedArgs>();
+            _deviceStateChangedObserver.Subscribe(OnDeviceStateChanged_OnNext, OnDeviceChanged_OnError);
+            
+            _devicePropertyChangedObserver = new AsyncBroadcaster<AudioSwitcher.AudioApi.DevicePropertyChangedArgs>();
+            _devicePropertyChangedObserver.Subscribe(OnDevicePropertyChanged_OnNext, OnDeviceChanged_OnError);
+
+
+            // Subscribe
+            AudioController.AudioDeviceChanged.Subscribe(_audioDeviceChangedObserver);
+
+            var devices = AudioController.GetDevices();
+            foreach (var device in devices)
+            {
+                SubscribeOnDevice(device);
+            }
+        }
+
+
+        private void ClearObservers()
+        {
+            lock (_subscribedDevices)
+            {
+                var count = _subscribedDevices.Count;
+                _audioDeviceChangedObserver?.Dispose();
+                _deviceVolumeChangedObserver?.Dispose();
+                _devicePeakValueChangedObserver?.Dispose();
+                _deviceStateChangedObserver?.Dispose();
+                _devicePropertyChangedObserver?.Dispose();
+                _deviceMuteChangedObserver?.Dispose();
+
+                _audioDeviceChangedObserver = null;
+                _deviceVolumeChangedObserver = null;
+                _devicePeakValueChangedObserver = null;
+                _deviceStateChangedObserver = null;
+                _devicePropertyChangedObserver = null;
+                _deviceMuteChangedObserver = null;
+
+                _subscribedDevices.Clear();
+                _log.Debug(() => $"Cleared device subscriptions. Count: {count}");
+            }
+        }
+
+
+
+        private void SubscribeOnDevice(AudioSwitcher.AudioApi.IDevice device)
+        {
+            lock (_subscribedDevices)
+            {
+                if (_subscribedDevices.Contains(device.Id.ToString()))
+                {
+                    _log.Debug(() => $"Already subscribed to device '{device.Id}'");
+                    return;
+                }
+
+                _log.Debug(() => $"Subscribed events for device '{device.Id}'");
+                device.VolumeChanged.Subscribe(_deviceVolumeChangedObserver);
+                device.PeakValueChanged.Subscribe(_devicePeakValueChangedObserver);
+                device.MuteChanged.Subscribe(_deviceMuteChangedObserver);
+                device.StateChanged.Subscribe(_deviceStateChangedObserver);
+                device.PropertyChanged.Subscribe(_devicePropertyChangedObserver);
+
+                _subscribedDevices.Add(device.Id.ToString());
+            }
         }
 
 
@@ -129,38 +210,126 @@ namespace Remotus.Plugins.Sound
         }
 
         
-        private void OnAudioDeviceChanged_OnNext(DeviceChangedArgs args)
+        private void OnAudioDeviceChanged_OnNext(AudioSwitcher.AudioApi.DeviceChangedArgs args)
         {
             _log.Info(() => $"OnAudioDeviceChanged() ChangedType: {args.ChangedType}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
 
+            if (args.ChangedType == AudioSwitcher.AudioApi.DeviceChangedType.DeviceAdded)
+            {
+                SubscribeOnDevice(args.Device);
+            }
+            else if (args.ChangedType == AudioSwitcher.AudioApi.DeviceChangedType.DeviceRemoved)
+            {
+                SubscribeOnDevice(args.Device);
+            }
+            else if (args.ChangedType == AudioSwitcher.AudioApi.DeviceChangedType.StateChanged)
+            {
+                SubscribeOnDevice(args.Device);
+            }
+
+
             if (Status != ServiceStatus.Running)
                 return;
-
+            DeviceChangedArgs payload = _modelConverter.FromArgs(args);
             var msg = new HubMessage
             {
                 Method = "OnAudioDeviceChanged",
-                Args = new object[] { args },
+                Args = new object[] { payload },
                 Queuable = false,
             };
             var task = _soundHub.InvokeCustom(msg);
             task.TryWaitAsync();
         }
 
-        private void OnPlaybackDeviceVolumeChanged_OnNext(DeviceChangedArgs args)
+        private void OnDeviceVolumeChanged_OnNext(AudioSwitcher.AudioApi.DeviceVolumeChangedArgs args)
         {
-            _log.Info(() => $"OnPlaybackDeviceVolumeChanged() ChangedType: {args.ChangedType}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
-
+            _log.Info(() => $"OnDeviceVolumeChanged() Volume: {args.Volume}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
+            
             if (Status != ServiceStatus.Running)
                 return;
-
+            DeviceVolumeChangedArgs payload = _modelConverter.FromArgs(args);
             var msg = new HubMessage
             {
-                Method = "OnPlaybackDeviceVolumeChanged",
-                Args = new object[] { args },
+                Method = "OnDeviceVolumeChanged",
+                Args = new object[] { payload },
                 Queuable = false,
             };
             var task = _soundHub.InvokeCustom(msg);
             task.TryWaitAsync();
+        }
+
+        private void OnDevicePeakValueChanged_OnNext(AudioSwitcher.AudioApi.DevicePeakValueChangedArgs args)
+        {
+            _log.Info(() => $"OnDevicePeakValueChanged() PeakValue: {args.PeakValue}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
+
+            if (Status != ServiceStatus.Running)
+                return;
+            DevicePeakValueChangedArgs payload = _modelConverter.FromArgs(args);
+            var msg = new HubMessage
+            {
+                Method = "OnDevicePeakValueChanged",
+                Args = new object[] { payload },
+                Queuable = false,
+            };
+            var task = _soundHub.InvokeCustom(msg);
+            task.TryWaitAsync();
+        }
+
+        private void OnDeviceMuteChanged_OnNext(AudioSwitcher.AudioApi.DeviceMuteChangedArgs args)
+        {
+            _log.Info(() => $"OnDeviceMuteChanged() IsMuted: {args.IsMuted}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
+
+            if (Status != ServiceStatus.Running)
+                return;
+            DeviceMuteChangedArgs payload = _modelConverter.FromArgs(args);
+            var msg = new HubMessage
+            {
+                Method = "OnDeviceMuteChanged",
+                Args = new object[] { payload },
+                Queuable = false,
+            };
+            var task = _soundHub.InvokeCustom(msg);
+            task.TryWaitAsync();
+        }
+
+        private void OnDeviceStateChanged_OnNext(AudioSwitcher.AudioApi.DeviceStateChangedArgs args)
+        {
+            _log.Info(() => $"OnDeviceStateChanged() State: {args.State}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
+
+            if (Status != ServiceStatus.Running)
+                return;
+            DeviceStateChangedArgs payload = _modelConverter.FromArgs(args);
+            var msg = new HubMessage
+            {
+                Method = "OnDeviceStateChanged",
+                Args = new object[] { payload },
+                Queuable = false,
+            };
+            var task = _soundHub.InvokeCustom(msg);
+            task.TryWaitAsync();
+        }
+
+        private void OnDevicePropertyChanged_OnNext(AudioSwitcher.AudioApi.DevicePropertyChangedArgs args)
+        {
+            _log.Info(() => $"OnDevicePropertyChanged() PropertyName: {args.PropertyName}, Device: {args.Device.FullName} [{args.Device.DeviceType}]");
+
+            if (Status != ServiceStatus.Running)
+                return;
+            DevicePropertyChangedArgs payload = _modelConverter.FromArgs(args);
+            var msg = new HubMessage
+            {
+                Method = "OnDevicePropertyChanged",
+                Args = new object[] { payload },
+                Queuable = false,
+            };
+            var task = _soundHub.InvokeCustom(msg);
+            task.TryWaitAsync();
+        }
+
+
+        private void OnDeviceChanged_OnError(Exception error)
+        {
+            _log.Info(() => $"OnDeviceChanged() OnError: {error.Message}");
         }
 
 
@@ -181,8 +350,7 @@ namespace Remotus.Plugins.Sound
 
         public void Dispose()
         {
-            _audioDeviceChangedObserver.Dispose();
-
+            ClearObservers();
 
             if (_audioController.IsValueCreated)
             {

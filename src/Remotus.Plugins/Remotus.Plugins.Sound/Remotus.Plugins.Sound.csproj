@@ -75,6 +75,7 @@
     <Compile Include="Models\AudioDevice.cs" />
     <Compile Include="Models\AudioSession.cs" />
     <Compile Include="Models\Enums.cs" />
+    <Compile Include="Payloads\DeviceChangedArgs.cs" />
     <Compile Include="SoundPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Functions\ToggleAudioDeviceMutedFunction.cs" />
