@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,22 +14,32 @@ namespace Remotus.API.Net.Hubs
 
         
 
-        public void InvokeCustom(ExternalHubMessage message)
+        public void InvokeCustom(CustomHubMessage message)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(message?.HubName))
                     throw new ArgumentNullException(nameof(message.HubName));
 
-                var customHubIdentifier = $"CustomHub_{message.HubName}";
-                var group = Clients.Group(customHubIdentifier);
-                var gp = (IClientProxy) group;
-
                 var args = message?.Args?.Length > 0
                     ? new object[] { message.Args.ToArray() }
                     : new object[0];
+
+                Task task;
                 var timeout = TimeSpan.FromSeconds(15);
-                var task = gp.Invoke(message.Method, args);
+                var groupNames = message?.Groups?.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToList() ?? new List<string>();
+                if (groupNames.Any())
+                {
+                    var group = Clients.Groups(groupNames);
+                    var proxy = (IClientProxy) group;
+                    task = proxy.Invoke(message.Method, args);
+                }
+                else
+                {
+                    var all = Clients.All;
+                    var proxy = (IClientProxy)all;
+                    task = proxy.Invoke(message.Method, args);
+                }
                 task.Wait(timeout);
             }
             catch (Exception ex)

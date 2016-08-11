@@ -6,6 +6,11 @@ namespace Remotus.Base.Net
 {
     public class HubMessage : IHubMessage
     {
+        public HubMessage()
+        {
+            Queuable = false;
+        }
+
         public string Method { get; set; }
 
         public object[] Args { get; set; }

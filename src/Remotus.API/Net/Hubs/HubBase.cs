@@ -11,12 +11,12 @@ namespace Remotus.API.Net.Hubs
 
         public async Task AddToGroup(string group)
         {
-            if (group == "Events")
-            {
-                await AddToGroup("Events-Group");
-                await AddToGroup("Events-Connections");
-                return;
-            }
+            //if (group == "Events")
+            //{
+            //    await AddToGroup("Events.Group");
+            //    await AddToGroup("Events.Connections");
+            //    return;
+            //}
 
             await Groups.Add(Context.ConnectionId, group);
 
@@ -31,17 +31,17 @@ namespace Remotus.API.Net.Hubs
                 EventName = "AddedToGroup",
                 Message = $"ConnectionId '{Context.ConnectionId}' added to group {group} ({HubName})",
             };
-            Clients.Group("Events-Group").OnEvent(model);
+            Clients.Groups("Events", "Events.Group").OnEvent(model);
         }
 
         public async Task RemoveFromFroup(string group)
         {
-            if (group == "Events")
-            {
-                await RemoveFromFroup("Events-Connections");
-                await RemoveFromFroup("Events-Group");
-                return;
-            }
+            //if (group == "Events")
+            //{
+            //    await RemoveFromFroup("Events.Connections");
+            //    await RemoveFromFroup("Events.Group");
+            //    return;
+            //}
 
             var client = HubServer.Instance.ClientManager.GetClient(Context.ConnectionId);
             var model = new HubEvent
@@ -53,7 +53,7 @@ namespace Remotus.API.Net.Hubs
                 EventName = "RemovedFromGroup",
                 Message = $"ConnectionId '{Context.ConnectionId}' removed from group {group} ({HubName})",
             };
-            Clients.Group("Events-Group").OnEvent(model);
+            Clients.Groups("Events", "Events.Group").OnEvent(model);
 
 
 
@@ -81,7 +81,7 @@ namespace Remotus.API.Net.Hubs
                     EventName = "OnConnected",
                     Message = $"ConnectionId '{Context.ConnectionId}' connected to hub '{HubName}'",
                 };
-                Clients.Group("Events-Connections").OnEvent(model);
+                Clients.Groups("Events", "Events.Connections").OnEvent(model);
             }
 
 
@@ -108,7 +108,7 @@ namespace Remotus.API.Net.Hubs
                     EventName = "OnReconnected",
                     Message = $"ConnectionId '{Context.ConnectionId}' reconnected to hub '{HubName}'",
                 };
-                Clients.Group("Events-Connections").OnEvent(model);
+                Clients.Groups("Event", "Events.Connections").OnEvent(model);
             }
 
 
@@ -133,7 +133,7 @@ namespace Remotus.API.Net.Hubs
                     EventName = "OnDisconnected",
                     Message = $"ConnectionId '{Context.ConnectionId}' disconnected from hub '{HubName}'",
                 };
-                Clients.Group("Events-Connections").OnEvent(model);
+                Clients.Groups("Events", "Events.Connections").OnEvent(model);
             }
 
 

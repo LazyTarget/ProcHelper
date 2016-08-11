@@ -19,8 +19,6 @@ namespace Remotus.Core.Net.Client
         {
         }
 
-        protected string CustomHubIdentifier => $"CustomHub_{HubName}";
-
 
         public override Task Invoke(IHubMessage message)
         {
@@ -29,21 +27,24 @@ namespace Remotus.Core.Net.Client
             return task;
         }
 
-        public Task InvokeCustom(IHubMessage message)
+        public Task InvokeCustom(CustomHubMessage message)
         {
-            var args = message?.Args?.Count > 0
+            var args = message?.Args?.Length > 0
                 ? message.Args.ToArray()
                 : new object[0];
 
-            var inner = new ExternalHubMessage();
+            var inner = new CustomHubMessage();
             inner.HubName = HubName;
             inner.Method = message?.Method;
             inner.Args = args;
             inner.Queuable = message?.Queuable ?? false;
+            inner.Groups = message?.Groups;
 
-            var msg = new ExternalHubMessage();
+            var msg = new CustomHubMessage();
             msg.HubName = "CustomHub";
             msg.Method = "InvokeCustom";
+            msg.Groups = null;
+            //msg.Groups = new [] { HubName };
             //msg.Args = args;
             msg.Args = new object[] { inner };
             msg.Queuable = inner.Queuable;

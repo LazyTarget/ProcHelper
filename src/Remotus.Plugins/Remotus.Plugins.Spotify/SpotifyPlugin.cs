@@ -125,9 +125,10 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnPlayStateChange() Playing: {args.Playing}");
 
             
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnPlayStateChange",
+                Groups = new[] { "Spotify", "Spotify.OnPlayStateChange" },
                 Args = new[] { args },
                 Queuable = true,
             };
@@ -140,9 +141,10 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnTrackChange() NewTrackName: {args.NewTrack?.TrackResource?.Name}");
 
 
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnTrackChange",
+                Groups = new [] { "Spotify", "Spotify.OnTrackChange" },
                 Args = new[] { args },
                 Queuable = true,
             };
@@ -155,9 +157,10 @@ namespace Remotus.Plugins.Spotify
             _log.Debug(() => $"OnTrackTimeChange() TrackTime: {args.TrackTime}");
 
 
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnTrackTimeChange",
+                Groups = new[] { "Spotify", "Spotify.OnTrackTimeChange" },
                 Args = new[] { args },
                 Queuable = false,
             };
@@ -170,9 +173,10 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnVolumeChange() NewVolume: {args.NewVolume}");
 
 
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnVolumeChange",
+                Groups = new[] { "Spotify", "Spotify.OnVolumeChange" },
                 Args = new[] { args },
                 Queuable = true,
             };

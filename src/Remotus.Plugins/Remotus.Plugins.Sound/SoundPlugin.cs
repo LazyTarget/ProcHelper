@@ -231,9 +231,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DeviceChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnAudioDeviceChanged",
+                Groups = new[] { "Sound", "Sound.OnAudioDeviceChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
@@ -248,9 +249,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DeviceVolumeChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnDeviceVolumeChanged",
+                Groups = new[] { "Sound", "Sound.OnDeviceVolumeChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
@@ -265,9 +267,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DevicePeakValueChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnDevicePeakValueChanged",
+                Groups = new [] { "Sound", "Sound.OnDevicePeakValueChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
@@ -282,9 +285,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DeviceMuteChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnDeviceMuteChanged",
+                Groups = new[] { "Sound", "Sound.OnDeviceMuteChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
@@ -299,9 +303,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DeviceStateChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnDeviceStateChanged",
+                Groups = new[] { "Sound", "Sound.OnDeviceStateChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
@@ -316,9 +321,10 @@ namespace Remotus.Plugins.Sound
             if (Status != ServiceStatus.Running)
                 return;
             DevicePropertyChangedArgs payload = _modelConverter.FromArgs(args);
-            var msg = new HubMessage
+            var msg = new CustomHubMessage
             {
                 Method = "OnDevicePropertyChanged",
+                Groups = new[] { "Sound", "Sound.OnDevicePropertyChanged" },
                 Args = new object[] { payload },
                 Queuable = false,
             };
