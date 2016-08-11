@@ -11,7 +11,7 @@ namespace Remotus.API.Data
 {
     public class PluginLoader : IPluginStore
     {
-        private readonly IList<LoadedPlugin> _plugins = new List<LoadedPlugin>();
+        private readonly IList<AgentPlugin> _plugins = new List<AgentPlugin>();
         private bool _loaded;
 
         public IFileSystem FileSystem { get; set; }
@@ -66,7 +66,13 @@ namespace Remotus.API.Data
                                 var instance = (IPlugin)obj;
                                 var plugin = new LoadedPlugin
                                 {
+                                    ID = instance.ID,
+                                    Name = instance.Name,
+                                    Version = instance.Version,
+                                    Loaded = true,
                                     Instance = instance,
+                                    PluginFile = filePath,
+                                    PluginInstanceType = pluginType,
                                 };
                                 _plugins.Add(plugin);
                             }
@@ -85,7 +91,7 @@ namespace Remotus.API.Data
             }
         }
 
-        public async Task<IEnumerable<LoadedPlugin>> GetPlugins()
+        public async Task<IEnumerable<AgentPlugin>> GetPlugins()
         {
             await LoadPlugins();
             return _plugins.AsEnumerable();

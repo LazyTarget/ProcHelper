@@ -1,6 +1,6 @@
 ﻿using System;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Net;
 
 namespace Remotus.API.Data
 {
@@ -12,6 +12,11 @@ namespace Remotus.API.Data
 
         }
 
+
+        public bool Any()
+        {
+            throw new NotImplementedException();
+        }
 
         public void Enqueue(HubRequest item)
         {

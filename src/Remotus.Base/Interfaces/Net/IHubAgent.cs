@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface IHubAgent : IDisposable
     {
         string HubName { get; }
         Task Invoke(IHubMessage message);
-        IHubSubscription Subscribe(string eventName);
-
-        Task Connect();
-        void Disconnect();
+        IHubSubscription Observe(string eventName);
+        IHubConnector Connector { get; }
     }
 }

@@ -2,28 +2,30 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR.Client;
 using Remotus.Base;
+using Remotus.Base.Interfaces.Net;
 
 namespace Remotus.Core.Net.Client
 {
     public class HubAgentManager : IHubAgentManager
     {
-        private readonly HubConnection _hubConnection;
+        private readonly IHubConnector _hubConnector;
         private readonly IDictionary<string, IHubAgent> _hubs;
 
-        public HubAgentManager(HubConnection hubConnection, IEnumerable<IHubAgent> hubs)
+        public HubAgentManager(IHubConnector hubConnector, IEnumerable<IHubAgent> hubs)
         {
-            if (hubConnection == null)
-                throw new ArgumentNullException(nameof(hubConnection));
+            if (hubConnector == null)
+                throw new ArgumentNullException(nameof(hubConnector));
             if (hubs == null)
                 throw new ArgumentNullException(nameof(hubs));
-            _hubConnection = hubConnection;
+            _hubConnector = hubConnector;
             _hubs = hubs.ToDictionary(x => x.HubName);
         }
         
-        public bool Connected => _hubConnection?.State == ConnectionState.Connected;
+        public bool Connected           => _hubConnector?.State == ConnectionState.Connected;
+
+        public IHubConnector Connector  => _hubConnector;
+
 
         public IReadOnlyDictionary<string, IHubAgent> GetHubs()
         {
@@ -39,25 +41,11 @@ namespace Remotus.Core.Net.Client
             return null;
         }
 
-        public async Task Connect()
-        {
-            var connection = _hubConnection;
-            if (connection != null)
-            {
-                await connection.Start();
-            }
-        }
-
-        public void Disconnect()
-        {
-            var error = new Exception("My custom exc. Closing hub connection...");
-            _hubConnection.Stop(error);
-        }
 
 
         public void Dispose()
         {
-            Disconnect();
+            _hubConnector?.Disconnect();
         }
     }
 }

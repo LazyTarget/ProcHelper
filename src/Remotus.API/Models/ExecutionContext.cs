@@ -1,4 +1,5 @@
 ﻿using Remotus.Base;
+using Remotus.Base.Interfaces.Net;
 
 namespace Remotus.API
 {

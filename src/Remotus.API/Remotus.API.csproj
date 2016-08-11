@@ -45,8 +45,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\third party\CoreAudioServer.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lux, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -92,6 +92,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -123,16 +127,17 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
-    <Compile Include="Components\LoadedPlugin.cs" />
+    <Compile Include="Extensions\HubServerExtensions.cs" />
+    <Compile Include="Extensions\HubExtensions.cs" />
+    <Compile Include="Models\AgentPlugin.cs" />
     <Compile Include="Data\MessageDatabaseCache.cs" />
     <Compile Include="Data\MessageFileSystemCache.cs" />
     <Compile Include="Data\MessageMemoryCache.cs" />
-    <Content Include="Hubs\Client\AutoReconnectService.cs" />
-    <Compile Include="Hubs\DiagnosticsHub.cs" />
-    <Compile Include="Hubs\Client\HubAgentFactory.cs" />
-    <Content Include="Hubs\Client\HubClientBuilder.cs" />
-    <Content Include="Hubs\Client\ClientHubManager.cs" />
-    <Compile Include="Hubs\CustomHubAuthorizeAttribute.cs" />
+    <Compile Include="Data\PluginLauncher.cs" />
+    <Compile Include="Net\Client\LauncherHubAgentFactory.cs" />
+    <Compile Include="Net\Hubs\DiagnosticsHub.cs" />
+    <Compile Include="Net\Client\HubAgentFactory.cs" />
+    <Compile Include="Net\Security\CustomHubAuthorizeAttribute.cs" />
     <Compile Include="Components\DebugActionFilter.cs" />
     <Compile Include="Config\ClientEndpointConfig.cs" />
     <Compile Include="Config\ApiConfig.cs" />
@@ -141,23 +146,22 @@
     <Compile Include="Data\PluginLoader.cs" />
     <Compile Include="Components\GlobalExceptionHandler.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
-    <Compile Include="Hubs\ChatHub.cs" />
-    <Compile Include="Hubs\ConnectedClient.cs" />
-    <Compile Include="Hubs\ClientManager.cs" />
-    <Compile Include="Hubs\ConnectionManager.cs" />
-    <Compile Include="Hubs\CustomUserIdProvider.cs" />
-    <Compile Include="Hubs\AgentHub.cs" />
-    <Compile Include="Hubs\HubBase.cs" />
-    <Compile Include="Hubs\PluginHub.cs" />
-    <Compile Include="Hubs\TimeHub.cs" />
-    <Compile Include="Hubs\EventHub.cs" />
-    <Compile Include="Hubs\HubExtensions.cs" />
-    <Compile Include="Hubs\HubServer.cs" />
-    <Compile Include="Hubs\ExternalHub.cs" />
-    <Compile Include="Hubs\MainHub.cs" />
+    <Compile Include="Net\Hubs\ChatHub.cs" />
+    <Compile Include="Net\Models\ConnectedClient.cs" />
+    <Compile Include="Net\ClientManager.cs" />
+    <Compile Include="Net\ConnectionManager.cs" />
+    <Compile Include="Net\Security\CustomUserIdProvider.cs" />
+    <Compile Include="Net\Hubs\AgentHub.cs" />
+    <Compile Include="Net\Hubs\ServerHub.cs" />
+    <Compile Include="Net\Hubs\HubBase.cs" />
+    <Compile Include="Net\Hubs\TimeHub.cs" />
+    <Compile Include="Net\Hubs\EventHub.cs" />
+    <Compile Include="Net\HubExtensions.cs" />
+    <Compile Include="Net\HubServer.cs" />
+    <Compile Include="Net\Hubs\CustomHub.cs" />
     <Compile Include="Interfaces\IBaseController.cs" />
     <Compile Include="Interfaces\IWebPlugin.cs" />
-    <Compile Include="Models\HubHandshake.cs" />
+    <Compile Include="Net\Models\HubHandshake.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\ClientInfo.cs" />
     <Compile Include="Models\ExecutionContext.cs" />
@@ -201,6 +205,9 @@
     <None Include="App_Data\Scripts\AudioDevice_Speaker.remotus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -235,20 +242,19 @@
       <Project>{63821537-6b6f-4412-ba4e-5799d51aef01}</Project>
       <Name>Remotus.Plugins.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
-      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
-      <Name>Remotus.Plugins.Sound</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Spotify\Remotus.Plugins.Spotify.csproj">
-      <Project>{42be24e3-f30d-468d-a304-b3214e46779f}</Project>
-      <Name>Remotus.Plugins.Spotify</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Remotus\Remotus.csproj">
       <Project>{eba770e8-fbfc-4adc-a8d1-259c3dedcc33}</Project>
       <Name>Remotus</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

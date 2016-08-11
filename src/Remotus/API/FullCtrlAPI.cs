@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotus.Base;
-using Remotus.Plugins.Sound;
+//using Remotus.Plugins.Sound;
 
 namespace Remotus.API
 {
@@ -17,7 +17,7 @@ namespace Remotus.API
             //Powershell = new PowershellAPI();
             //Mouse = new MouseAPI();
             //Keyboard = new KeyboardAPI();
-            AudioController = new AudioControllerAPI();
+            //AudioController = new AudioControllerAPI();
             DeviceController = new DeviceControllerAPI();
         }
 
@@ -50,7 +50,7 @@ namespace Remotus.API
             // todo get clients for that client
 
             var plugins = new List<IPlugin>();
-            plugins.Add(new SoundPlugin());
+            //plugins.Add(new SoundPlugin());
             return plugins;
         }
 

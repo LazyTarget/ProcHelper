@@ -1,57 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
+using ConnectionState = Remotus.Base.Interfaces.Net.ConnectionState;
 
 namespace Remotus.Core.Net.Client
 {
     public class HubAgent : IHubAgent
     {
-        private readonly HubConnection _hubConnection;
-        private readonly IMessageCache _messageCache;
-        private readonly IHubProxy _hubProxy;
-        private bool _isDisposing;
+        protected static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod()?.DeclaringType?.FullName);
 
-        public HubAgent(string hubName, HubConnection hubConnection, IMessageCache messageCache)
+        private readonly IHubConnector _hubConnector;
+        private readonly IMessageCache _messageCache;
+        protected readonly IHubProxy _hubProxy;
+        private bool _isDisposing;
+        private readonly object _processQueueLock = new object();
+        private readonly IDictionary<string, HubSubscription> _subscriptions;
+
+
+        public HubAgent(string hubName, IHubProxy hubProxy, IHubConnector hubConnector, IMessageCache messageCache)
         {
             if (string.IsNullOrWhiteSpace(hubName))
                 throw new ArgumentNullException(nameof(hubName));
-            if (hubConnection == null)
-                throw new ArgumentNullException(nameof(hubConnection));
+            if (hubConnector == null)
+                throw new ArgumentNullException(nameof(hubConnector));
             HubName = hubName;
             _messageCache = messageCache;
-            _hubConnection = hubConnection;
-            _hubProxy = _hubConnection.CreateHubProxy(HubName);
-
-            _hubConnection.StateChanged += HubConnection_OnStateChanged;
+            _hubProxy = hubProxy;
+            _subscriptions = new Dictionary<string, HubSubscription>();
+            
+            _hubConnector = hubConnector;
+            _hubConnector.StateChanged -= HubConnection_OnStateChanged;
+            _hubConnector.StateChanged += HubConnection_OnStateChanged;
         }
 
 
         public string HubName { get; }
 
-        public bool Connected => _hubConnection?.State == ConnectionState.Connected;
+        protected bool Connected        => _hubConnector.Connected;
 
+        public IHubConnector Connector  => _hubConnector;
 
-        public Task Invoke(IHubMessage message)
+        
+        protected virtual void HubConnection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
         {
+            if (_isDisposing)
+                return;
+            
+            //if (stateChange.NewState == Microsoft.AspNet.SignalR.Client.ConnectionState.Connected)
+            if (stateChange.NewState == ConnectionState.Connected)
+            {
+                // Re-gained connection
+                ThreadPool.QueueUserWorkItem(ProcessSendQueue);
+            }
+        }
+
+
+        public virtual Task Invoke(IHubMessage message)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
             Task task;
             if (!Connected)
             {
                 if (_messageCache != null && message.Queuable)
                 {
+                    _log.Info($"HubAgent:Invoke() Not connected. Queuing message...");
                     var request = new HubRequest
                     {
                         HubName = HubName,
-                        ConnectionId = _hubConnection?.ConnectionId,
+                        ConnectionId = _hubConnector?.ConnectionId,
                         //AgentId = _hubConnection.GetAgentId(),
                         Message = message,
+                        TimeQueued = DateTime.UtcNow,
+                        TimeSent = null,
                     };
                     _messageCache.Enqueue(request);
+                }
+                else
+                {
+                    if (message.Queuable)
+                        _log.Warn($"HubAgent:Invoke() Not connected. Message could not be queued to undefined messageQueue");
+                    else
+                        _log.Warn($"HubAgent:Invoke() Not connected. Message will not be queued");
                 }
 
                 task = Task.Factory.StartNew((msg) =>
@@ -64,56 +102,36 @@ namespace Remotus.Core.Net.Client
                 return task;
             }
 
-            task = _hubProxy.Invoke(message.Method, message.Args);
+            object[] args = message.Args?.ToArray();
+            task = InvokeMethod(message.Method, args);
             return task;
         }
 
 
-        public IHubSubscription Subscribe(string eventName)
+        protected virtual Task InvokeMethod(string method, object[] args)
         {
-            var subscription = new HubSubscription();
-            subscription.HubName = HubName;
-            subscription.EventName = eventName;
+            if (string.IsNullOrWhiteSpace(method))
+                throw new ArgumentNullException(nameof(method));
 
-            Action<IList<JToken>> HubProxySub_OnReceived = list =>
-            {
-                subscription.Invoke(list);
-            };
-
-            var sub = _hubProxy.Subscribe(eventName);
-            sub.Received += HubProxySub_OnReceived;
-
-            // todo: able to unsubscribe via IDisposable
-
-            return subscription;
+            var task = _hubProxy.Invoke(method, args: args);
+            return task;
         }
 
-
-        public async Task Connect()
+        
+        public virtual IHubSubscription Observe(string eventName)
         {
-            var connection = _hubConnection;
-            if (connection != null)
+            lock (_subscriptions)
             {
-                await connection.Start();
-            }
-        }
-
-        public void Disconnect()
-        {
-            var error = new Exception("My custom exc. Closing hub connection...");
-            _hubConnection?.Stop(error);
-        }
-
-
-        private void HubConnection_OnStateChanged(StateChange stateChange)
-        {
-            if (_isDisposing)
-                return;
-
-            if (stateChange.NewState == ConnectionState.Connected)
-            {
-                // Re-gained connection
-                ThreadPool.QueueUserWorkItem(ProcessSendQueue);
+                HubSubscription subscription;
+                if (!_subscriptions.TryGetValue(eventName, out subscription) || subscription == null)
+                {
+                    var observable = _hubProxy.Observe(eventName);
+                    subscription = new HubSubscription(observable);
+                    subscription.HubName = HubName;
+                    subscription.EventName = eventName;
+                    _subscriptions.Add(subscription.EventName, subscription);
+                }
+                return subscription;
             }
         }
 
@@ -133,58 +151,69 @@ namespace Remotus.Core.Net.Client
                 return;
             }
 
-            //var messageCount = _messageQueue.Count;   // todo?
-            var messageCount = 1;
-            if (messageCount > 0)
+            lock (_processQueueLock)
             {
-                //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
-
-                HubRequest req;
-                while (_messageCache.TryDequeue(out req))
+                //var messageCount = _messageQueue.Count;   // todo?
+                var messageCount = _messageCache.Any() ? 1 : 0;
+                if (messageCount > 0)
                 {
-                    try
+                    //LogMessage(LogLevel.Verbose, "Proccessing message queue, message count: {0}", _messageQueue.Count);
+
+                    HubRequest req;
+                    while (Connected && _messageCache.TryDequeue(out req))
                     {
-                        if (req.HubName != HubName)
+                        try
                         {
-                            // todo: Dequeued, will never run?
-                            continue;
+                            if (req.HubName != HubName)
+                            {
+                                // todo: Dequeued, will never run?
+                                continue;
+                            }
+
+                            var task = Invoke(req.Message);
+                            task.Wait();
+
+                            sendCount++;
+                            req.TimeSent = DateTime.UtcNow;
                         }
+                        catch (Exception ex)
+                        {
+                            //LogMessage(LogLevel.Error, "Error sending message data to hub. Error: {0}", ex.Message);
+                            //LogException(ex);
 
-                        var task = Invoke(req.Message);
-                        task.Wait();
+                            if (!(ex is NotImplementedException || ex is NotSupportedException))
+                                failed.Add(req);
+                        }
+                        finally
+                        {
 
-                        sendCount++;
+                        }
                     }
-                    catch (Exception ex)
+
+                    _log.Info($"HubAgent:ProcessSendQueue() Success: {sendCount}");
+                    _log.Info($"HubAgent:ProcessSendQueue() Failed: {failed.Count}");
+                    if (failed.Any())
                     {
-                        //LogMessage(LogLevel.Error, "Error sending message data to hub. Error: {0}", ex.Message);
-                        //LogException(ex);
+                        //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
+                        failed.ForEach(item => _messageCache.Enqueue(item));
 
-                        if (!(ex is NotImplementedException || ex is NotSupportedException))
-                            failed.Add(req);
+                        // Timer to retry fail queue
+                        ThreadPool.QueueUserWorkItem(delegate(object o)
+                        {
+                            Thread.Sleep(10 * 1000);
+                            ProcessSendQueue(state: "retry-failed");
+                        });
                     }
-                    finally
+                    else
                     {
+                        //LogMessage(LogLevel.Verbose, "Successfully sent all messages (count: {0})", messageCount);
 
                     }
-                }
-
-                if (failed.Any())
-                {
-                    //LogMessage(LogLevel.Verbose, "Re-queuing failed messages ({0}/{1})", failed.Count, messageCount);
-                    failed.ForEach(item => _messageCache.Enqueue(item));
-
-                    // todo: timer to retry?
                 }
                 else
                 {
-                    //LogMessage(LogLevel.Verbose, "Successfully sent all messages (count: {0})", messageCount);
 
                 }
-            }
-            else
-            {
-
             }
 
             //if (sentMessages > 0)
@@ -198,6 +227,13 @@ namespace Remotus.Core.Net.Client
 
         public void Dispose()
         {
+            if (_hubConnector != null)
+            {
+                _hubConnector.StateChanged -= HubConnection_OnStateChanged;
+                //_hubConnector.Dispose();
+                //_hubConnector = null;
+            }
+
             _isDisposing = true;
         }
     }

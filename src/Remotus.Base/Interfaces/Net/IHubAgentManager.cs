@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Remotus.Base
+namespace Remotus.Base.Interfaces.Net
 {
     public interface IHubAgentManager : IDisposable
     {
         IReadOnlyDictionary<string, IHubAgent> GetHubs();
         IHubAgent GetHub(string hubName);
-
-        Task Connect();
-        void Disconnect();
+        IHubConnector Connector { get; }
     }
 }

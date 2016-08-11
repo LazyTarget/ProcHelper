@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Security;
 
-namespace Remotus.Base.Payloads
+namespace Remotus.Base.Interfaces.Net.Payloads
 {
     public class AuthCredentials
     {

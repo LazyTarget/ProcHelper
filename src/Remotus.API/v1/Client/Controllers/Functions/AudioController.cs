@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Remotus.Base;
-using Remotus.Plugins.Sound;
+//using Remotus.Plugins.Sound;
 
 namespace Remotus.API.v1.Client.Controllers.Functions
 {
     public class AudioController : BaseController
     {
+        /*
+        
         [HttpGet, HttpPost, HttpPut]
         [Route("api/v1/audio/sessions")]
         [Route("api/v1/audio/sessions/list")]
@@ -125,7 +127,7 @@ namespace Remotus.API.v1.Client.Controllers.Functions
             var response = CreateFunctionResponse<object>(functionResult);
             return response;
         }
-        
+        */   
 
     }
 }

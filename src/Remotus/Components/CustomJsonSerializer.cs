@@ -139,6 +139,7 @@ namespace Remotus
             Container.Bind(typeof(IPlugin), typeof(API.v1.FunctionPluginDescriptor));
             Container.Bind(typeof(IFunctionPlugin), typeof(API.v1.FunctionPluginDescriptor));
             Container.Bind(typeof(IServicePlugin), typeof(API.v1.ServicePluginDescriptor));
+            Container.Bind(typeof(IComponentDescriptor), typeof(API.v1.ComponentDescriptor));
 
 
             Settings = new JsonSerializerSettings

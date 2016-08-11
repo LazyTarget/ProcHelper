@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
-using Remotus.Base.Models.Hub;
-using Remotus.Base.Models.Payloads;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
 using SpotifyAPI.Local;
 
 namespace Remotus.Plugins.Spotify
 {
     public class SpotifyPlugin : IFunctionPlugin, IServicePlugin
     {
+        private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+
         private ServiceStatus _status;
         //private ClientHubManager _pluginHub;
+        private IExecutionContext _executionContext;
+        private ICustomHubAgent _spotifyHub;
 
-
+        public SpotifyPlugin()
+        {
+            
+        }
+        
         public string ID        => "79A54741-590C-464D-B1E9-0CC606771493";
         public string Name      => "Spotify";
         public string Version   => "1.0.0.0";
@@ -60,41 +70,12 @@ namespace Remotus.Plugins.Spotify
             }
 
             Status = ServiceStatus.Initializing;
+            _executionContext = context;
+            
 
-
-            //var agent = context.HubAgentFactory.Create("Spotify");
-            //_pluginHub = new ClientHubManager(connection);
-
-
-            Action act = async () =>
-            {
-                var diagHub = context.HubAgentFactory.Create("DiagnosticsHub", null);
-                await diagHub.Connect();
-
-                while (true)
-                {
-                    var m1 = new DebugMessage("null", null, "Mesg1", 1);
-                    var m2 = new DebugMessage("null", null, "Mesg2", 2);
-                    var m3 = new DebugMessage("null", null, "Mesg2", 3);
-                    var m4 = new DebugMessage("null", null, "Mesg2", 4);
-                    var msg = new HubMessage();
-                    msg.Method = "Write";
-                    msg.Args = new[] { JToken.FromObject(m1) };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { JToken.FromObject(m2.Message) };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { m3.Message };
-                    await diagHub.Invoke(msg);
-                    msg.Args = new[] { m4.Message };
-                    await diagHub.Invoke(msg);
-
-                    Thread.Sleep(1500);
-                }
-            };
-
-#if DEBUG
-            ThreadPool.QueueUserWorkItem(state => act());
-#endif
+            ICredentials credentials = null;
+            IDictionary<string, string> queryString = null;
+            _spotifyHub = _executionContext?.HubAgentFactory?.CreateCustom("SpotifyHub", credentials, queryString);
 
 
             Status = ServiceStatus.Initialized;
@@ -103,7 +84,11 @@ namespace Remotus.Plugins.Spotify
 
         public async Task Start()
         {
+            _log.Info(() => $"Starting spotify plugin...");
+
             Status = ServiceStatus.Starting;
+
+            _spotifyHub?.Connector?.ConnectContinuous();
 
             Worker.ConnectLocalIfNotConnected();
             Worker.LocalApi.OnPlayStateChange += LocalApi_OnPlayStateChange;
@@ -118,6 +103,8 @@ namespace Remotus.Plugins.Spotify
 
         public async Task Stop()
         {
+            _log.Info(() => $"Stopping spotify plugin...");
+
             Status = ServiceStatus.Stopping;
 
             Worker.LocalApi.ListenForEvents = false;
@@ -125,30 +112,76 @@ namespace Remotus.Plugins.Spotify
             Worker.LocalApi.OnTrackTimeChange -= LocalApi_OnTrackTimeChange;
             Worker.LocalApi.OnTrackChange -= LocalApi_OnTrackChange;
             Worker.LocalApi.OnVolumeChange -= LocalApi_OnVolumeChange;
+            
+            // should disconnect?
+            _spotifyHub?.Connector?.Disconnect();
 
             Status = ServiceStatus.Stopped;
         }
-
-
+        
 
         private void LocalApi_OnPlayStateChange(object sender, PlayStateEventArgs args)
         {
+            _log.Info(() => $"OnPlayStateChange() Playing: {args.Playing}");
+
             
+            var msg = new CustomHubMessage
+            {
+                Method = "OnPlayStateChange",
+                Groups = new[] { "Spotify", "Spotify.OnPlayStateChange" },
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnTrackChange(object sender, TrackChangeEventArgs args)
         {
+            _log.Info(() => $"OnTrackChange() NewTrackName: {args.NewTrack?.TrackResource?.Name}");
 
+
+            var msg = new CustomHubMessage
+            {
+                Method = "OnTrackChange",
+                Groups = new [] { "Spotify", "Spotify.OnTrackChange" },
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnTrackTimeChange(object sender, TrackTimeChangeEventArgs args)
         {
+            _log.Debug(() => $"OnTrackTimeChange() TrackTime: {args.TrackTime}");
 
+
+            var msg = new CustomHubMessage
+            {
+                Method = "OnTrackTimeChange",
+                Groups = new[] { "Spotify", "Spotify.OnTrackTimeChange" },
+                Args = new[] { args },
+                Queuable = false,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
         private void LocalApi_OnVolumeChange(object sender, VolumeChangeEventArgs args)
         {
-            
+            _log.Info(() => $"OnVolumeChange() NewVolume: {args.NewVolume}");
+
+
+            var msg = new CustomHubMessage
+            {
+                Method = "OnVolumeChange",
+                Groups = new[] { "Spotify", "Spotify.OnVolumeChange" },
+                Args = new[] { args },
+                Queuable = true,
+            };
+            var task = _spotifyHub?.InvokeCustom(msg);
+            task?.TryWaitAsync();
         }
 
 
@@ -169,7 +202,10 @@ namespace Remotus.Plugins.Spotify
 
         public void Dispose()
         {
-
+            _spotifyHub?.Connector?.Disconnect();
+            _spotifyHub?.Connector?.Dispose();
+            _spotifyHub?.Dispose();
+            _spotifyHub = null;
         }
     }
 }
