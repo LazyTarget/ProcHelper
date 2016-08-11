@@ -17,6 +17,7 @@ using Remotus.API.Net.Client;
 using Remotus.Base;
 using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
+using Remotus.Base.Observables;
 
 namespace Sandbox.Console
 {
@@ -27,6 +28,7 @@ namespace Sandbox.Console
         private static IHubAgentManager _hubAgentManager;
         private static ReconnectArguments _reconnectArgs;
         private static ZeroconfService.NetServiceBrowser _zeroconfBrowser;
+        private static readonly IDictionary<Tuple<string, string>, IList<IDisposable>> _subscriptions = new Dictionary<Tuple<string, string>, IList<IDisposable>>();
 
 
         static Program()
@@ -547,11 +549,28 @@ namespace Sandbox.Console
                 System.Console.WriteLine("Hub not initialized...");
                 return;
             }
-            var subscription = hub.Subscribe(arguments.EventName);
+            var subscription = hub.Observe(arguments.EventName);
             if (subscription != null)
             {
-                subscription.Received -= OnHubReceive;
-                subscription.Received += OnHubReceive;
+                // Subscribe
+                var observer = new DelegateObserver<HubSubscriptionEvent>(
+                    onNext: (evt) => OnHubReceive(evt.Subscription, evt.Data),
+                    onError: null,
+                    onCompleted: null
+                );
+                var disposable = subscription.Subscribe(observer);
+
+
+                // Add to cache
+                IList<IDisposable> subs;
+                var key = new Tuple<string, string>(arguments.HubName, arguments.EventName);
+                if (!_subscriptions.TryGetValue(key, out subs) || subs == null)
+                {
+                    subs = subs ?? new List<IDisposable>();
+                    _subscriptions[key] = subs;
+                }
+                subs.Add(disposable);
+                System.Console.WriteLine($"Subscribed to hub '{arguments.HubName}', event '{arguments.EventName}'");
             }
         }
 
@@ -608,10 +627,20 @@ namespace Sandbox.Console
                 return;
             }
 
-            var subscription = hub.Subscribe(arguments.EventName);
-            if (subscription != null)
+            
+            // Read from cache
+            IList<IDisposable> subs;
+            var key = new Tuple<string, string>(arguments.HubName, arguments.EventName);
+            if (_subscriptions.TryGetValue(key, out subs) && subs != null)
             {
-                subscription.Received -= OnHubReceive;
+                var disposable = subs.FirstOrDefault();
+                if (disposable != null)
+                {
+                    // Unsubscribe
+                    var r = subs.Remove(disposable);
+                    disposable.Dispose();
+                    System.Console.WriteLine($"Unsubscribed from hub '{arguments.HubName}', event '{arguments.EventName}'");
+                }
             }
         }
 

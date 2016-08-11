@@ -7,7 +7,7 @@ namespace Remotus.Base.Interfaces.Net
     {
         string HubName { get; }
         Task Invoke(IHubMessage message);
-        IHubSubscription Subscribe(string eventName);
+        IHubSubscription Observe(string eventName);
         IHubConnector Connector { get; }
     }
 }

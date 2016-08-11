@@ -53,43 +53,43 @@ namespace Remotus.Core.Net.Client
         }
 
 
-        public override IHubSubscription Subscribe(string eventName)
-        {
-            var subscription = new HubSubscription();
-            subscription.HubName = HubName;
-            subscription.EventName = eventName;
+        //public override IHubSubscription Subscribe(string eventName)
+        //{
+        //    var subscription = new HubSubscription();
+        //    subscription.HubName = HubName;
+        //    subscription.EventName = eventName;
 
-            Action<IList<JToken>> HubProxySub_OnReceived = list =>
-            {
-                subscription.Invoke(list);
-            };
+        //    Action<IList<JToken>> HubProxySub_OnReceived = list =>
+        //    {
+        //        subscription.Invoke(list);
+        //    };
 
-            var sub = _hubProxy.Subscribe(eventName);
-            sub.Received += HubProxySub_OnReceived;
+        //    var sub = _hubProxy.Subscribe(eventName);
+        //    sub.Received += HubProxySub_OnReceived;
 
-            // todo: able to unsubscribe via IDisposable
+        //    // todo: able to unsubscribe via IDisposable
 
 
-            Task task = null;
-            try
-            {
-                var msg = new HubMessage
-                {
-                    Method = "AddToGroup",
-                    Args = new object[] { CustomHubIdentifier },
-                    Queuable = true,
-                };
-                var timeout = TimeSpan.FromSeconds(15);
-                task = Invoke(msg);
-                task.Wait(timeout);
-            }
-            catch (Exception ex)
-            {
+        //    Task task = null;
+        //    try
+        //    {
+        //        var msg = new HubMessage
+        //        {
+        //            Method = "AddToGroup",
+        //            Args = new object[] { CustomHubIdentifier },
+        //            Queuable = true,
+        //        };
+        //        var timeout = TimeSpan.FromSeconds(15);
+        //        task = Invoke(msg);
+        //        task.Wait(timeout);
+        //    }
+        //    catch (Exception ex)
+        //    {
                 
-            }
+        //    }
 
-            return subscription;
-        }
+        //    return subscription;
+        //}
 
     }
 }

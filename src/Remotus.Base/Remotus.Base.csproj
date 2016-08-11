@@ -91,6 +91,7 @@
     <Compile Include="Interfaces\Net\Enums.cs" />
     <Compile Include="Interfaces\Net\HubConnectionStateChanged.cs" />
     <Compile Include="Interfaces\Net\HubSubscription.cs" />
+    <Compile Include="Interfaces\Net\HubSubscriptionEvent.cs" />
     <Compile Include="Interfaces\Net\ICustomHubAgent.cs" />
     <Compile Include="Interfaces\Net\IHubConnector.cs" />
     <Compile Include="Interfaces\Net\IHubAgentManager.cs" />
@@ -177,6 +178,11 @@
     <Compile Include="Models\ProcHelper\StartProcessRequest.cs" />
     <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
     <Compile Include="Models\ResponseMetadata.cs" />
+    <Compile Include="Observables\AsyncBroadcaster.cs" />
+    <Compile Include="Observables\BroadcasterBase.cs" />
+    <Compile Include="Observables\DelegateDisposable.cs" />
+    <Compile Include="Observables\IBroadcaster.cs" />
+    <Compile Include="Observables\DelegateObserver.cs" />
     <Compile Include="Scripting\Tasks\ExecuteFunctionScriptTask.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Models\WinServiceHelper\ContinueWinServiceRequest.cs" />

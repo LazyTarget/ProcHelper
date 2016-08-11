@@ -16,6 +16,7 @@ using Remotus.API.v1;
 using Remotus.Base;
 using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
+using Remotus.Base.Observables;
 using Remotus.Base.Payloads;
 using ExecutionContext = Remotus.API.ExecutionContext;
 
@@ -56,15 +57,20 @@ namespace Remotus.Launcher
             _hubAgentManager = _hubAgentFactory.Create(hubNames, credentials, queryString);
 
             var agentHub = _hubAgentManager.GetHub("AgentHub");
-            agentHub.Subscribe("StartPlugin").Received  += HubEvent_OnStartPlugin;
-            agentHub.Subscribe("StopPlugin").Received   += HubEvent_OnStopPlugin;
+            //agentHub.Subscribe("StartPlugin").Received  += HubEvent_OnStartPlugin;
+            //agentHub.Subscribe("StopPlugin").Received   += HubEvent_OnStopPlugin;
+            agentHub.Observe("StartPlugin").Subscribe(new DelegateObserver<HubSubscriptionEvent>(onNext: (evt) => HubEvent_OnStartPlugin(evt.Subscription, evt.Data)));
+            agentHub.Observe("StopPlugin").Subscribe(new DelegateObserver<HubSubscriptionEvent>(onNext: (evt) => HubEvent_OnStopPlugin(evt.Subscription, evt.Data)));
 
             var serverHub = _hubAgentManager.GetHub("ServerHub");
-            serverHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
-            serverHub.Subscribe("StopPlugin").Received  += HubEvent_OnStopPlugin;
+            //serverHub.Subscribe("StartPlugin").Received += HubEvent_OnStartPlugin;
+            //serverHub.Subscribe("StopPlugin").Received  += HubEvent_OnStopPlugin;
+            serverHub.Observe("StartPlugin").Subscribe(new DelegateObserver<HubSubscriptionEvent>(onNext: (evt) => HubEvent_OnStartPlugin(evt.Subscription, evt.Data)));
+            serverHub.Observe("StopPlugin").Subscribe(new DelegateObserver<HubSubscriptionEvent>(onNext: (evt) => HubEvent_OnStartPlugin(evt.Subscription, evt.Data)));
 
             var timeHub = _hubAgentManager.GetHub("TimeHub");
-            timeHub.Subscribe("OnTick").Received        += HubEvent_OnTick;
+            //timeHub.Subscribe("OnTick").Received += HubEvent_OnTick;
+            timeHub.Observe("OnTick").Subscribe(new DelegateObserver<HubSubscriptionEvent>(onNext: (evt) => HubEvent_OnTick(evt.Subscription, evt.Data)));
 
 
             _hubAgentManager.Connector.ConnectContinuous();

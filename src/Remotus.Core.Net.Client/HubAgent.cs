@@ -22,6 +22,7 @@ namespace Remotus.Core.Net.Client
         protected readonly IHubProxy _hubProxy;
         private bool _isDisposing;
         private readonly object _processQueueLock = new object();
+        private readonly IDictionary<string, HubSubscription> _subscriptions;
 
 
         public HubAgent(string hubName, IHubProxy hubProxy, IHubConnector hubConnector, IMessageCache messageCache)
@@ -33,6 +34,7 @@ namespace Remotus.Core.Net.Client
             HubName = hubName;
             _messageCache = messageCache;
             _hubProxy = hubProxy;
+            _subscriptions = new Dictionary<string, HubSubscription>();
             
             _hubConnector = hubConnector;
             _hubConnector.StateChanged -= HubConnection_OnStateChanged;
@@ -115,24 +117,22 @@ namespace Remotus.Core.Net.Client
             return task;
         }
 
-
-        public virtual IHubSubscription Subscribe(string eventName)
+        
+        public virtual IHubSubscription Observe(string eventName)
         {
-            var subscription = new HubSubscription();
-            subscription.HubName = HubName;
-            subscription.EventName = eventName;
-
-            Action<IList<JToken>> HubProxySub_OnReceived = list =>
+            lock (_subscriptions)
             {
-                subscription.Invoke(list);
-            };
-
-            var sub = _hubProxy.Subscribe(eventName);
-            sub.Received += HubProxySub_OnReceived;
-
-            // todo: able to unsubscribe via IDisposable
-
-            return subscription;
+                HubSubscription subscription;
+                if (!_subscriptions.TryGetValue(eventName, out subscription) || subscription == null)
+                {
+                    var observable = _hubProxy.Observe(eventName);
+                    subscription = new HubSubscription(observable);
+                    subscription.HubName = HubName;
+                    subscription.EventName = eventName;
+                    _subscriptions.Add(subscription.EventName, subscription);
+                }
+                return subscription;
+            }
         }
 
 
