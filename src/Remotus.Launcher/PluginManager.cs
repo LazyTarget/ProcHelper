@@ -50,6 +50,7 @@ namespace Remotus.Launcher
 
         private async Task SetupHub()
         {
+            Console.WriteLine("T1");
             string[] hubNames = new [] { "AgentHub", "ServerHub", "TimeHub" };
             ICredentials credentials = CredentialCache.DefaultCredentials;
             IDictionary<string, string> queryString = null;
@@ -94,6 +95,7 @@ namespace Remotus.Launcher
 
         private async Task Load(string filePath)
         {
+            Console.WriteLine("T2");
             if (!_fileSystem.FileExists(filePath))
                 throw new FileNotFoundException("Could not find plugin file", filePath);
             
@@ -163,6 +165,7 @@ namespace Remotus.Launcher
 
         private async Task Start()
         {
+            Console.WriteLine("T3");
             if (_plugins == null || _plugins.Count <= 0)
                 return;
             

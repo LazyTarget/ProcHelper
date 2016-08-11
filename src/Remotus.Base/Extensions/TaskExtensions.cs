@@ -13,6 +13,21 @@ namespace Remotus.Base
             TryWait(task, _defaultTimeout);
         }
 
+        public static void TryWait(this Task task, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (cancellationToken != CancellationToken.None)
+                    task?.Wait(cancellationToken);
+                else
+                    task?.Wait();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         public static void TryWait(this Task task, TimeSpan timeout)
         {
             try
@@ -33,6 +48,14 @@ namespace Remotus.Base
         public static void TryWaitAsync(this Task task)
         {
             TryWaitAsync(task, _defaultTimeout);
+        }
+
+        public static void TryWaitAsync(this Task task, CancellationToken cancellationToken)
+        {
+            ThreadPool.QueueUserWorkItem(delegate(object state)
+            {
+                TryWait(task, cancellationToken);
+            });
         }
 
         public static void TryWaitAsync(this Task task, TimeSpan timeout)

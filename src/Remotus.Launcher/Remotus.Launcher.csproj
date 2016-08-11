@@ -36,6 +36,10 @@
       <HintPath>..\packages\FileAssociation.1.0.0.0\lib\net35\FileAssociation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentCommandLineParser, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentCommandLineParser.1.4.3\lib\net35\FluentCommandLineParser.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -63,6 +67,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arguments\CommandArguments.cs" />
+    <Compile Include="Arguments\CancelLastCommandArguments.cs" />
+    <Compile Include="Arguments\RunScriptArguments.cs" />
+    <Compile Include="Arguments\RunPluginArguments.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

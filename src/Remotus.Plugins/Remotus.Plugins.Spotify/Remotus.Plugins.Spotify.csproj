@@ -73,7 +73,6 @@
     <Compile Include="Functions\NextTrackFunction.cs" />
     <Compile Include="Functions\PlayFunction.cs" />
     <Compile Include="Functions\PauseFunction.cs" />
-    <Compile Include="Hubs\SpotifyHub.cs" />
     <Compile Include="ModelConverter.cs" />
     <Compile Include="Models\SpotifyResource.cs" />
     <Compile Include="Models\Track.cs" />
@@ -83,10 +82,6 @@
     <Compile Include="Worker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Remotus.API\Remotus.API.csproj">
-      <Project>{c259b631-17cd-4123-b520-c8212239535a}</Project>
-      <Name>Remotus.API</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
