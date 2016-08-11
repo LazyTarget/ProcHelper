@@ -9,12 +9,14 @@ namespace Remotus.API.Net.Models
         public ConnectedClient()
         {
             Hubs = new HashSet<string>();
+            Groups = new HashSet<string>();
         }
 
         public string ConnectionId { get; set; }
         public bool Connected { get; set; }
         public DateTime? TimeDisconnected { get; set; }
         public HubHandshake Handshake { get; set; }
-        public HashSet<string> Hubs { get; private set; } 
+        public HashSet<string> Hubs { get; private set; }
+        public HashSet<string> Groups { get; private set; }
     }
 }

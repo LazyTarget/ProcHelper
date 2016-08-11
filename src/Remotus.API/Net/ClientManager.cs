@@ -87,7 +87,12 @@ namespace Remotus.API.Net
             {
                 ConnectedClient client;
                 var removed = _clients.TryRemove(connectionId, out client);
-                _log.Debug(() => $"Client '{connectionId}' has been purged from memory");
+                if (removed)
+                    _log.Debug(() => $"Client '{connectionId}' has been purged from memory");
+                else
+                {
+                    
+                }
             }
 
             Thread.Sleep(_purgeLoopInterval);

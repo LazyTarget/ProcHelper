@@ -127,6 +127,7 @@
     <Compile Include="Components\ControllerCategoryActionFilterAttribute.cs" />
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
+    <Compile Include="Extensions\HubServerExtensions.cs" />
     <Compile Include="Extensions\HubExtensions.cs" />
     <Compile Include="Models\AgentPlugin.cs" />
     <Compile Include="Data\MessageDatabaseCache.cs" />
