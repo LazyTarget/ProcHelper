@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Lux.Config.Xml;
 using Lux.Extensions;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using Remotus.API.Data;
+using Remotus.API.Net.Client;
+using Remotus.API.Net.Hubs;
+using Remotus.API.v1;
 using Remotus.Base;
+using Remotus.Base.Payloads;
 
 namespace Remotus.API
 {
@@ -24,13 +30,14 @@ namespace Remotus.API
         // Client
         private IClientInfo _clientInfo;
         private readonly IPluginStore _pluginStore;
-        private readonly IDictionary<string, IPlugin> _plugins;
+        internal readonly IDictionary<string, AgentPlugin> _plugins;
 
         public ServiceInstance()
         {
             _clients = new Dictionary<string, IClientInfo>();
-            _plugins = new Dictionary<string, IPlugin>();
-            _pluginStore = new PluginLoader();
+            _plugins = new Dictionary<string, AgentPlugin>();
+            //_pluginStore = new PluginLoader();
+            _pluginStore = new PluginLauncher();
         }
 
         public IClientInfo ClientInfo { get { return _clientInfo; } }
@@ -45,6 +52,42 @@ namespace Remotus.API
         }
 
 
+        internal void StartPlugin(AgentPlugin plugin)
+        {
+            try
+            {
+                // Run Launcher, to Init/Start plugin
+                var path = plugin.PluginFile;
+                var args = $"plugin {path}";
+                var exe = @"E:\Programming\Repos\GitHub\LazyTarget\ProcHelper\src\Remotus.Launcher\bin\Debug\Remotus.Launcher.exe";
+                var proc = new System.Diagnostics.Process();
+                proc.StartInfo = new ProcessStartInfo(exe, args);
+                proc.Exited += delegate (object sender, EventArgs eventArgs)
+                {
+                    Trace.WriteLine("Plugin launcher exited. Plugin file: " + path);
+                    var p = Program.Service._plugins.ContainsKey(plugin.Name)
+                        ? Program.Service._plugins[plugin.Name]
+                        : null;
+                    if (p != null)
+                    {
+                        p.Status = ServiceStatus.Stopped;
+                    }
+                };
+                proc.EnableRaisingEvents = true;
+                Console.WriteLine("Starting plugin launcher. Plugin file: " + path);
+                var b = proc.Start();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
+        internal void StopPlugin()
+        {
+
+        }
 
 
         private void LoadPlugins()
@@ -59,7 +102,36 @@ namespace Remotus.API
                     {
                         foreach (var plugin in plugs)
                         {
+                            var loadedPlugin = plugin as LoadedPlugin;
+                            if (loadedPlugin == null)
+                                continue;
+                            //if (string.IsNullOrWhiteSpace(loadedPlugin.Name))
+                            //    continue;
+
                             _plugins[plugin.Name] = plugin;
+                            if (loadedPlugin.Loaded)
+                            {
+
+                            }
+                            else
+                            {
+                                if (loadedPlugin.Status == ServiceStatus.None ||
+                                    loadedPlugin.Status == ServiceStatus.Stopped)
+                                {
+                                    StartPlugin(loadedPlugin);
+                                }
+                                else
+                                {
+                                    
+                                }
+                            }
+
+                            //var servicePlugin = loadedPlugin.Instance as IServicePlugin;
+                            //if (servicePlugin != null)
+                            //{
+                            //    servicePlugin.OnStatusChanged -= ServicePlugin_OnStatusChanged;
+                            //    servicePlugin.OnStatusChanged += ServicePlugin_OnStatusChanged;
+                            //}
                         }
                     }
                 }
@@ -76,7 +148,8 @@ namespace Remotus.API
             IList<IPlugin> result;
             lock (_plugins)
             {
-                result = _plugins.Values.ToList();
+                //result = _plugins.Values.ToList();
+                result = _plugins.Values.Where(x => x.Loaded).Select(x => x.Instance).ToList();
             }
             return result;
         }
@@ -97,7 +170,7 @@ namespace Remotus.API
             _clients[clientInfo.ClientID] = clientInfo;
             return 1;
         }
-
+        
 
         protected virtual StartOptions GetStartOptions(ApiConfig config)
         {
@@ -134,6 +207,7 @@ namespace Remotus.API
             if (_started)
                 return;
             _started = true;
+            Console.WriteLine("Starting service instance. Args: " + string.Join(" ", args));
 
             // Config
             _apiConfig = LoadApiConfig();
@@ -167,47 +241,74 @@ namespace Remotus.API
 
             var options = GetStartOptions(_apiConfig);
             _server = StartAsSelftHost(options);
+            _startupConfig._Configuration.EnsureInitialized();
 
             Console.WriteLine("Server started");
 
             
             // Plugins
             LoadPlugins();
+            Console.WriteLine("Plugins loaded: " + _plugins.Count);
+
 
             //_startupClient?._Configuration?.MapHttpAttributeRoutes();
 
             lock (_plugins)
             {
-                var servicePlugins = _plugins.Values.OfType<IServicePlugin>().ToList();
-                foreach (var servicePlugin in servicePlugins)
+                IExecutionContext context = new ExecutionContext
                 {
-                    try
+                    ClientInfo = _clientInfo,
+                    Logger = new TraceLogger(),
+                    Remotus = new Remotus.API.v1.FullCtrlAPI(),
+                    //SignalR =  // todo: !
+                    HubAgentFactory = new HubAgentFactory()
+                };
+
+                var servicePlugins = GetPlugins().OfType<IServicePlugin>().ToList();
+                if (servicePlugins.Count > 0)
+                {
+                    Console.WriteLine("Starting service plugins: " + servicePlugins.Count);
+                    foreach (var servicePlugin in servicePlugins)
                     {
-                        if (servicePlugin.Status != ServiceStatus.Running)
-                            servicePlugin.Start();
-                    }
-                    catch (Exception ex)
-                    {
+                        // todo: Make plugin initialization async (load multiple plugins at the same time)
+
+                        try
+                        {
+                            if (servicePlugin.Status != ServiceStatus.Initializing)
+                            {
+                                var task = servicePlugin.Init(context);
+                                task.Wait();
+                            }
+
+                            if (servicePlugin.Status != ServiceStatus.Running)
+                            {
+                                var task = servicePlugin.Start();
+                                task.Wait();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
                         
+                        }
                     }
                 }
 
                 
-                if (_startupConfig?._Configuration?.Routes != null)
-                {
-                    var webPlugins = _plugins.Values.OfType<IWebPlugin>().ToList();
-                    foreach (var webPlugin in webPlugins)
-                    {
-                        try
-                        {
-                            webPlugin.RegisterRoutes(_startupConfig._Configuration.Routes);
-                        }
-                        catch (Exception ex)
-                        {
+                //if (_startupConfig?._Configuration?.Routes != null)
+                //{
+                //    var webPlugins = _plugins.Values.OfType<IWebPlugin>().ToList();
+                //    foreach (var webPlugin in webPlugins)
+                //    {
+                //        try
+                //        {
+                //            webPlugin.RegisterRoutes(_startupConfig._Configuration.Routes);
+                //        }
+                //        catch (Exception ex)
+                //        {
 
-                        }
-                    }
-                }
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -219,17 +320,24 @@ namespace Remotus.API
             {
                 _started = false;
 
-                var servicePlugins = _plugins.Values.OfType<IServicePlugin>().ToList();
-                foreach (var servicePlugin in servicePlugins)
+                var servicePlugins = GetPlugins().OfType<IServicePlugin>().ToList();
+                if (servicePlugins.Count > 0)
                 {
-                    try
+                    Console.WriteLine("Stopping service plugins: " + servicePlugins.Count);
+                    foreach (var servicePlugin in servicePlugins)
                     {
-                        if (servicePlugin.Status != ServiceStatus.Stopped)
-                            servicePlugin.Stop();
-                    }
-                    catch (Exception ex)
-                    {
-                        
+                        try
+                        {
+                            if (servicePlugin.Status != ServiceStatus.Stopped)
+                            {
+                                var task = servicePlugin.Stop();
+                                task.Wait();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
             }
@@ -249,10 +357,32 @@ namespace Remotus.API
         }
 
 
+        private void ServicePlugin_OnStatusChanged(object sender, ServiceStatusChangedEventArgs args)
+        {
+            var agentHub = GlobalHost.ConnectionManager.GetHubContext<AgentHub>();
+
+            var plugin = sender as IServicePlugin;
+            var agentId = Program.Service?.ClientInfo?.ClientID;
+            var componentDesc = ComponentDescriptor.Create(plugin);
+            var model = new PluginStatusChanged(agentId, componentDesc, args.OldStatus, args.NewStatus);
+
+
+            var msg = string.Format("Plugin '{0}' status changed: {1} => {2}", model.Plugin?.Name, model.OldStatus, model.NewStatus);
+            System.Console.WriteLine(msg);
+            agentHub.Clients.All.OnPluginStatusChanged(model);
+
+
+            var msgModel = new DebugMessage(agentId, null, msg, 2);
+            var diagHub = GlobalHost.ConnectionManager.GetHubContext<DiagnosticsHub>();
+            diagHub.Clients.Group("ListenTo_" + agentId).OnDebugMessage(msgModel);
+        }
+
+
         public virtual void Dispose()
         {
             if (_disposed)
                 return;
+            Console.WriteLine("Disposing server");
             _disposed = true;
             try
             {

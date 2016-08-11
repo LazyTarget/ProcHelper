@@ -21,5 +21,10 @@ namespace Remotus.Plugins.Input
             yield return new MoveMouseToFunction.Descriptor();
             yield return new MoveMouseToOnVirtualDesktopFunction.Descriptor();
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

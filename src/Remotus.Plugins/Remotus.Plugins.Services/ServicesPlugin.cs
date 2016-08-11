@@ -19,5 +19,10 @@ namespace Remotus.Plugins.Services
             yield return new PauseServiceFunction.Descriptor();
             yield return new ContinueServiceFunction.Descriptor();
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

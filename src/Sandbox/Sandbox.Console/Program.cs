@@ -3,124 +3,156 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Web;
 using Fclp;
-using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Remotus;
 using Remotus.API.Models;
-using Timer = System.Timers.Timer;
+using Remotus.API.Net.Client;
+using Remotus.Base;
+using Remotus.Base.Interfaces.Net;
+using Remotus.Base.Net;
+using Remotus.Base.Observables;
 
 namespace Sandbox.Console
 {
     static class Program
     {
-        private static HubConnection _connection;
+        private static IHubAgentFactory _hubAgentFactory = new HubAgentFactory();
+        //private static readonly IDictionary<string, IHubAgent> _hubs = new Dictionary<string, IHubAgent>();
+        private static IHubAgentManager _hubAgentManager;
         private static ReconnectArguments _reconnectArgs;
-        private static readonly Timer _reconnectTimer;
-        private static readonly object _connectLock;
-        private static readonly Dictionary<string, IHubProxy> _hubProxies;
-        private static ZeroconfService.NetServiceBrowser _zeroconfBrowser; 
+        private static ZeroconfService.NetServiceBrowser _zeroconfBrowser;
+        private static readonly IDictionary<Tuple<string, string>, IList<IDisposable>> _subscriptions = new Dictionary<Tuple<string, string>, IList<IDisposable>>();
 
 
         static Program()
         {
-            _connectLock = new object();
-            _hubProxies = new Dictionary<string, IHubProxy>();
+            LogManager.ConfigureLog4Net();
+            LogManager.InitializeWith<Log4NetLogger>();
 
             _reconnectArgs = new ReconnectArguments();
-            _reconnectTimer = new Timer();
-            _reconnectTimer.AutoReset = true;
-            _reconnectTimer.Enabled = true;
-            _reconnectTimer.Interval = _reconnectArgs.ReconnectInterval.TotalMilliseconds;
-            _reconnectTimer.Elapsed += ReconnectTimer_OnElapsed;
         }
 
-        
+
         static void Main(string[] args)
         {
-            RunAsConsole();
-        }
+            RunAsConsole(args);
 
-        
-        private static void RunAsConsole()
-        {
-            while (true)
+
+            if (_hubAgentManager?.Connector != null)
             {
-                var input = System.Console.ReadLine();
-                var verb = input;
-                try
-                {
-                    if (input == "cls")
-                    {
-                        System.Console.Clear();
-                    }
-                    else if (input == "help")
-                    {
-                        PrintHelp();
-                    }
-                    else if (input == "exit")
-                    {
-                        if (_connection != null)
-                            DisconnectHub();
-                    }
-
-
-                    var args = new string[0];
-                    if (!string.IsNullOrWhiteSpace(input))
-                        args = input.Split(' ');
-                    var switchIndex = args.ToList().FindIndex(x => x.StartsWith("/"));
-                    if (switchIndex < 0)
-                        switchIndex = args.Length;
-                    verb = switchIndex > 0
-                        ? String.Join(" ", args.Take(switchIndex))
-                        : args.Length > 0 ? args[0] : null;
-                    args = switchIndex > 0
-                        ? args.Skip(switchIndex).ToArray()
-                        : args.Length > 1 ? args.Skip(1).ToArray() : args;
-
-                    var a = new CommandArguments
-                    {
-                        Verb = verb,
-                        Arguments = args,
-                    };
-                    ProcessInput(a);
-                }
-                catch (AggregateException ex)
-                {
-                    var msg = ex.GetBaseException().Message;
-                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
-                catch (Exception ex)
-                {
-                    var msg = ex.GetBaseException().Message;
-                    System.Console.WriteLine($"Error executing command '{verb}': {msg}");
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
+                _hubAgentManager.Connector.Disconnect();
+                _hubAgentManager.Connector.Dispose();
+            }
+            if (_hubAgentManager != null)
+            {
+                _hubAgentManager.Dispose();
+                _hubAgentManager = null;
             }
         }
 
 
-        private static void PrintHelp()
+        private static void RunAsConsole(string[] args)
         {
-            System.Console.WriteLine("Commands: ");
-            System.Console.WriteLine("* discover");
-            System.Console.WriteLine("* zeroconf");
-            System.Console.WriteLine("* connect");
-            System.Console.WriteLine("* reconnect");
-            System.Console.WriteLine("* disconnect");
-            System.Console.WriteLine("* subscribe");
-            System.Console.WriteLine("* unsubscribe");
-            System.Console.WriteLine("* send");
+            System.Console.WriteLine("Remotus Sandbox v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            System.Console.WriteLine("For help enter \"help\"");
+
+            Queue<string> buffer = null;
+            var firstArg = args.FirstOrDefault();
+            if (firstArg == "buffer")
+                buffer = new Queue<string>(args.Skip(1));
+            while (true)
+            {
+                string input = null;
+                if (buffer?.Count > 0)
+                    input = buffer.Dequeue() ?? "";
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    System.Console.Write("> ");
+                    input = System.Console.ReadLine();
+                }
+                else
+                    System.Console.WriteLine("> " + input);
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    System.Console.WriteLine("Invalid input!");
+                    continue;
+                }
+
+                if (input == "exit")
+                {
+                    break;
+                }
+                ProcessInput(input);
+            }
+        }
+        
+
+        private static void ProcessInput(string input)
+        {
+            var verb = input;
+            try
+            {
+                if (input == "cls")
+                {
+                    System.Console.Clear();
+                    return;
+                }
+                else if (input == "help" || input == "-?")
+                {
+                    PrintHelp();
+                    return;
+                }
+                else if (input == "exit")
+                {
+                    return;
+                }
+
+
+                var args = new string[0];
+                if (!string.IsNullOrWhiteSpace(input))
+                    args = input.Split(' ');
+                var switchIndex = args.ToList().FindIndex(x => x.StartsWith("/"));
+                if (switchIndex < 0)
+                    switchIndex = args.Length;
+                verb = switchIndex > 0
+                    ? String.Join(" ", args.Take(switchIndex))
+                    : args.Length > 0 ? args[0] : null;
+                args = switchIndex > 0
+                    ? args.Skip(switchIndex).ToArray()
+                    : args.Length > 1 ? args.Skip(1).ToArray() : args;
+
+                var a = new CommandArguments
+                {
+                    Verb = verb,
+                    Arguments = args,
+                };
+                ProcessCommand(a);
+            }
+            catch (AggregateException ex)
+            {
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine($"Error executing command '{verb}': {msg}");
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.GetBaseException().Message;
+                System.Console.WriteLine($"Error executing command '{verb}': {msg}");
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
 
-        private static void ProcessInput(CommandArguments a)
+        private static void ProcessCommand(CommandArguments a)
         {
             var verb = a.Verb;
             if (verb == "discover")
@@ -161,9 +193,36 @@ namespace Sandbox.Console
             {
                 VerbSendToHub(a);
             }
+            else
+            {
+                CommandNotFound(a);
+            }
         }
 
 
+
+
+        private static void PrintHelp()
+        {
+            System.Console.WriteLine("Commands: ");
+            //System.Console.WriteLine("* discover");
+            System.Console.WriteLine("* zeroconf");
+            System.Console.WriteLine("* connect - Connect to hub server");
+            System.Console.WriteLine("* reconnect - Reconnect to hub server");
+            System.Console.WriteLine("* disconnect - Disconnnect from hub server");
+            System.Console.WriteLine("* subscribe - Subscribe to a hub event");
+            System.Console.WriteLine("* unsubscribe - Unsubscribe from a hub event");
+            System.Console.WriteLine("* send - Invoke a method on a hub");
+        }
+
+
+        private static void CommandNotFound(CommandArguments a)
+        {
+            if (a.Arguments?.Length > 0)
+                System.Console.WriteLine($"Command '{a.Verb}' was not found. Args: {string.Join(" ", a.Arguments)}");
+            else
+                System.Console.WriteLine($"Command '{a.Verb}' was not found.");
+        }
 
 
         private static void VerbConnectHub(CommandArguments a)
@@ -172,15 +231,16 @@ namespace Sandbox.Console
             p.IsCaseSensitive = false;
             p.Setup(x => x.Host)
                 .As('h', "host")
-                .SetDefault("localhost")
+                //.SetDefault("localhost")
                 .WithDescription("Enter the host address to the SignalR server");
             p.Setup(x => x.Port)
                 .As('p', "port")
-                .SetDefault(9000)
+                //.SetDefault(9000)
                 .WithDescription("Enter the port to the SignalR server");
             p.Setup(x => x.Hubs)
                 .As("hubs")
-                .WithDescription("Enter the hubs to connect to. Seperate with commas");
+                .Required()
+                .WithDescription("Enter the hubs to connect to. Seperate with commas or spaces");
             p.SetupHelp("help");
 
             var args = a.Verb == "connect" ||
@@ -202,105 +262,106 @@ namespace Sandbox.Console
             }
         }
 
-        
+
         private static void ConnectHub(ConnectArguments arguments = null)
         {
             arguments = arguments ?? new ConnectArguments();
+            if (arguments.Hubs == null)
+                throw new ArgumentNullException(nameof(arguments.Hubs));
 
             var url = $"http://{arguments.Host}:{arguments.Port}/signalr";
 
-            if (_connection != null)
+            if (_hubAgentManager != null)
             {
-                if (_connection.Url == url)
-                {
-                    System.Console.WriteLine($"Already connected to specified server... ({_connection.State})");
-                    if (_connection.State == ConnectionState.Disconnected)
-                    {
-                        System.Console.WriteLine("State is Disconnected. Will try to reconnect...");
-                        ReconnectHub();
-                    }
+                //if (_hubs.Connection?.Url == url)
+                //{
+                //    if (_hubs.Connection.State == ConnectionState.Disconnected)
+                //    {
+                //        System.Console.WriteLine("State is Disconnected. Will try to reconnect...");
+                //        ReconnectHub();
+                //    }
+                //    else
+                //        System.Console.WriteLine($"Already connected to specified server... ({_hubs.Connection.State})");
+                //    return;
+                //}
+                //else
+                //{
+                    System.Console.WriteLine("Already connected to another server. You must disconnect before you can connect to another server.");
                     return;
+                //}
+            }
+
+            var f = _hubAgentFactory as HubAgentFactory;
+            if (f != null)
+            {
+                f.Host = arguments.Host;
+                f.Port = arguments.Port;
+            }
+
+            ICredentials credentials;
+            credentials = CredentialCache.DefaultNetworkCredentials;
+            credentials = CredentialCache.DefaultCredentials;
+            credentials = new NetworkCredential("Sandbox", "asdkljWuzux2", Environment.UserDomainName);
+
+            var hubNames = arguments.Hubs.SelectMany(x => x.Split(',')).ToArray();
+            var hubAgentManager = _hubAgentFactory.Create(hubNames, credentials);
+            hubAgentManager.Connector.StateChanged += Connection_OnStateChanged;
+
+            System.Console.WriteLine("Connecting to SignalR server...");
+            Task task = null;
+            Exception exception = null;
+            try
+            {
+                var timeout = arguments.Timeout;
+                task = hubAgentManager.Connector.Connect();
+                task.Wait(timeout);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+            finally
+            {
+                if (exception != null || task == null || task.IsFaulted || task.Exception != null)
+                {
+                    System.Console.WriteLine("Error connecting to SignalR server...");
+                    exception = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException() ?? exception;
+                    if (exception != null)
+                        System.Console.WriteLine(exception.Message);
                 }
                 else
                 {
-                    System.Console.WriteLine("Already connected to another server. You must disconnect before you can connect to another server.");
-                    return;
+                    if (hubAgentManager.Connector.Connected)
+                    {
+                        System.Console.WriteLine($"Connected! #{hubAgentManager.Connector.ConnectionId}");
+                    }
                 }
             }
 
-
-            var customJsonSerializerSettings = new CustomJsonSerializerSettings();
-            var jsonSerializerSettings = customJsonSerializerSettings.Settings;
-            var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
-            jsonSerializer.Formatting = Formatting.None;
-                
-
-            var handshake = new HubHandshake();
-            handshake.MachineName = Environment.MachineName;
-            handshake.ApplicationVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            handshake.UserName = Environment.UserName;
-            handshake.UserDomainName = Environment.UserDomainName;
-            handshake.ClientVersion = "1.0";
-            handshake.ClientKey = "qSdhjkZ672zzz";
-            handshake.Address = new Uri("http://localhost:9000");
-
-            // Hub context
-            var queryString = new Dictionary<string, string>();
-            queryString["hub-version"] = "1.0";
-            queryString["machine-name"] = Environment.MachineName;
-            queryString["username"] = Environment.UserName;
-            queryString["UserDomainName"] = Environment.UserDomainName;
-
-            var stringBuilder = new StringBuilder();
-            var stringWriter = new StringWriter(stringBuilder);
-            jsonSerializer.Serialize(stringWriter, handshake);
-            var handshakeJson = stringBuilder.ToString();
-
-            // Instantiate
-            var connection = new HubConnection(url, queryString);
-            connection.JsonSerializer = jsonSerializer;
-            connection.StateChanged += Connection_OnStateChanged;
-            connection.Headers["App-Handshake"] = handshakeJson;
-
-            // Hubs
-            if (arguments.Hubs != null)
-            {
-                foreach (var hubName in arguments.Hubs)
-                {
-                    System.Console.WriteLine($"Initializing hub proxy for '{hubName}'");
-                    var hub = connection.CreateHubProxy(hubName);
-                    _hubProxies[hubName] = hub;
-                }
-            }
-
-            System.Console.WriteLine("Connecting to SignalR server...");
-            var timeout = arguments.Timeout;
-            var task = connection.Start();
-            task.Wait(timeout);
-
-            if (connection.State == ConnectionState.Connected)
-            {
-                System.Console.WriteLine("Connected as: " + connection.ConnectionId);
-                System.Console.WriteLine("Token: " + connection.ConnectionToken);
-            }
-
-            _connection = connection;
+            //_hubs = clientHubManager;
+            _hubAgentManager = hubAgentManager;
         }
 
 
 
         private static void VerbReconnectHub(CommandArguments a)
         {
+            if (_hubAgentManager == null)
+            {
+                System.Console.WriteLine("No server initialized...");
+                return;
+            }
+
             var p = new FluentCommandLineParser<ReconnectArguments>();
             p.IsCaseSensitive = false;
             p.Setup(x => x.AutoReconnect)
                 .As('a', "auto")
-                .SetDefault(false)
+                .SetDefault(false)    //
                 .WithDescription("Whether to automatically reconnect");
-            p.Setup(x => x.ReconnectInterval)
-                .As('t')
-                .SetDefault(TimeSpan.FromSeconds(3))
-                .WithDescription("The duration between reconnect tries");
+            //p.Setup(x => x.ReconnectInterval)
+            //    .As('t')
+            //    .SetDefault(TimeSpan.FromSeconds(3))
+            //    .WithDescription("The duration between reconnect tries");
             p.SetupHelp("help");
 
             var args = a.Verb == "reconnect"
@@ -325,24 +386,47 @@ namespace Sandbox.Console
 
         private static void ReconnectHub(ReconnectArguments arguments = null)
         {
-            if (_connection.State != ConnectionState.Disconnected)
-                return;
-
             arguments = arguments ?? new ReconnectArguments();
+
             if (arguments.AutoReconnect)
             {
-                _reconnectTimer.Stop();
-                _reconnectTimer.Enabled = true;
-                _reconnectTimer.AutoReset = true;
-                _reconnectTimer.Interval = arguments.ReconnectInterval.TotalMilliseconds;
-                _reconnectTimer.Start();
+                System.Console.WriteLine("Re-connecting to hubs (auto)...");
+                var r = _hubAgentManager.Connector.EnsureReconnecting();
+                System.Console.WriteLine("EnsureReconnecting: " + r);
             }
             else
             {
-                System.Console.WriteLine("Re-connecting to SignalR server...");
-                var timeout = arguments.Timeout;
-                var task = _connection.Start();
-                task.Wait(timeout);
+                System.Console.WriteLine("Re-connecting to hubs (manual)...");
+
+                Task task = null;
+                Exception exception = null;
+                try
+                {
+                    var timeout = arguments.Timeout;
+                    task = _hubAgentManager.Connector.Connect();
+                    task.Wait(timeout);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+                finally
+                {
+                    if (exception != null || task == null || task.IsFaulted || task.Exception != null)
+                    {
+                        System.Console.WriteLine("Error re-connecting to SignalR server...");
+                        exception = task?.Exception?.InnerExceptions.FirstOrDefault()?.GetBaseException() ?? exception;
+                        if (exception != null)
+                            System.Console.WriteLine(exception.Message);
+                    }
+                    else
+                    {
+                        if (_hubAgentManager.Connector.Connected)
+                        {
+                            System.Console.WriteLine($"Connected! #{_hubAgentManager.Connector.ConnectionId}");
+                        }
+                    }
+                }
             }
         }
 
@@ -379,88 +463,43 @@ namespace Sandbox.Console
                 DisconnectHub(p.Object);
             }
         }
-        
+
 
         private static void DisconnectHub(DisconnectArguments arguments = null)
         {
-            if (_connection == null)
+            if (_hubAgentManager == null)
             {
-                System.Console.WriteLine("No server connected...");
+                System.Console.WriteLine("No server initialized...");
                 return;
             }
-
+            
             arguments = arguments ?? new DisconnectArguments();
             if (arguments.Force)
             {
                 var msg = arguments.ForceMessage;
-                var error = new OperationCanceledException(msg);
-                _connection.Stop(error);
+                Exception error = new OperationCanceledException(msg);
+                _hubAgentManager.Connector.Disconnect();
+                //_hubAgentManager.Connector.Disconnect(error);
             }
             else
             {
-                _connection.Stop();
+                _hubAgentManager.Connector.Disconnect();
             }
-                
-            _connection.Dispose();
-            _connection = null;
-        }
-        
-        
 
-        private static void Connection_OnStateChanged(StateChange stateChange)
+            _hubAgentManager.Connector.Dispose();
+            _hubAgentManager.Dispose();
+            _hubAgentManager = null;
+        }
+
+
+
+        private static void Connection_OnStateChanged(object sender, HubConnectionStateChange stateChange)
         {
-            System.Console.WriteLine("Connection changed: {0} => {1}", stateChange.OldState, stateChange.NewState);
-
-            if (stateChange.NewState == ConnectionState.Disconnected)
-            {
-                if (_reconnectArgs == null || _reconnectArgs.AutoReconnect)
-                    _reconnectTimer.Start();
-            }
+            //System.Console.WriteLine("Connection changed: {0} => {1}", stateChange.OldState, stateChange.NewState);
         }
 
 
-        private static void ReconnectTimer_OnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            try
-            {
-                if (_connection == null)
-                {
-                    _reconnectTimer.Stop();
-                    //System.Console.WriteLine("No server to reconnect to...");
-                    return;
-                }
-                if (_connection.State == ConnectionState.Connected)
-                {
-                    _reconnectTimer.Stop();
-                    return;
-                }
 
-                var arguments = new ReconnectArguments();
-                if (_reconnectArgs != null)
-                {
-                    arguments.Timeout = _reconnectArgs.Timeout;
-                    arguments.ReconnectInterval = _reconnectArgs.ReconnectInterval;
-                }
-                arguments.AutoReconnect = false;
-
-                ReconnectHub(arguments);
-            }
-            catch (AggregateException ex)
-            {
-                var msg = ex.GetBaseException().Message;
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + msg);
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
-            catch (Exception ex)
-            {
-                var msg = ex.GetBaseException().Message;
-                System.Console.WriteLine("Error re-connecting to SignalR server: " + msg);
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
-        }
-        
-
-        
         private static void VerbSubscribeHub(CommandArguments a)
         {
             var p = new FluentCommandLineParser<SubscribeArguments>();
@@ -490,34 +529,53 @@ namespace Sandbox.Console
                 SubscribeHub(p.Object);
             }
         }
-        
+
 
         private static void SubscribeHub(SubscribeArguments arguments)
         {
-            if (_connection == null)
+            if (_hubAgentManager == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
             }
-
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
+            if (string.IsNullOrWhiteSpace(arguments.HubName))
+                throw new ArgumentNullException(nameof(arguments.HubName));
 
-            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
-                ? _hubProxies[arguments.HubName]
-                : null;
-            if (hubProxy != null)
+            var hub = _hubAgentManager.GetHub(arguments.HubName);
+            if (hub == null)
             {
-                var subscription = hubProxy.Subscribe(arguments.EventName);
-                if (subscription != null)
+                System.Console.WriteLine("Hub not initialized...");
+                return;
+            }
+            var subscription = hub.Observe(arguments.EventName);
+            if (subscription != null)
+            {
+                // Subscribe
+                var observer = new DelegateObserver<HubSubscriptionEvent>(
+                    onNext: (evt) => OnHubReceive(evt.Subscription, evt.Data),
+                    onError: null,
+                    onCompleted: null
+                );
+                var disposable = subscription.Subscribe(observer);
+
+
+                // Add to cache
+                IList<IDisposable> subs;
+                var key = new Tuple<string, string>(arguments.HubName, arguments.EventName);
+                if (!_subscriptions.TryGetValue(key, out subs) || subs == null)
                 {
-                    subscription.Received += OnHubReceive;
+                    subs = subs ?? new List<IDisposable>();
+                    _subscriptions[key] = subs;
                 }
+                subs.Add(disposable);
+                System.Console.WriteLine($"Subscribed to hub '{arguments.HubName}', event '{arguments.EventName}'");
             }
         }
-        
 
-        
+
+
 
         private static void VerbUnsubscribeHub(CommandArguments a)
         {
@@ -548,35 +606,47 @@ namespace Sandbox.Console
                 UnsubscribeHub(p.Object);
             }
         }
-        
+
 
         private static void UnsubscribeHub(UnsubscribeArguments arguments)
         {
-            if (_connection == null)
+            if (_hubAgentManager == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
             }
-
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
+            if (string.IsNullOrWhiteSpace(arguments.HubName))
+                throw new ArgumentNullException(nameof(arguments.HubName));
 
-            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
-                ? _hubProxies[arguments.HubName]
-                : null;
-            if (hubProxy != null)
+            var hub = _hubAgentManager.GetHub(arguments.HubName);
+            if (hub == null)
             {
-                var subscription = hubProxy.Subscribe(arguments.EventName);
-                if (subscription != null)
+                System.Console.WriteLine("Hub not initialized...");
+                return;
+            }
+
+            
+            // Read from cache
+            IList<IDisposable> subs;
+            var key = new Tuple<string, string>(arguments.HubName, arguments.EventName);
+            if (_subscriptions.TryGetValue(key, out subs) && subs != null)
+            {
+                var disposable = subs.FirstOrDefault();
+                if (disposable != null)
                 {
-                    subscription.Received -= OnHubReceive;
+                    // Unsubscribe
+                    var r = subs.Remove(disposable);
+                    disposable.Dispose();
+                    System.Console.WriteLine($"Unsubscribed from hub '{arguments.HubName}', event '{arguments.EventName}'");
                 }
             }
         }
 
 
-        
-        
+
+
         private static void VerbSendToHub(CommandArguments a)
         {
             var p = new FluentCommandLineParser<SendToHubArguments>();
@@ -590,6 +660,9 @@ namespace Sandbox.Console
             p.Setup(x => x.Args)
                 .As('a', "args")
                 .WithDescription("Method arguments");
+            p.Setup(x => x.Queuable)
+                .As('q', "queuable")
+                .WithDescription("Whether this message should be queued if not currently connected");
             p.SetupHelp("help");
 
             var args = a.Verb == "send" ||
@@ -610,11 +683,11 @@ namespace Sandbox.Console
                 SendToHub(p.Object);
             }
         }
-        
+
 
         private static void SendToHub(SendToHubArguments arguments)
         {
-            if (_connection == null)
+            if (_hubAgentManager == null)
             {
                 System.Console.WriteLine("No server initialized...");
                 return;
@@ -626,42 +699,42 @@ namespace Sandbox.Console
                 throw new ArgumentNullException(nameof(arguments.HubName));
             if (string.IsNullOrWhiteSpace(arguments.Method))
                 throw new ArgumentNullException(nameof(arguments.Method));
+            
+            var hub = _hubAgentManager.GetHub(arguments.HubName);
+            if (hub == null)
+            {
+                System.Console.WriteLine("Hub not initialized...");
+                return;
+            }
 
-            var hubProxy = _hubProxies.ContainsKey(arguments.HubName)
-                ? _hubProxies[arguments.HubName]
-                : null;
-            if (hubProxy != null)
+            object[] args = arguments.Args?.Cast<object>().ToArray() ?? new object[0];
+            var message = new HubMessage
             {
-                object[] args = arguments.Args?.Cast<object>().ToArray() ?? new object[0];
-                var timeout = arguments.Timeout;
-                var task = hubProxy.Invoke(arguments.Method, args);
-                task.Wait(timeout);
-            }
-            else
-            {
-                
-            }
+                //Hub = arguments.HubName,
+                Method = arguments.Method,
+                Args = args,
+                Queuable = arguments.Queuable,
+            };
+            var timeout = arguments.Timeout;
+            var task = hub.Invoke(message);
+            task.Wait(timeout);
         }
 
 
 
-        private static void OnHubReceive(IList<JToken> list)
+        private static void OnHubReceive(IHubSubscription subscription, IList<JToken> list)
         {
-            System.Console.WriteLine("::OnHubReceive::");
+            System.Console.WriteLine($"::{subscription.HubName}.{subscription.EventName}::");
             foreach (var tkn in list)
             {
-                System.Console.WriteLine("OnHubReceive tkn: " + tkn);
-                if (tkn?.ToString() == "ping")
-                {
-                    //_hubEventProxy.Invoke("Send", new[] {list[0], "respond", "pong!"});
-                }
+                System.Console.WriteLine($"{subscription.EventName} token: {tkn}");
             }
         }
 
 
 
 
-        
+
         private static void VerbZeroConfResolve(CommandArguments a)
         {
             var p = new FluentCommandLineParser<ZeroConfResolveArguments>();
@@ -695,13 +768,13 @@ namespace Sandbox.Console
                 ZeroConfResolve(p.Object);
             }
         }
-        
+
 
         private static void ZeroConfResolve(ZeroConfResolveArguments arguments)
         {
             arguments = arguments ?? new ZeroConfResolveArguments();
 
-            
+
 
             if (_zeroconfBrowser == null)
             {
@@ -736,8 +809,8 @@ namespace Sandbox.Console
 
 
 
-        
-        
+
+
         private static void VerbZeroConfPublish(CommandArguments a)
         {
             var p = new FluentCommandLineParser<ZeroConfPublishArguments>();
@@ -774,7 +847,7 @@ namespace Sandbox.Console
                 ZeroConfPublish(p.Object);
             }
         }
-        
+
 
         private static void ZeroConfPublish(ZeroConfPublishArguments arguments)
         {

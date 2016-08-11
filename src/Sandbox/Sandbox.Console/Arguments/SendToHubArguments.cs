@@ -14,5 +14,6 @@ namespace Sandbox.Console
         public string Method { get; set; }
         public List<string> Args { get; set; }
         public TimeSpan Timeout { get; set; }
+        public bool Queuable { get; set; }
     }
 }

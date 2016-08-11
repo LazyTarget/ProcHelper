@@ -19,5 +19,10 @@ namespace Remotus.API.v1
         {
             return Functions;
         }
+
+        public void Dispose()
+        {
+
+        }
     }
 }

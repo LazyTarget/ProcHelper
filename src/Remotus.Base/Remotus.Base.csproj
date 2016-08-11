@@ -34,6 +34,10 @@
     <Reference Include="CoreAudioApi">
       <HintPath>..\third party\CoreAudioApi.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Lux, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lux.1.0.2\lib\net45\Lux.dll</HintPath>
       <Private>True</Private>
@@ -72,16 +76,35 @@
     <Compile Include="Diagnostics\LogExtensions.cs" />
     <Compile Include="Diagnostics\Loggers\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Loggers\NullLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\DebugLogger.cs" />
+    <Compile Include="Diagnostics\Loggers\Log4NetLogger.cs" />
     <Compile Include="Diagnostics\Loggers\TraceLogger.cs" />
+    <Compile Include="Diagnostics\LogManager.log4net.cs" />
     <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\ServiceStatusChangedEventArgs.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="Extensions\JsonExtensions.cs" />
+    <Compile Include="Extensions\HubExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\API\IRemotusAPI.cs" />
+    <Compile Include="Interfaces\Net\Enums.cs" />
+    <Compile Include="Interfaces\Net\HubConnectionStateChanged.cs" />
+    <Compile Include="Interfaces\Net\HubSubscription.cs" />
+    <Compile Include="Interfaces\Net\HubSubscriptionEvent.cs" />
+    <Compile Include="Interfaces\Net\ICustomHubAgent.cs" />
+    <Compile Include="Interfaces\Net\IHubConnector.cs" />
+    <Compile Include="Interfaces\Net\IHubAgentManager.cs" />
+    <Compile Include="Interfaces\Net\IHubSubscription.cs" />
+    <Compile Include="Interfaces\Net\IHubMessage.cs" />
+    <Compile Include="Interfaces\Net\IHubAgentFactory.cs" />
+    <Compile Include="Interfaces\Net\IHubAgent.cs" />
     <Compile Include="Interfaces\IApiEndpoint.cs" />
     <Compile Include="Interfaces\IClientInfo.cs" />
     <Compile Include="Interfaces\IComponentInstantiator.cs" />
     <Compile Include="Interfaces\IDescriptor.cs" />
     <Compile Include="Interfaces\IExecutionContext.cs" />
+    <Compile Include="Interfaces\IMessageCache.cs" />
     <Compile Include="Interfaces\IResponseMetadata.cs" />
     <Compile Include="Interfaces\IServerInfo.cs" />
     <Compile Include="Interfaces\IService.cs" />
@@ -100,6 +123,7 @@
     <Compile Include="Interfaces\IFunctionDescriptor.cs" />
     <Compile Include="Interfaces\IFunctionPlugin.cs" />
     <Compile Include="Interfaces\IFunctionResult.cs" />
+    <Compile Include="Interfaces\Net\Payloads\AuthCredentials.cs" />
     <Compile Include="Interfaces\Workers\IInputHelper.cs" />
     <Compile Include="Interfaces\ILink.cs" />
     <Compile Include="Interfaces\IParameter.cs" />
@@ -117,6 +141,8 @@
     <Compile Include="Models\DefaultResponseBase.cs" />
     <Compile Include="Models\FunctionResult.cs" />
     <Compile Include="Models\FunctionArguments.cs" />
+    <Compile Include="Models\Net\HubMessage.cs" />
+    <Compile Include="Models\Net\HubRequest.cs" />
     <Compile Include="Models\Parameter.cs" />
     <Compile Include="Models\ParameterCollection.cs" />
     <Compile Include="Models\InputHelper\IsKeyDown.cs" />
@@ -133,6 +159,10 @@
     <Compile Include="Models\InputHelper\Point.cs" />
     <Compile Include="Models\InputHelper\WriteTextRequest.cs" />
     <Compile Include="Models\InputHelper\WriteTextResponse.cs" />
+    <Compile Include="Models\Net\CustomHubMessage.cs" />
+    <Compile Include="Models\Payloads\HubEvent.cs" />
+    <Compile Include="Models\Payloads\DebugMessage.cs" />
+    <Compile Include="Models\Payloads\PluginStatusChanged.cs" />
     <Compile Include="Models\PowershellHelper\PowershellFileRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellQueryRequest.cs" />
     <Compile Include="Models\PowershellHelper\PowershellResponse.cs" />
@@ -148,6 +178,11 @@
     <Compile Include="Models\ProcHelper\StartProcessRequest.cs" />
     <Compile Include="Models\ProcHelper\StartProcessResponse.cs" />
     <Compile Include="Models\ResponseMetadata.cs" />
+    <Compile Include="Observables\AsyncBroadcaster.cs" />
+    <Compile Include="Observables\BroadcasterBase.cs" />
+    <Compile Include="Observables\DelegateDisposable.cs" />
+    <Compile Include="Observables\IBroadcaster.cs" />
+    <Compile Include="Observables\DelegateObserver.cs" />
     <Compile Include="Scripting\Tasks\ExecuteFunctionScriptTask.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Models\WinServiceHelper\ContinueWinServiceRequest.cs" />

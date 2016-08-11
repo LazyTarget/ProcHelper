@@ -9,24 +9,25 @@ namespace Remotus.API
 {
     public static class Program
     {
-        internal static ServiceInstance Service;
+        internal static ServiceInstance Service { get; private set; }
 
 
         public static void Main(string[] args)
         {
+            LogManager.ConfigureLog4Net();
+            LogManager.InitializeWith<Log4NetLogger>();
+
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_OnFirstChanceException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_OnUnhandledException;
-            
+
             if (!Environment.UserInteractive)
             {
                 // If run via Service Control Manager
-                LogManager.InitializeWith<TraceLogger>();
                 RunService(args);
             }
             else
             {
                 // If run via Explorer, Command prompt or other
-                LogManager.InitializeWith<ConsoleLogger>();
                 RunServiceWithConsole(args);
             }
         }

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Remotus.Base
 {
     public interface IService : IDisposable
     {
         ServiceStatus Status { get; }
-        void Start();
-        void Stop();
+        event EventHandler<ServiceStatusChangedEventArgs> OnStatusChanged;
+
+        Task Start();
+        Task Stop();
     }
 }

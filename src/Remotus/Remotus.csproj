@@ -94,6 +94,7 @@
     <Compile Include="API\v1\Converters\FunctionPluginConverter.cs" />
     <Compile Include="API\v1\FullCtrlAPI.ServerController.cs" />
     <Compile Include="API\v1\FullCtrlAPI.RemoteController.cs" />
+    <Compile Include="API\v1\Models\ComponentDescriptor.cs" />
     <Compile Include="API\v1\Models\FunctionDescriptor.cs" />
     <Compile Include="API\v1\Models\ServicePluginDescriptor.cs" />
     <Compile Include="API\v1\Models\FunctionPluginDescriptor.cs" />
@@ -123,10 +124,6 @@
     <ProjectReference Include="..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Remotus.Plugins\Remotus.Plugins.Sound\Remotus.Plugins.Sound.csproj">
-      <Project>{3b22b620-56c3-44e6-8635-4ea1d8b09437}</Project>
-      <Name>Remotus.Plugins.Sound</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
