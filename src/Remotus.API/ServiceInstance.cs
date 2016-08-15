@@ -22,6 +22,7 @@ namespace Remotus.API
         private IDisposable _server;
         private ApiConfig _apiConfig;
         private StartupConfig _startupConfig;
+        private bool _launchPlugins = true;
 
         // Server
         private readonly IDictionary<string, IClientInfo> _clients;
@@ -118,7 +119,8 @@ namespace Remotus.API
                                 if (loadedPlugin.Status == ServiceStatus.None ||
                                     loadedPlugin.Status == ServiceStatus.Stopped)
                                 {
-                                    StartPlugin(loadedPlugin);
+                                    if (_launchPlugins)
+                                        StartPlugin(loadedPlugin);
                                 }
                                 else
                                 {

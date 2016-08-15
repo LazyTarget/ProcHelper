@@ -6,6 +6,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Owin;
 using Remotus.API.Net.Security;
+using Remotus.API.Net.Server;
 
 namespace Remotus.API
 {
@@ -85,10 +86,14 @@ namespace Remotus.API
                     //signalrConf.EnableJSONP = true;
 
                     var authorizer = new CustomHubAuthorizeAttribute();
-                    var module = new AuthorizeModule(authorizer, authorizer);
+                    IHubPipelineModule module = new AuthorizeModule(authorizer, authorizer);
                     GlobalHost.HubPipeline.AddModule(module);
-                    //GlobalHost.Configuration.ConnectionTimeout = 
 
+                    module = new LoggingPipelineModule();
+                    GlobalHost.HubPipeline.AddModule(module);
+
+
+                    //GlobalHost.Configuration.ConnectionTimeout = 
 
                     //GlobalHost.DependencyResolver.Register(typeof(IJsonSerializer), jsonSerializer);
                     GlobalHost.DependencyResolver.Register(typeof(IUserIdProvider), () => new CustomUserIdProvider());
