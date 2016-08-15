@@ -23,6 +23,11 @@ namespace Remotus.Web.Controllers
             return View("Dashboard");
         }
 
+        public ActionResult Connections()
+        {
+            return View("Connections");
+        }
+
 
         public ActionResult Screenshot()
         {

@@ -50,7 +50,7 @@ namespace Remotus.API.Net.Hubs
         }
 
 
-        public async Task RemoveFromFroup(string group)
+        public async Task RemoveFromGroup(string group)
         {
             if (string.IsNullOrWhiteSpace(group))
             {

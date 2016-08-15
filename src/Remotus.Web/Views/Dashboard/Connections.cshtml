@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Connections";
+}
+<h2>Connections</h2>
+<div>
+    <div id="messages"></div>
+</div>
+
+@section Scripts{
+    <!--Script references. -->
+    <!--The jQuery library is required and is referenced by default in _Layout.cshtml. -->
+    <!--Reference the SignalR library. -->
+    @Scripts.Render("~/bundles/signalr")
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            jQuery.support.cors = false;        // todo: not secure!!!
+
+            var uri = "http://localhost:9000";
+            var connection = $.hubConnection(uri);
+            var serverHub = connection.createHubProxy('serverHub');
+
+            // Create a function that the hub can call back to display messages.
+            serverHub.on('OnEvent', function (model) {
+                console.log("ServerHub::OnEvent()", arguments);
+                var connectionId = model.connectionId || model.ConnectionId;
+
+                var targetDiv = $('#messages');
+                var connDiv = targetDiv.find('[data-connectionid="' + connectionId + '"]');
+                if (connDiv.length <= 0) {
+                    connDiv = $('</div>');
+                    connDiv.attr('data-connectionid', connectionId);
+                    targetDiv.append(connDiv);
+                } else {
+                    
+                }
+
+                var agentId = model.agentId || model.AgentId;
+                var connected = model.connected || model.Connected;
+                connDiv.text('ConnectionId: ' + connectionId + '; AgentId: ' + agentId + ', Connected: ' + connected);
+            });
+
+            // Start the connection.
+            connection.start().done(function () {
+                
+            });
+        });
+
+        // This optional function html-encodes messages for display in the page.
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+
+    </script>
+}

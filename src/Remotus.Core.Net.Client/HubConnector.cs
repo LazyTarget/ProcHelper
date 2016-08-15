@@ -118,10 +118,19 @@ namespace Remotus.Core.Net.Client
                         return;
                     if (_hubConnection.State == Microsoft.AspNet.SignalR.Client.ConnectionState.Reconnecting)
                         return;
+
+                    if (_isReconnecting)
+                    {
+                        var timeout = TimeSpan.FromSeconds(3);
+                        _log.Debug($"HubConnector:Reconnect() Waiting {timeout} before trying to reconnect...");
+                        Thread.Sleep(timeout);
+                    }
+
+                    Task task = null;
                     try
                     {
                         _isReconnecting = true;
-                        var task = Connect();
+                        task = Connect();
                         task.Wait();
                     }
                     catch (Exception ex)
@@ -132,10 +141,6 @@ namespace Remotus.Core.Net.Client
                     {
 
                     }
-                                    
-                    var timeout = TimeSpan.FromSeconds(3);
-                    _log.Debug($"HubConnector:Reconnect() Waiting {timeout} before trying to reconnect...");
-                    Thread.Sleep(timeout);
                 }
                 _isReconnecting = false;
             }

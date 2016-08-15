@@ -384,6 +384,7 @@
     <Content Include="Views\Plugin\_FunctionResult.cshtml" />
     <Content Include="Views\Shared\_Error.cshtml" />
     <Content Include="Views\Plugin\_PluginFunctions.cshtml" />
+    <Content Include="Views\Dashboard\Connections.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
