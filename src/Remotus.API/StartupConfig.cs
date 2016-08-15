@@ -84,12 +84,15 @@ namespace Remotus.API
                     // JSONP requests are insecure but some older browsers (and some
                     // versions of IE) require JSONP to work cross domain
                     //signalrConf.EnableJSONP = true;
-
-                    var authorizer = new CustomHubAuthorizeAttribute();
-                    IHubPipelineModule module = new AuthorizeModule(authorizer, authorizer);
+                    
+                    IHubPipelineModule module = new LoggingPipelineModule();
                     GlobalHost.HubPipeline.AddModule(module);
 
-                    module = new LoggingPipelineModule();
+                    var authorizer = new CustomHubAuthorizeAttribute();
+                    module = new AuthorizeModule(authorizer, authorizer);
+                    GlobalHost.HubPipeline.AddModule(module);
+
+                    module = new HubRecipePipelineModule();
                     GlobalHost.HubPipeline.AddModule(module);
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Remotus.API.Data;
 
 namespace Remotus.API.Net
 {
@@ -15,10 +16,12 @@ namespace Remotus.API.Net
         {
             ClientManager = new ClientManager();
             ConnectionManager = new ConnectionManager(ClientManager, _locker);
+            RecipeRepository = new RecipeRepository();
         }
         
         public ClientManager ClientManager { get; private set; }
         public ConnectionManager ConnectionManager { get; private set; }
+        public RecipeRepository RecipeRepository { get; private set; }
 
     }
 }

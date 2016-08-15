@@ -7,7 +7,14 @@ namespace Remotus.API.Net.Server
 {
     public class LoggingPipelineModule : HubPipelineModule
     {
-        private static ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+        private static ILog _log;
+
+        static LoggingPipelineModule()
+        {
+#if DEBUG
+            //_log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+#endif
+        }
 
 
         #region Connectivity
@@ -63,7 +70,7 @@ namespace Remotus.API.Net.Server
 
         protected override bool OnBeforeIncoming(IHubIncomingInvokerContext context)
         {
-            _log.Debug(() => $"=> Invoking '{context.MethodDescriptor.Name}' on hub '{context.MethodDescriptor.Hub.Name}'");
+            _log?.Debug(() => $"=> Invoking '{context.MethodDescriptor.Name}' on hub '{context.MethodDescriptor.Hub.Name}'");
             var res = base.OnBeforeIncoming(context);
             return res;
         }
@@ -76,7 +83,7 @@ namespace Remotus.API.Net.Server
 
         protected override bool OnBeforeOutgoing(IHubOutgoingInvokerContext context)
         {
-            _log.Debug(() => $"<= Invoking '{context.Invocation.Method}' on client hub '{context.Invocation.Hub}'");
+            _log?.Debug(() => $"<= Invoking '{context.Invocation.Method}' on client hub '{context.Invocation.Hub}'");
             return base.OnBeforeOutgoing(context);
         }
 
