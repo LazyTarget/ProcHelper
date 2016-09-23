@@ -128,10 +128,7 @@
     <Compile Include="Components\ActionCategoryAttribute.cs" />
     <Compile Include="Components\ControllerCategoryAttribute.cs" />
     <Compile Include="Data\RecipeRepository.cs" />
-    <Compile Include="Models\CustomHubAction.cs" />
-    <Compile Include="Models\HubAction.cs" />
     <Compile Include="Models\HubRecipe.cs" />
-    <Compile Include="Models\HubTrigger.cs" />
     <Compile Include="Extensions\HubServerExtensions.cs" />
     <Compile Include="Extensions\HubExtensions.cs" />
     <Compile Include="Models\AgentPlugin.cs" />

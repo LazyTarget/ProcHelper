@@ -9,12 +9,14 @@ using Remotus.Base;
 using Remotus.Base.Interfaces.Net;
 using Remotus.Base.Net;
 using SpotifyAPI.Local;
+using Remotus.Plugins.Spotify.Hub;
 
 namespace Remotus.Plugins.Spotify
 {
-    public class SpotifyPlugin : IFunctionPlugin, IServicePlugin
+    public class SpotifyPlugin : IFunctionPlugin, IServicePlugin, IHubPlugin
     {
         private static readonly ILog _log = LogManager.GetLoggerFor(MethodBase.GetCurrentMethod().DeclaringType.FullName);
+        private static readonly ModelConverter _modelConverter = new ModelConverter();
 
         private ServiceStatus _status;
         //private ClientHubManager _pluginHub;
@@ -40,6 +42,11 @@ namespace Remotus.Plugins.Spotify
             yield return new NextTrackFunction.Descriptor();
             yield return new GetStatusFunction.Descriptor();
             yield return new GetProfileFunction.Descriptor();
+        }
+
+        public IEnumerable<IHubDescriptor> GetHubs()
+        {
+            yield return new SpotifyHubDescriptor();
         }
 
         public ServiceStatus Status
@@ -141,11 +148,18 @@ namespace Remotus.Plugins.Spotify
             _log.Info(() => $"OnTrackChange() NewTrackName: {args.NewTrack?.TrackResource?.Name}");
 
 
+            object payload = new
+            {
+                OldTrack = _modelConverter.FromTrack(args.OldTrack),
+                NewTrack = _modelConverter.FromTrack(args.NewTrack),
+            };
+            //payload = args;
+
             var msg = new CustomHubMessage
             {
                 Method = "OnTrackChange",
                 Groups = new [] { "Spotify", "Spotify.OnTrackChange" },
-                Args = new[] { args },
+                Args = new[] { payload },
                 Queuable = true,
             };
             var task = _spotifyHub?.InvokeCustom(msg);

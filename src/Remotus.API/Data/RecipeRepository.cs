@@ -5,36 +5,75 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Remotus.Base;
+using Remotus.API.Net;
 
 namespace Remotus.API.Data
 {
     public class RecipeRepository
     {
-        private readonly IList<HubRecipe> _data = new List<HubRecipe>();
+        private readonly IDictionary<string, IList<HubTrigger>> _triggers = new Dictionary<string, IList<HubTrigger>>();
+        private readonly IDictionary<string, IList<HubAction>> _actions = new Dictionary<string, IList<HubAction>>();
+        private readonly IList<HubRecipe> _recipies = new List<HubRecipe>();
         private bool _loaded;
 
         public RecipeRepository()
         {
-
+            
         }
 
 
         private void Load()
         {
-            lock (_data)
+            lock (_recipies)
             {
-                _data.Clear();
+                _recipies.Clear();
+                _triggers.Clear();
+                _actions.Clear();
 
-                _data.Add(new HubRecipe
+                var plugins = Program.Service?.GetPlugins()?.OfType<IHubPlugin>();
+                if (plugins != null)
                 {
-                    Trigger = new HubTrigger
+                    foreach(var plugin in plugins)
                     {
-                        HubName = "SpotifyHub",
-                        EventName = "OnVolumeChange",
+                        var hubs = plugin?.GetHubs();
+                        if (hubs == null)
+                            continue;
+                        foreach (var hubDescriptor in hubs)
+                        {
+                            if (hubDescriptor == null)
+                                continue;
+                            var triggers = hubDescriptor.GetTriggers();
+                            var actions = hubDescriptor.GetActions();
+
+
+                            IList<HubTrigger> lt;
+                            if (!_triggers.TryGetValue(hubDescriptor.HubName, out lt))
+                            {
+                                lt = new List<HubTrigger>();
+                                _triggers[hubDescriptor.HubName] = lt;
+                            }
+
+
+                            IList<HubAction> la;
+                            if (!_actions.TryGetValue(hubDescriptor.HubName, out la))
+                            {
+                                la = new List<HubAction>();
+                                _actions[hubDescriptor.HubName] = la;
+                            }
+                        }
+                    }
+                }
+
+
+                _recipies.Add(new HubRecipe
+                {
+                    Trigger = new CustomHubTrigger(hubName: "SpotifyHub", eventName: "OnVolumeChange")
+                    {
+
                     },
                     Action = new CustomHubAction
                     {
-                        Action = async (args) =>
+                        Action = async (context, args) =>
                         {
                             var customSerializerSettings = new CustomJsonSerializerSettings();
                             var serializer = JsonSerializer.Create(customSerializerSettings.Settings);
@@ -49,16 +88,15 @@ namespace Remotus.API.Data
                 });
 
 
-                _data.Add(new HubRecipe
+                _recipies.Add(new HubRecipe
                 {
-                    Trigger = new HubTrigger
+                    Trigger = new CustomHubTrigger(hubName: "SpotifyHub", eventName: "OnDeviceMuteChanged")
                     {
-                        HubName = "SoundHub",
-                        EventName = "OnDeviceMuteChanged",
+
                     },
                     Action = new CustomHubAction
                     {
-                        Action = async (args) =>
+                        Action = async (context, args) =>
                         {
                             var customSerializerSettings = new CustomJsonSerializerSettings();
                             var serializer = JsonSerializer.Create(customSerializerSettings.Settings);
@@ -93,9 +131,9 @@ namespace Remotus.API.Data
             }
 
             IEnumerable<HubRecipe> result;
-            lock (_data)
+            lock (_recipies)
             {
-                result = _data.AsEnumerable();
+                result = _recipies.AsEnumerable();
             }
             return result;
         }

@@ -73,6 +73,9 @@
     <Compile Include="Functions\NextTrackFunction.cs" />
     <Compile Include="Functions\PlayFunction.cs" />
     <Compile Include="Functions\PauseFunction.cs" />
+    <Compile Include="Hub\OnVolumeChangeHubTrigger.cs" />
+    <Compile Include="Hub\SpotifyHubDescriptor.cs" />
+    <Compile Include="Hub\OnTrackChangeHubTrigger.cs" />
     <Compile Include="ModelConverter.cs" />
     <Compile Include="Models\SpotifyResource.cs" />
     <Compile Include="Models\Track.cs" />
@@ -85,6 +88,10 @@
     <ProjectReference Include="..\..\Remotus.Base\Remotus.Base.csproj">
       <Project>{cd84ada9-e373-49fe-b889-74ee1f1643a7}</Project>
       <Name>Remotus.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Remotus\Remotus.csproj">
+      <Project>{EBA770E8-FBFC-4ADC-A8D1-259C3DEDCC33}</Project>
+      <Name>Remotus</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
