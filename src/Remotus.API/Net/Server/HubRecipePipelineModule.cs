@@ -4,6 +4,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Remotus.Base;
 using Remotus.Base.Net;
+using Remotus.API.Net.Client;
 
 namespace Remotus.API.Net.Server
 {
@@ -37,6 +38,9 @@ namespace Remotus.API.Net.Server
             }
 
 
+            var triggers = HubServer.Instance.RecipeRepository.GetTriggers();
+            var actions = HubServer.Instance.RecipeRepository.GetActions();
+
             // Find recipes
             var recipes = HubServer.Instance.RecipeRepository.GetRecipes();
             var matchingRecipes = recipes.Where(x =>
@@ -58,7 +62,16 @@ namespace Remotus.API.Net.Server
                 args = args ?? new object[0];
                 foreach (var recipe in matchingRecipes)
                 {
-                    var task = recipe.Action.Invoke(args);
+                    IExecutionContext executionContext = new ExecutionContext
+                    {
+                        //ClientInfo = _clientInfo,
+                        Logger = new TraceLogger(),
+                        Remotus = new Remotus.API.v1.FullCtrlAPI(),
+                        //SignalR =  // todo: !
+                        HubAgentFactory = new HubAgentFactory(),
+                    };
+
+                    var task = recipe.Action.Invoke(executionContext, args);
                     //task.TryWaitAsync();
                     task.TryWait();
                 }

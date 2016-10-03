@@ -137,6 +137,37 @@ namespace Remotus.API.Data
             }
             return result;
         }
+        
+
+        public IEnumerable<HubTrigger> GetTriggers()
+        {
+            if (!_loaded)
+            {
+                Load();
+            }
+
+            IEnumerable<HubTrigger> result;
+            lock (_recipies)
+            {
+                result = _triggers.SelectMany(x => x.Value).AsEnumerable();
+            }
+            return result;
+        }
+        
+        public IEnumerable<HubAction> GetActions()
+        {
+            if (!_loaded)
+            {
+                Load();
+            }
+
+            IEnumerable<HubAction> result;
+            lock (_recipies)
+            {
+                result = _actions.SelectMany(x => x.Value).AsEnumerable();
+            }
+            return result;
+        }
 
     }
 }

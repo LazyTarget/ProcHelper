@@ -1,4 +1,6 @@
-﻿namespace Remotus.API
+﻿using Remotus.Base;
+
+namespace Remotus.API
 {
     public class HubRecipe
     {

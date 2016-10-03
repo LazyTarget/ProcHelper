@@ -59,8 +59,9 @@ namespace Remotus.API
             {
                 // Run Launcher, to Init/Start plugin
                 var path = plugin.PluginFile;
-                var args = $"plugin {path}";
-                var exe = @"E:\Programming\Repos\GitHub\LazyTarget\ProcHelper\src\Remotus.Launcher\bin\Debug\Remotus.Launcher.exe";
+                var args = $"run-plugin /async /p {path}";
+                //var exe = @"E:\Programming\Repos\GitHub\LazyTarget\ProcHelper\src\Remotus.Launcher\bin\Debug\Remotus.Launcher.exe";
+                var exe = @"C:\Repos\MyGit\Remotus\src\Remotus.Launcher\bin\Debug\Remotus.Launcher.exe";
                 var proc = new System.Diagnostics.Process();
                 proc.StartInfo = new ProcessStartInfo(exe, args);
                 proc.Exited += delegate (object sender, EventArgs eventArgs)

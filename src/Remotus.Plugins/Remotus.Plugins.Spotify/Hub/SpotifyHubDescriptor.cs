@@ -23,6 +23,11 @@ namespace Remotus.Plugins.Spotify.Hub
         public IEnumerable<HubAction> GetActions()
         {
             var result = new List<HubAction>();
+            result.Add(new InvokeFunctionHubAction
+            {
+                PluginID = "79A54741-590C-464D-B1E9-0CC606771493",  // Spotify
+                FunctionID = new PauseFunction.Descriptor().ID,     // Pause
+            });
             //result.Add(new CustomHubAction
             //{
             //    Action = async (context, args) =>
